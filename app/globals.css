@@ -1,26 +1,189 @@
 @import "tailwindcss";
 
+/*
+  Design tokens — keep in sync with lib/design/tokens.ts and the Figma spec.
+  Do not introduce colors, type sizes, or spacing outside this file.
+*/
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ink-strong: #000000;
+  --ink-medium: rgb(0 0 0 / 0.75);
+  --ink-weak: rgb(0 0 0 / 0.6);
+  --canvas: #ffffff;
+  --surface: #000000;
+  --inverse: #ffffff;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-sans: var(--font-space-grotesk);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-ink-strong: var(--ink-strong);
+  --color-ink-medium: var(--ink-medium);
+  --color-ink-weak: var(--ink-weak);
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-inverse: var(--inverse);
+
+  --font-weight-regular: var(--weight-regular);
+  --font-weight-medium: var(--weight-medium);
+
+  --text-display: 48px;
+  --text-display--line-height: 1.15;
+  --text-display--font-weight: var(--weight-medium);
+
+  --text-heading-1: 40px;
+  --text-heading-1--line-height: 1.15;
+  --text-heading-1--font-weight: var(--weight-medium);
+
+  --text-heading-2: 32px;
+  --text-heading-2--line-height: 1.2;
+  --text-heading-2--font-weight: var(--weight-medium);
+
+  --text-heading-3: 24px;
+  --text-heading-3--line-height: 1.25;
+  --text-heading-3--font-weight: var(--weight-medium);
+
+  --text-heading-4: 20px;
+  --text-heading-4--line-height: 1.3;
+  --text-heading-4--font-weight: var(--weight-medium);
+
+  --text-body: 16px;
+  --text-body--line-height: 1.5;
+  --text-body--font-weight: var(--weight-regular);
+
+  --text-body-bold: 16px;
+  --text-body-bold--line-height: 1.5;
+  --text-body-bold--font-weight: var(--weight-medium);
+
+  --text-small: 14px;
+  --text-small--line-height: 1.45;
+  --text-small--font-weight: var(--weight-regular);
+
+  --text-small-bold: 14px;
+  --text-small-bold--line-height: 1.45;
+  --text-small-bold--font-weight: var(--weight-medium);
+
+  --text-tiny: 12px;
+  --text-tiny--line-height: 1.4;
+  --text-tiny--font-weight: var(--weight-regular);
+
+  --text-tiny-bold: 12px;
+  --text-tiny-bold--line-height: 1.4;
+  --text-tiny-bold--font-weight: var(--weight-regular);
+
+  --spacing-section: 180px;
+  --spacing-major: 60px;
+  --spacing-page: 40px;
+  --spacing-header-t: 24px;
+  --spacing-header-b: 60px;
+  --spacing-footer: 120px;
+  --spacing-gutter: 40px;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--canvas);
+  color: var(--ink-strong);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-weight: var(--weight-regular);
+}
+
+.page-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--spacing-gutter);
+  margin-inline: var(--spacing-page);
+}
+
+/* Full-screen editorial panels keep the pacing intentional on laptop layouts. */
+.section-panel {
+  min-height: 88svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+@media (max-width: 767px) {
+  .section-panel {
+    min-height: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .service-slide {
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto !important;
+  }
+
+  .services-track {
+    height: auto !important;
+  }
+}
+
+.services-track {
+  --service-count: 4;
+}
+
+.services-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 5rem;
+}
+
+.service-slide {
+  width: 100%;
+}
+
+.services-progress {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .services-track.services-ready {
+    height: calc(var(--service-count) * 100svh);
+  }
+
+  .services-track.services-ready .services-stage {
+    position: sticky;
+    top: 0;
+    display: block;
+    height: 100svh;
+    overflow: hidden;
+    padding-block: clamp(40px, 9svh, 80px);
+  }
+
+  .services-track.services-ready .service-slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .services-track.services-ready .service-slide:not([inert]) {
+    pointer-events: auto;
+  }
+
+  .services-track.services-ready .services-progress {
+    display: flex;
+  }
+}
+
+@media (max-height: 600px) and (prefers-reduced-motion: no-preference) {
+  .services-track.services-ready .services-stage {
+    padding-block: 32px 56px;
+  }
+
+  .services-track.services-ready .service-slide {
+    align-items: flex-start;
+    padding-top: 24px;
+  }
+
+  .services-track.services-ready .services-progress {
+    bottom: 16px;
+  }
 }
