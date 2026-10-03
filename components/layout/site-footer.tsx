@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { NewsletterForm } from "@/components/layout/newsletter-form";
+import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import { Text } from "@/components/ui/text";
 import { site, siteNav } from "@/lib/constants/navigation";
 
@@ -32,16 +33,16 @@ function SectionLink({ label }: { label: string }) {
 
 export function SiteFooter() {
   return (
-    <footer className="mt-auto bg-[#f8f8f9] px-page pt-footer pb-footer">
+    <footer className="mt-auto bg-ink-strong/10 px-page pt-footer pb-footer">
       <div className="mx-auto flex max-w-6xl flex-col gap-major lg:flex-row lg:justify-between">
         {/* Left: newsletter, copyright, socials */}
         <div className="flex w-full max-w-md flex-col gap-8">
-          <div className="border-l-4 border-[#f7e0ea] bg-white p-7 [clip-path:polygon(0_0,100%_0,100%_calc(100%-20px),calc(100%-20px)_100%,0_100%)]">
+          <div className="border-l-4 border-ink-strong/20 bg-canvas p-7 [clip-path:polygon(0_0,100%_0,100%_calc(100%-20px),calc(100%-20px)_100%,0_100%)]">
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-1">
-                <h2 className="text-xl font-bold text-black">
+                <Text as="h2" variant="h4">
                   Subscribe to our mailing list
-                </h2>
+                </Text>
                 <p className="text-sm text-[#5f5660]">
                   Get insights and updates straight to your inbox.
                 </p>
@@ -73,7 +74,7 @@ export function SiteFooter() {
         {/* Right: story paragraph with the site sections woven in */}
         <div className="flex w-full max-w-lg flex-col gap-6">
           <nav aria-label="Footer">
-            <p className="text-small leading-7 text-ink-medium">
+            <ScrollReveal as="p" className="text-small leading-7 text-ink-medium">
               Every realm that has weathered a long winter was built in the
               summer before it. Premodus takes its name from the old Latin:{" "}
               <em>pre</em>, meaning before, and <em>modus</em>, the way, the
@@ -87,11 +88,11 @@ export function SiteFooter() {
               you are never the last to hear what is coming over the horizon.
               Should you need to call your banners,{" "}
               <SectionLink label="Contact" /> is where the horn is sounded.
-            </p>
+            </ScrollReveal>
           </nav>
           <a
             href={`mailto:${site.email}`}
-            className="text-small font-semibold text-black"
+            className="text-small font-semibold text-black transition-colors duration-200 hover:text-ink-medium"
           >
             {site.email}
           </a>

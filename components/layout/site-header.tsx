@@ -2,15 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "motion/react";
 import { useRef, useState, useSyncExternalStore, useEffect, type ReactNode } from "react";
 import { site, siteNav } from "@/lib/constants/navigation";
+import { DURATION, EASE, EASE_CSS, MOTION_QUERY } from "@/lib/design/motion";
 
 // Pixels scrolled before the nav collapses (re-expands when you return to the top)
 const SCROLL_THRESHOLD = 48;
 // Grace period before the bar closes after the cursor leaves it
 const CLOSE_DELAY_MS = 220;
-const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
-
 /* -------------------------------------------------------------------------- */
 /* Scroll state                                                               */
 /* Works whether the page scrolls on the window OR inside a big container.    */
@@ -41,8 +41,6 @@ function subscribeToScroll(onChange: () => void) {
   return () => document.removeEventListener("scroll", onScroll, { capture: true });
 }
 
-/* Reduced-motion preference */
-const MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 function subscribeToMotion(onChange: () => void) {
   const mq = window.matchMedia(MOTION_QUERY);
   mq.addEventListener("change", onChange);
@@ -76,7 +74,7 @@ function Collapsible({
         gridTemplateColumns: show ? "1fr" : "0fr",
         opacity: show ? 1 : 0,
         transition: animate
-          ? `grid-template-columns 300ms ${EASE}, opacity 180ms ease`
+          ? `grid-template-columns ${DURATION.base * 1000}ms ${EASE_CSS}, opacity ${DURATION.fast * 1000}ms ease`
           : "none",
       }}
     >
@@ -94,7 +92,8 @@ export function SiteHeader() {
   const animate = useSyncExternalStore(
     subscribeToMotion,
     () => !window.matchMedia(MOTION_QUERY).matches,
-    () => true
+    // SSR: assume reduced motion so the pill stays visible in HTML.
+    () => false,
   );
 
   const [hovered, setHovered] = useState(false); // pointer over the bar
@@ -138,15 +137,19 @@ export function SiteHeader() {
   // On the home page there's no matching nav item, so a "Home" label stands in.
   // It only appears while collapsed, so the expanded bar matches the other pages.
   const items =
-    pathname === "/" && !siteNav.some((item) => item.href === "/")
+    pathname === "/"
       ? [{ href: "/", label: "Home" }, ...siteNav]
       : siteNav;
 
   return (
     // Sticky wrapper is click-through; only the bar itself catches pointer events.
     <header className="pointer-events-none sticky top-0 z-50 px-page pt-header-t pb-header-b">
-      <div
+      <motion.div
+        key={animate ? "animated-header" : "static-header"}
         ref={pillRef}
+        initial={animate ? { opacity: 0, y: -8 } : false}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: animate ? DURATION.base : 0, ease: EASE }}
         onPointerEnter={open}
         onPointerMove={(e) => {
           if (e.pointerType !== "touch") open();
@@ -194,18 +197,29 @@ export function SiteHeader() {
                     href={item.href}
                     aria-current={active ? "page" : undefined}
                     tabIndex={show ? undefined : -1}
-                    className={`block whitespace-nowrap rounded-lg px-2 py-1 text-tiny text-inverse transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
+                    className={`relative block whitespace-nowrap rounded-lg px-2 py-1 text-tiny text-inverse transition-[background-color,color] duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
                       active ? "bg-white/15" : "hover:bg-white/10"
                     }`}
                   >
                     {item.label}
+                    {active ? (
+                      <motion.span
+                        layoutId="primary-nav-active"
+                        aria-hidden="true"
+                        className="pointer-events-none absolute inset-x-2 bottom-0 h-px bg-inverse"
+                        transition={{
+                          duration: animate ? DURATION.fast : 0,
+                          ease: EASE,
+                        }}
+                      />
+                    ) : null}
                   </Link>
                 </Collapsible>
               );
             })}
           </ul>
         </nav>
-      </div>
+      </motion.div>
     </header>
   );
 }

@@ -1,34 +1,92 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Image from "next/image";
+import dynamic from "next/dynamic";
+import {
+  Component,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 import Link from "next/link";
 import { createTimeline } from "animejs";
 import { Text } from "@/components/ui/text";
 import { usePrefersReducedMotion } from "@/components/ui/use-prefers-reduced-motion";
-import { motion } from "@/lib/design/motion";
+import { MOTION } from "@/lib/design/motion";
+
+const clamp = (value: number, min = 0, max = 1) =>
+  Math.min(max, Math.max(min, value));
+
+const ExplodedModel = dynamic(
+  () => import("@/components/ui/exploded-model").then((mod) => mod.ExplodedModel),
+  { ssr: false },
+);
 
 export type HomeService = {
   label: string;
   title: string;
   description: string;
-  image: string;
+  model: "computer" | "wall" | "paper" | "shield";
+  fallbackImage: string;
 };
 
 function pad(index: number) {
   return String(index).padStart(2, "0");
 }
 
+class ModelFallbackBoundary extends Component<
+  { children: ReactNode; fallbackImage: string; label: string },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div
+          role="img"
+          aria-label={`Static illustration of ${this.props.label.toLowerCase()}`}
+          className="relative h-full w-full"
+        >
+          <Image
+            src={this.props.fallbackImage}
+            alt={this.props.label}
+            fill
+            sizes="(min-width: 768px) 50vw, 100vw"
+            className="object-cover"
+          />
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 function ServiceSlide({
   service,
   index,
   active,
+  modelProgress,
+  reducedMotion,
 }: {
   service: HomeService;
   index: number;
   active: boolean;
+  modelProgress: React.RefObject<number[]>;
+  reducedMotion: boolean;
 }) {
   const flipped = index % 2 === 1;
+  const getProgress = useCallback(
+    () => (reducedMotion ? 1 : modelProgress.current[index] ?? 0),
+    [index, modelProgress, reducedMotion],
+  );
 
   return (
     <article
@@ -50,15 +108,23 @@ function ServiceSlide({
         >
           <div
             data-service-art
-            className="relative aspect-[16/9] max-h-[28svh] overflow-hidden bg-surface md:max-h-[42svh]"
+            className="relative aspect-[16/9] max-h-[28svh] overflow-hidden bg-canvas md:max-h-[42svh]"
           >
-            <Image
-              src={service.image}
-              alt={service.label}
-              fill
-              sizes="(min-width: 768px) 50vw, 100vw"
-              className="object-cover"
-            />
+            {active ? (
+              <ModelFallbackBoundary
+                key={service.model}
+                fallbackImage={service.fallbackImage}
+                label={service.label}
+              >
+                <ExplodedModel
+                  model={service.model}
+                  getProgress={getProgress}
+                  fallbackImage={service.fallbackImage}
+                  label={service.label}
+                  className="h-full w-full"
+                />
+              </ModelFallbackBoundary>
+            ) : null}
           </div>
           <Text as="h3" variant="h4" className="mt-4">
             {service.title}
@@ -69,7 +135,7 @@ function ServiceSlide({
           <Link
             href="/services"
             tabIndex={active ? undefined : -1}
-            className="mt-4 inline-block text-tiny-bold text-ink-strong underline underline-offset-4"
+            className="mt-4 inline-block text-tiny-bold text-ink-strong underline underline-offset-4 transition-colors duration-200 hover:text-ink-medium"
           >
             Learn more
           </Link>
@@ -80,59 +146,39 @@ function ServiceSlide({
 }
 
 export function ServicesScroller({ services }: { services: readonly HomeService[] }) {
-export function ServicesScroller({ services }: { services: readonly HomeService[] }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
-  const [enhanced, setEnhanced] = useState(false);
   const [active, setActive] = useState(0);
+  const modelProgress = useRef<number[]>(services.map(() => 0));
   const count = services.length;
 
   useEffect(() => {
     const track = trackRef.current;
     if (!track || prefersReducedMotion) return;
-    setEnhanced(true);
-
-    const slides = Array.from(
-      track.querySelectorAll<HTMLElement>("[data-service-slide]"),
-    );
-    const art = Array.from(
-      track.querySelectorAll<HTMLElement>("[data-service-art]"),
-    );
-    const progress = progressRef.current;
+    const slides = Array.from(track.querySelectorAll<HTMLElement>("[data-service-slide]"));
+    const art = Array.from(track.querySelectorAll<HTMLElement>("[data-service-art]"));
+    const progressEl = progressRef.current;
     if (slides.length === 0) return;
 
-    const fade = motion.serviceFadeMs;
-    const hold = motion.serviceHoldMs;
+    const fade = MOTION.serviceFadeMs;
+    const hold = MOTION.serviceHoldMs;
+    const span = 2 * fade + hold;
     let cursor = 0;
     track.classList.add("services-ready");
 
-    const timeline = createTimeline({
-      defaults: { ease: "linear" },
-      onUpdate: (self) => {
-        // Match the interactive slide to the timeline's actual entrance times,
-        // so a slide never becomes focusable during the previous slide's hold.
-        let next = 0;
-        let elapsed = 0;
-        for (let index = 1; index < count; index += 1) {
-          elapsed += fade + hold + fade;
-          if (self.currentTime >= elapsed) next = index;
-        }
-        setActive((current) => (current === next ? current : next));
-      },
-    });
+    const timeline = createTimeline({ defaults: { ease: "linear" } });
 
     slides.forEach((slide, index) => {
       const isLast = index === slides.length - 1;
-
       timeline.add(
         slide,
         {
           opacity: [0, 1],
-          translateY: [motion.serviceY, 0],
-          scale: [motion.serviceScaleFrom, 1],
+          translateY: [MOTION.serviceY, 0],
+          scale: [MOTION.serviceScaleFrom, 1],
           duration: fade,
-          ease: motion.easeOutSoft,
+          ease: MOTION.easeOutSoft,
         },
         cursor,
       );
@@ -141,7 +187,7 @@ export function ServicesScroller({ services }: { services: readonly HomeService[
         timeline.add(
           art[index],
           {
-            translateY: [motion.parallaxY, `-${motion.parallaxY}`],
+            translateY: [MOTION.parallaxY, `-${MOTION.parallaxY}`],
             duration: fade + hold + (isLast ? 0 : fade),
             ease: "linear",
           },
@@ -158,10 +204,10 @@ export function ServicesScroller({ services }: { services: readonly HomeService[
           slide,
           {
             opacity: 0,
-            translateY: -motion.serviceY,
-            scale: motion.serviceScaleFrom,
+            translateY: -MOTION.serviceY,
+            scale: MOTION.serviceScaleFrom,
             duration: fade,
-            ease: motion.easeIn,
+            ease: MOTION.easeIn,
           },
           cursor,
         );
@@ -169,9 +215,9 @@ export function ServicesScroller({ services }: { services: readonly HomeService[
       }
     });
 
-    if (progress) {
+    if (progressEl) {
       timeline.add(
-        progress,
+        progressEl,
         {
           scaleX: [0, 1],
           ease: "linear",
@@ -182,31 +228,49 @@ export function ServicesScroller({ services }: { services: readonly HomeService[
     }
 
     const updateTimeline = () => {
-      const progress = Math.min(
-        1,
-        Math.max(0, -track.getBoundingClientRect().top / track.offsetHeight),
+      const stage = track.querySelector<HTMLElement>("[data-services-stage]");
+      if (!stage) return;
+      const tail =
+        Number.parseFloat(getComputedStyle(track).getPropertyValue("--service-tail")) || 0;
+      const stickyDistance =
+        track.offsetHeight - stage.offsetHeight - tail;
+      const progress = clamp(
+        -track.getBoundingClientRect().top / Math.max(1, stickyDistance),
       );
-      timeline.seek(timeline.duration * progress);
+      const time = progress * timeline.duration;
+
+      timeline.seek(time);
+      const nextActive = Math.min(slides.length - 1, Math.floor(time / span));
+      setActive((current) => (current === nextActive ? current : nextActive));
+      modelProgress.current = slides.map((_, index) =>
+        clamp((time - index * span - fade) / hold),
+      );
     };
-    window.addEventListener("scroll", updateTimeline, { passive: true });
+
+    document.addEventListener("scroll", updateTimeline, {
+      capture: true,
+      passive: true,
+    });
     window.addEventListener("resize", updateTimeline);
     const frame = requestAnimationFrame(updateTimeline);
 
     return () => {
       track.classList.remove("services-ready");
       cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", updateTimeline);
+      document.removeEventListener("scroll", updateTimeline, true);
       window.removeEventListener("resize", updateTimeline);
       timeline.pause();
       timeline.revert();
     };
-  }, [count, prefersReducedMotion]);
+  }, [count, prefersReducedMotion, services]);
 
   return (
     <div
       ref={trackRef}
       data-services-track
-      style={{ "--service-count": count } as CSSProperties}
+      style={{
+        "--service-count": count,
+      } as CSSProperties}
       className="services-track relative mt-major"
     >
       <div data-services-stage className="services-stage box-border">
@@ -215,7 +279,9 @@ export function ServicesScroller({ services }: { services: readonly HomeService[
             key={service.label}
             service={service}
             index={index}
-            active={prefersReducedMotion || !enhanced || index === active}
+            active={prefersReducedMotion || index === active}
+            modelProgress={modelProgress}
+            reducedMotion={prefersReducedMotion}
           />
         ))}
         <div

@@ -67,7 +67,7 @@ export function ServicesPage() {
                 <ScrollReveal delay={0.34 + index * 0.1}>
                   <a
                     href={`#${service.title.replaceAll(" ", "-")}`}
-                    className="text-tiny text-ink-medium underline underline-offset-4"
+                    className="text-tiny text-ink-medium underline underline-offset-4 transition-colors duration-200 hover:text-ink-strong"
                   >
                     {service.title}
                   </a>

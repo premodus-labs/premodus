@@ -2,7 +2,18 @@
  * Shared motion timings. Anime.js v4 easings are named strings
  * (`outExpo`, `outCubic`). Keep durations in milliseconds.
  */
-export const motion = {
+export const EASE = [0.22, 1, 0.36, 1] as const;
+export const EASE_CSS = "cubic-bezier(0.22, 1, 0.36, 1)";
+
+export const DURATION = {
+  fast: 0.24,
+  base: 0.4,
+  slow: 0.8,
+} as const;
+
+export const TEXT_STAGGER = 0.04;
+
+export const MOTION = {
   easeOut: "outExpo",
   easeIn: "inCubic",
   easeOutSoft: "outCubic",
@@ -12,14 +23,13 @@ export const motion = {
   /** Start when the element's top reaches 85% of the viewport. */
   revealEnter: "top 85%",
   staggerMs: 120,
-  heroHeadingMs: 700,
-  heroButtonMs: 520,
   heroY: 24,
   imageScaleFrom: 1.06,
   /** Track height / sticky stage per service. */
   serviceViewport: "100svh",
   serviceFadeMs: 420,
-  serviceHoldMs: 900,
+  serviceHoldMs: 2400,
+  modelPartStagger: 0.04,
   serviceY: 28,
   serviceScaleFrom: 0.97,
   /** Artwork parallax as a percentage of the image box. */

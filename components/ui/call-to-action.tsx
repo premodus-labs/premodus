@@ -34,7 +34,7 @@ export function CallToAction({
             {secondaryHref && secondaryLabel ? (
               <Link
                 href={secondaryHref}
-                className="text-body-bold text-ink-strong underline underline-offset-4"
+                className="text-body-bold text-ink-strong underline underline-offset-4 transition-colors duration-200 hover:text-ink-medium"
               >
                 {secondaryLabel}
               </Link>

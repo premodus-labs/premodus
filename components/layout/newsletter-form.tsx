@@ -31,11 +31,11 @@ export function NewsletterForm() {
           required
           autoComplete="email"
           placeholder="you@example.com"
-          className="min-w-0 flex-1 border-l-2 border-transparent bg-[#fcf5f8] px-3 py-2.5 text-sm font-semibold text-black outline-none transition-all duration-200 placeholder:text-[#b9a3ae] focus:border-[#f0c6d7] focus-visible:ring-2 focus-visible:ring-[#f0c6d7]"
+          className="min-w-0 flex-1 border-l-2 border-transparent bg-ink-strong/5 px-3 py-2.5 text-sm font-semibold text-black outline-none transition-all duration-200 placeholder:text-ink-weak focus:border-ink-weak focus-visible:ring-2 focus-visible:ring-ink-weak"
         />
         <button
           type="submit"
-          className="border border-transparent bg-[#f9e3ec] px-5 py-2.5 text-sm font-semibold text-black transition-colors duration-200 hover:bg-[#f4d1e0] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f0c6d7]"
+          className="border border-transparent bg-ink-strong/10 px-5 py-2.5 text-sm font-semibold text-black transition-colors duration-200 hover:bg-ink-strong/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-weak"
         >
           Subscribe
         </button>

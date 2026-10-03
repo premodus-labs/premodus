@@ -9,7 +9,7 @@ type ButtonLinkProps = ComponentPropsWithoutRef<"a"> & {
 };
 
 const styles =
-  "inline-flex items-center justify-center bg-surface text-inverse text-body-bold px-6 py-4 transition-opacity hover:opacity-90";
+  "inline-flex items-center justify-center bg-surface text-inverse text-body-bold px-6 py-4 transition-opacity duration-300 hover:opacity-90";
 
 export function Button({ className = "", ...props }: ButtonProps) {
   return <button className={`${styles} ${className}`.trim()} {...props} />;

@@ -1,4 +1,8 @@
 import type { ComponentPropsWithoutRef, ElementType } from "react";
+import { AnimatedText, type AnimatedTag } from "@/components/ui/animated-text";
+import { ScrollReveal } from "@/components/ui/scroll-reveal";
+
+type TextTag = "div" | "h1" | "h2" | "h3" | "h4" | "p" | "span";
 
 const variants = {
   display: "text-display text-ink-strong",
@@ -40,14 +44,57 @@ export function Text<T extends ElementType = "p">({
   as,
   variant = "body",
   className = "",
+  children,
   ...props
 }: TextProps<T>) {
   const Component = as ?? defaultElements[variant];
+  const combinedClassName = `${variants[variant]} ${className}`.trim();
+
+  if (
+    typeof Component === "string" &&
+    isAnimatedTag(Component) &&
+    typeof children === "string"
+  ) {
+    return (
+      <AnimatedText
+        as={Component}
+        className={combinedClassName}
+      >
+        {children}
+      </AnimatedText>
+    );
+  }
+
+  if (typeof Component === "string" && isTextTag(Component)) {
+    return (
+      <ScrollReveal
+        as={Component}
+        className={`${variants[variant]} ${className}`.trim()}
+      >
+        {children}
+      </ScrollReveal>
+    );
+  }
 
   return (
-    <Component
-      className={`${variants[variant]} ${className}`.trim()}
-      {...props}
-    />
+    <Component className={combinedClassName} {...props}>
+      {children}
+    </Component>
+  );
+}
+
+function isAnimatedTag(tag: string): tag is AnimatedTag {
+  return tag === "h1" || tag === "h2" || tag === "h3" || tag === "h4";
+}
+
+function isTextTag(tag: string): tag is TextTag {
+  return (
+    tag === "div" ||
+    tag === "h1" ||
+    tag === "h2" ||
+    tag === "h3" ||
+    tag === "h4" ||
+    tag === "p" ||
+    tag === "span"
   );
 }

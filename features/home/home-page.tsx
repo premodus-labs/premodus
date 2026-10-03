@@ -13,28 +13,32 @@ const services = [
     title: "Built to hold up under real use, not just under a demo.",
     description:
       "We write the version that still works when the traffic spikes, the data’s messy, and someone’s using it on a bad connection — not the version that only works in the sales deck.",
-    image: "/images/services/software-development.jpg",
+    model: "computer",
+    fallbackImage: "/images/services/software-development.jpg",
   },
   {
     label: "Digital Transformation",
     title: "Change that fits how people actually work, not disruption for its own sake.",
     description:
       "We don’t turn digital transformation projects into a problem no one had. We start with how the institution actually runs today, and build toward something better.",
-    image: "/images/services/digital-transformation.jpg",
+    model: "wall",
+    fallbackImage: "/images/services/digital-transformation.jpg",
   },
   {
     label: "IT Consulting",
     title: "Advice from people who’ve had to live with the consequences of bad advice.",
     description:
       "We ask what you’re solving before we recommend the next one — because a recommendation that ignores the local context sets up the next problem.",
-    image: "/images/services/it-consulting.jpg",
+    model: "paper",
+    fallbackImage: "/images/services/it-consulting.jpg",
   },
   {
     label: "Cybersecurity",
     title: "Threat models built for the environment we’re actually in, not a checklist copied from somewhere else.",
     description:
       "Malawi has particular threats, particular network patterns, and risks here don’t look like the risks in a generic framework.",
-    image: "/images/services/cybersecurity.jpg",
+    model: "shield",
+    fallbackImage: "/images/services/cybersecurity.jpg",
   },
 ] as const;
 
@@ -45,7 +49,7 @@ export function HomePage() {
     <>
       <HomeHero />
 
-      <SectionTransition className="px-page pt-section pb-major">
+      <SectionTransition animateOnView={false} className="px-page pt-section pb-major">
         <div className="mx-auto max-w-5xl">
           <ScrollReveal>
             <div className="flex items-end justify-between gap-8">
@@ -61,7 +65,7 @@ export function HomePage() {
         </div>
       </SectionTransition>
 
-      <SectionTransition className="px-page py-major mb-major">
+      <SectionTransition className="home-section-beat px-page py-major mb-section">
         <div className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-8 border-t border-surface pt-8 lg:grid-cols-12 lg:gap-gutter">
           <ScrollReveal className="lg:col-span-5">
             <Text variant="small-bold">What this means for you</Text>
@@ -80,7 +84,7 @@ export function HomePage() {
         </div>
       </SectionTransition>
 
-      <SectionTransition className="px-page py-major mb-major">
+      <SectionTransition className="home-section-beat px-page py-major mb-section">
         <ScrollReveal>
           <Text as="h2" variant="h2">
             A small team that moves like one.
@@ -101,7 +105,7 @@ export function HomePage() {
         </div>
       </SectionTransition>
 
-      <SectionTransition className="px-page py-major mb-major">
+      <SectionTransition className="home-section-beat px-page py-major mb-section">
         <ScrollReveal>
           <Text as="h2" variant="h2">
             What we’re building

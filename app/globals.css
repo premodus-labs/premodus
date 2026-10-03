@@ -105,6 +105,13 @@ body {
   justify-content: center;
 }
 
+.home-section-beat {
+  min-height: 90svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 @media (max-width: 767px) {
   .section-panel {
     min-height: auto;
@@ -125,6 +132,8 @@ body {
 
 .services-track {
   --service-count: 4;
+  --service-scroll-distance: 250svh;
+  --service-tail: 96px;
 }
 
 .services-stage {
@@ -143,7 +152,7 @@ body {
 
 @media (prefers-reduced-motion: no-preference) {
   .services-track.services-ready {
-    height: calc(var(--service-count) * 100svh);
+    height: calc(var(--service-count) * var(--service-scroll-distance) + 100svh + var(--service-tail));
   }
 
   .services-track.services-ready .services-stage {
@@ -151,7 +160,6 @@ body {
     top: 0;
     display: block;
     height: 100svh;
-    overflow: hidden;
     padding-block: clamp(40px, 9svh, 80px);
   }
 
@@ -175,15 +183,19 @@ body {
 
 @media (max-height: 600px) and (prefers-reduced-motion: no-preference) {
   .services-track.services-ready .services-stage {
-    padding-block: 32px 56px;
+    padding-block: 24px 48px;
   }
 
   .services-track.services-ready .service-slide {
     align-items: flex-start;
-    padding-top: 24px;
+    padding-top: 16px;
+  }
+
+  .services-track.services-ready [data-service-art] {
+    max-height: 22svh;
   }
 
   .services-track.services-ready .services-progress {
-    bottom: 16px;
+    bottom: 12px;
   }
 }
