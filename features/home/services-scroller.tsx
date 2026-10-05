@@ -87,6 +87,7 @@ function ServiceSlide({
 }) {
   const flipped = index % 2 === 1;
   const values = useServiceMotionValues(trackProgress, index, count);
+  const assembledProgress = useMemo(() => motionValue(1), []);
   const modelVisible = active || reducedMotion;
 
   return (
@@ -116,7 +117,7 @@ function ServiceSlide({
             <div className="absolute inset-0">
               <ExplodedModel
                 model={service.model}
-                progress={values.progress}
+                progress={reducedMotion ? assembledProgress : values.progress}
                 fallbackImage={service.fallbackImage}
                 label={service.label}
                 className="h-full w-full"
