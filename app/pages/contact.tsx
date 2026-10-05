@@ -1,5 +1,5 @@
-import { PlaceholderPage } from "@/features/marketing/placeholder-page";
+import { ContactPage as ContactPageContent } from "@/features/contact/contact-page";
 
 export default function ContactPage() {
-  return <PlaceholderPage title="Contact" />;
+  return <ContactPageContent />;
 }

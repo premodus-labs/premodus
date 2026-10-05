@@ -2,7 +2,6 @@ export const siteNav = [
   { href: "/services", label: "Services" },
   { href: "/about", label: "About" },
   { href: "/work", label: "Work" },
-  { href: "/insights", label: "Insights" },
   { href: "/contact", label: "Contact" },
 ] as const;
 

@@ -83,10 +83,8 @@ export function SiteFooter() {
               while the sky is still clear, and{" "}
               <SectionLink label="About" /> is the oath we swear to those who
               will stand behind them. Our <SectionLink label="Work" /> is what
-              remains standing when the cold finally arrives, and{" "}
-              <SectionLink label="Insights" /> are the ravens we send ahead, so
-              you are never the last to hear what is coming over the horizon.
-              Should you need to call your banners,{" "}
+              remains standing when the cold finally arrives. Should you need
+              to call your banners,{" "}
               <SectionLink label="Contact" /> is where the horn is sounded.
             </ScrollReveal>
           </nav>
