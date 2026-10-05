@@ -85,7 +85,6 @@ function ServiceSlide({
   reducedMotion: boolean;
   trackProgress: MotionValue<number>;
 }) {
-  const flipped = index % 2 === 1;
   const values = useServiceMotionValues(trackProgress, index, count);
   const assembledProgress = useMemo(() => motionValue(1), []);
   const modelVisible = active || reducedMotion;
@@ -103,14 +102,7 @@ function ServiceSlide({
       }}
     >
       <div
-        className={`service-label md:col-span-4 ${flipped ? "md:col-start-9 md:row-start-1" : ""}`}
-      >
-        <Text variant="tiny" className="tracking-[0.16em]">
-          {service.label}
-        </Text>
-      </div>
-      <div
-        className={`service-copy md:col-span-8 ${flipped ? "md:col-start-1 md:row-start-1" : "md:col-start-5"}`}
+        className="service-copy md:col-span-8 md:col-start-3"
       >
         <div className="service-art relative aspect-[16/9] overflow-hidden bg-canvas">
           {modelVisible ? (

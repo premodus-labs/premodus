@@ -153,10 +153,6 @@ body {
     gap: 0;
   }
 
-  .services-track .service-label {
-    display: none;
-  }
-
   .services-track .service-copy {
     width: 100%;
     text-align: center;
