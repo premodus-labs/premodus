@@ -149,6 +149,10 @@ body {
     align-items: flex-start;
   }
 
+  .services-track .service-title {
+    display: none;
+  }
+
   .service-art {
     height: min(48svh, 360px);
     max-height: none;

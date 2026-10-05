@@ -125,7 +125,7 @@ function ServiceSlide({
             </div>
           ) : null}
         </div>
-        <Text as="h3" variant="h4" className="mt-4">
+        <Text as="h3" variant="h4" className="service-title mt-4">
           {service.title}
         </Text>
         <Text variant="small" className="mt-3">
