@@ -115,8 +115,44 @@ body {
 }
 
 @media (max-width: 767px) {
+  :root {
+    --spacing-section: 120px;
+    --spacing-major: 40px;
+    --spacing-page: 24px;
+    --spacing-header-b: 24px;
+    --spacing-footer: 80px;
+    --spacing-gutter: 24px;
+  }
+
   .section-panel {
     min-height: auto;
+  }
+
+  .home-section-beat {
+    min-height: auto;
+  }
+
+  .services-track {
+    --service-tail: 48px;
+  }
+
+  /* Mobile gets a slower scrub and an animation-first composition. */
+  .services-track.services-ready {
+    height: calc(var(--service-count) * 300svh + 100svh + var(--service-tail));
+  }
+
+  .services-track.services-ready .services-stage {
+    padding-block: 24px 56px;
+  }
+
+  .services-track.services-ready .service-slide {
+    align-items: flex-start;
+  }
+
+  .service-art {
+    height: min(48svh, 360px);
+    max-height: none;
+    aspect-ratio: auto;
   }
 }
 
