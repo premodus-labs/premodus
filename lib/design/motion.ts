@@ -10,11 +10,12 @@ export const DURATION = {
 export const TEXT_STAGGER = 0.04;
 
 export const MOTION = {
-  modelScrollStiffness: 80,
-  modelScrollDamping: 24,
-  modelScrollMass: 0.6,
-  modelPartStagger: 0.35,
-  modelPartAssemblyWindow: 0.65,
+  // A deliberately overdamped spring filters abrupt touch and wheel deltas.
+  modelScrollStiffness: 50,
+  modelScrollDamping: 22,
+  modelScrollMass: 0.85,
+  modelPartStagger: 0.28,
+  modelPartAssemblyWindow: 0.72,
 } as const;
 
 export const MOTION_QUERY = "(prefers-reduced-motion: reduce)";
