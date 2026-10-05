@@ -84,7 +84,13 @@ export function Text<T extends ElementType = "p">({
 }
 
 function isAnimatedTag(tag: string): tag is AnimatedTag {
-  return tag === "h1" || tag === "h2" || tag === "h3" || tag === "h4";
+  return (
+    tag === "h1" ||
+    tag === "h2" ||
+    tag === "h3" ||
+    tag === "h4" ||
+    tag === "p"
+  );
 }
 
 function isTextTag(tag: string): tag is TextTag {

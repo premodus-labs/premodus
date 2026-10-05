@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, useInView } from "motion/react";
-import { createElement, useRef } from "react";
+import { motion } from "motion/react";
+import { createElement } from "react";
 import {
   useIsHydrated,
   usePrefersReducedMotion,
@@ -24,6 +24,11 @@ const unitVariants = {
   visible: { opacity: 1, y: 0 },
 };
 
+const textVariants = {
+  hidden: {},
+  visible: {},
+};
+
 type AnimatedTextProps = {
   as?: AnimatedTag;
   children: string;
@@ -32,48 +37,6 @@ type AnimatedTextProps = {
   delay?: number;
   className?: string;
 };
-
-function AnimatedUnit({
-  unit,
-  mode,
-  delay,
-  stagger,
-  index,
-}: {
-  unit: string;
-  mode: NonNullable<AnimatedTextProps["mode"]>;
-  delay: number;
-  stagger: number;
-  index: number;
-}) {
-  const ref = useRef<HTMLSpanElement | null>(null);
-  const isInView = useInView(ref, { once: true, amount: 0.4 });
-
-  return (
-    <span
-      ref={ref}
-      aria-hidden="true"
-      className={mode === "lines" ? "block overflow-hidden" : "inline-block overflow-hidden"}
-      style={{ paddingBottom: "0.12em", marginBottom: "-0.12em" }}
-    >
-      <motion.span
-        initial="hidden"
-        animate={isInView ? "visible" : "hidden"}
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.4 }}
-        variants={unitVariants}
-        transition={{
-          duration: DURATION.slow,
-          delay: delay + index * stagger,
-          ease: EASE,
-        }}
-        style={{ display: "inline-block", willChange: "transform" }}
-      >
-        {unit}
-      </motion.span>
-    </span>
-  );
-}
 
 function splitText(text: string, mode: NonNullable<AnimatedTextProps["mode"]>) {
   if (mode === "lines") return text.split("\n");
@@ -85,7 +48,7 @@ export function AnimatedText({
   as = "span",
   children,
   mode = "words",
-  stagger = TEXT_STAGGER,
+  stagger = as === "p" ? 0.015 : TEXT_STAGGER,
   delay = 0,
   className = "",
 }: AnimatedTextProps) {
@@ -111,6 +74,11 @@ export function AnimatedText({
       aria-label={children}
       className={`block ${className}`.trim()}
       style={{ display: "block" }}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.15 }}
+      variants={textVariants}
+      transition={{ delayChildren: delay, staggerChildren: stagger }}
     >
       {units.map((unit, index) => {
         if (mode === "words" && /^\s+$/.test(unit)) {
@@ -121,20 +89,21 @@ export function AnimatedText({
           );
         }
 
-        const currentIndex = units
-          .slice(0, index)
-          .filter((candidate) => mode !== "words" || !/^\s+$/.test(candidate))
-          .length;
-
         return (
-          <AnimatedUnit
+          <span
             key={`${unit}-${index}`}
-            unit={unit}
-            mode={mode}
-            delay={delay}
-            stagger={stagger}
-            index={currentIndex}
-          />
+            aria-hidden="true"
+            className={mode === "lines" ? "block overflow-hidden" : "inline-block overflow-hidden"}
+            style={{ paddingBottom: "0.12em", marginBottom: "-0.12em" }}
+          >
+            <motion.span
+              variants={unitVariants}
+              transition={{ duration: DURATION.slow, ease: EASE }}
+              style={{ display: "inline-block", willChange: "transform" }}
+            >
+              {unit}
+            </motion.span>
+          </span>
         );
       })}
     </Component>

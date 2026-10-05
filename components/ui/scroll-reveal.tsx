@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, useInView } from "motion/react";
-import { createElement, useRef, type ReactNode } from "react";
+import { motion } from "motion/react";
+import { createElement, type ReactNode } from "react";
 import {
   useIsHydrated,
   usePrefersReducedMotion,
@@ -38,8 +38,6 @@ export function ScrollReveal({
 }) {
   const isHydrated = useIsHydrated();
   const prefersReducedMotion = usePrefersReducedMotion();
-  const ref = useRef<HTMLElement | null>(null);
-  const isInView = useInView(ref, { once: true, amount: "some" });
   const Component = motionTags[as];
 
   if (!isHydrated || prefersReducedMotion) {
@@ -55,15 +53,11 @@ export function ScrollReveal({
 
   return (
     <Component
-      ref={(element) => {
-        ref.current = element;
-      }}
       data-scroll-reveal
       className={`${as === "span" ? "inline-block" : ""} ${className ?? ""}`.trim()}
       initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
       whileInView="visible"
-      viewport={{ once: true, amount: "some" }}
+      viewport={{ once: true, amount: 0.15 }}
       variants={revealVariants}
       transition={{
         duration: DURATION.slow,
