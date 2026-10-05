@@ -1,30 +1,52 @@
 "use client";
 
-import { createElement, type CSSProperties, type ReactNode } from "react";
-import { useScrollReveal } from "@/components/ui/use-scroll-reveal";
+import { createElement, type ComponentPropsWithoutRef, type ReactNode } from "react";
+import { motion } from "motion/react";
+import { usePrefersReducedMotion } from "@/components/ui/use-prefers-reduced-motion";
+import { DURATION, EASE } from "@/lib/design/motion";
 
 type RevealTag = "article" | "div" | "h1" | "h2" | "h3" | "h4" | "p" | "span";
+
+const motionTags: Record<RevealTag, React.ElementType> = {
+  article: motion.article,
+  div: motion.div,
+  h1: motion.h1,
+  h2: motion.h2,
+  h3: motion.h3,
+  h4: motion.h4,
+  p: motion.p,
+  span: motion.span,
+};
+
+type ScrollRevealProps = {
+  children: ReactNode;
+  delay?: number;
+  as?: RevealTag;
+} & Omit<ComponentPropsWithoutRef<RevealTag>, "children">;
 
 export function ScrollReveal({
   children,
   className,
   delay = 0.05,
   as = "div",
-}: {
-  children: ReactNode;
-  className?: string;
-  delay?: number;
-  as?: RevealTag;
-}) {
-  const ref = useScrollReveal<HTMLElement>();
+  ...props
+}: ScrollRevealProps) {
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   return createElement(
-    as,
+    motionTags[as],
     {
-      ref,
+      ...props,
       "data-scroll-reveal": true,
       className: `${as === "span" ? "inline-block" : ""} ${className ?? ""}`.trim(),
-      style: { "--reveal-delay": `${delay}s` } as CSSProperties,
+      initial: prefersReducedMotion ? false : "hidden",
+      whileInView: prefersReducedMotion ? undefined : "visible",
+      viewport: { once: true, amount: 0.15 },
+      variants: {
+        hidden: { opacity: 0, y: 24 },
+        visible: { opacity: 1, y: 0 },
+      },
+      transition: { duration: DURATION.slow, delay, ease: EASE },
     },
     children,
   );

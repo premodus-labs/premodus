@@ -3,6 +3,17 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import {
+  animate,
+  cancelFrame,
+  frame,
+  inView,
+  interpolate,
+  cubicBezier,
+  springValue,
+  transformValue,
+} from "motion";
+import { threeEffect } from "motion/three";
 import type { MotionValue } from "motion/react";
 import {
   SUB,
@@ -10,20 +21,23 @@ import {
   type ExplodedModelName,
   type ExplodedPart,
 } from "@/lib/exploded/models";
-import { MOTION } from "@/lib/design/motion";
+import { usePrefersReducedMotion } from "@/components/ui/use-prefers-reduced-motion";
+import { EASE, MOTION } from "@/lib/design/motion";
+
+animate.addEffect(threeEffect);
 
 export type ExplodedModelProps = {
   model: ExplodedModelName;
-  scrollProgress: MotionValue<number>;
-  serviceIndex: number;
-  serviceCount: number;
-  fallbackImage?: string;
+  progress: MotionValue<number>;
+  fallbackImage: string;
   label?: string;
   className?: string;
 };
 
-const clamp = (value: number, min = 0, max = 1) =>
-  Math.min(max, Math.max(min, value));
+const clamp = (value: number) => Math.max(0, Math.min(1, value));
+const mix = (from: number, to: number, progress: number) =>
+  from + (to - from) * progress;
+const ease = interpolate([0, 1], [0, 1], { ease: cubicBezier(...EASE) });
 
 const modelDescriptions: Record<ExplodedModelName, string> = {
   computer: "a computer",
@@ -34,49 +48,72 @@ const modelDescriptions: Record<ExplodedModelName, string> = {
 
 export function ExplodedModel({
   model,
-  scrollProgress,
-  serviceIndex,
-  serviceCount,
+  progress,
   fallbackImage,
   label = "Service model",
   className = "",
 }: ExplodedModelProps) {
   const hostRef = useRef<HTMLDivElement | null>(null);
-  const [supportsWebGL] = useState(() =>
-    typeof window !== "undefined" && "WebGLRenderingContext" in window,
-  );
-  const [webglFailed, setWebglFailed] = useState(false);
-  const fallbackVisible = !supportsWebGL || webglFailed;
+  const [ready, setReady] = useState(false);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     const host = hostRef.current;
-    if (!host || !supportsWebGL) return;
+    if (!host || prefersReducedMotion) return;
 
-    let frameId = 0;
     let disposed = false;
     let renderer: THREE.WebGLRenderer | undefined;
     let fillMaterial: THREE.MeshBasicMaterial | undefined;
     let lineMaterial: THREE.LineBasicMaterial | undefined;
-    let parts: Array<{
-      group: THREE.Group;
-      explodeVector: THREE.Vector3;
-      box: THREE.Box3;
-    }> = [];
     let resizeObserver: ResizeObserver | undefined;
-    let visibilityObserver: IntersectionObserver | undefined;
-    let themeObserver: MutationObserver | undefined;
-    let onColorSchemeChange: (() => void) | undefined;
-    let colorScheme: MediaQueryList | undefined;
-    let onResize: (() => void) | undefined;
-    let isVisible = false;
+    let stopInView: (() => void) | undefined;
+    let smoothProgress: MotionValue<number> | undefined;
+    let render = () => {};
+    const effectCleanups: Array<() => void> = [];
+    const groups: Array<{
+      group: THREE.Group;
+      explodedPosition: THREE.Vector3;
+      bounds: THREE.Box3;
+    }> = [];
 
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const cleanup = () => {
+      if (disposed) return;
+      disposed = true;
+      stopInView?.();
+      cancelFrame(render);
+      resizeObserver?.disconnect();
+      effectCleanups.forEach((stop) => stop());
+      smoothProgress?.destroy();
+      host.replaceChildren();
+
+      groups.forEach(({ group }) => {
+        group.traverse((object) => {
+          if (object instanceof THREE.Mesh || object instanceof THREE.LineSegments) {
+            object.geometry.dispose();
+          }
+          if (object instanceof THREE.Mesh || object instanceof THREE.LineSegments) {
+            const materials = Array.isArray(object.material)
+              ? object.material
+              : [object.material];
+            materials.forEach((material) => {
+              if ("map" in material && material.map instanceof THREE.Texture) {
+                material.map.dispose();
+              }
+            });
+          }
+        });
+      });
+      fillMaterial?.dispose();
+      lineMaterial?.dispose();
+      renderer?.dispose();
+      renderer?.forceContextLoss();
+    };
+
     try {
       const canvas = document.createElement("canvas");
       canvas.style.width = "100%";
       canvas.style.height = "100%";
       canvas.style.display = "block";
-      host.replaceChildren(canvas);
 
       renderer = new THREE.WebGLRenderer({
         canvas,
@@ -90,15 +127,14 @@ export function ExplodedModel({
       const scene = new THREE.Scene();
       const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, -200, 200);
       camera.position.set(0, 0, 20);
-
       const pitch = new THREE.Group();
       const yaw = new THREE.Group();
-      const scn = new THREE.Group();
+      const content = new THREE.Group();
       pitch.rotation.x = 0.58;
       yaw.rotation.y = -0.7;
       scene.add(pitch);
       pitch.add(yaw);
-      yaw.add(scn);
+      yaw.add(content);
 
       fillMaterial = new THREE.MeshBasicMaterial({
         color: new THREE.Color("#ffffff"),
@@ -108,56 +144,102 @@ export function ExplodedModel({
       });
       lineMaterial = new THREE.LineBasicMaterial({ color: new THREE.Color("#000000") });
 
-      parts = SUB[model]().map((part: ExplodedPart) => {
+      smoothProgress = springValue(progress, {
+        stiffness: MOTION.modelScrollStiffness,
+        damping: MOTION.modelScrollDamping,
+        mass: MOTION.modelScrollMass,
+      });
+      const definitions = SUB[model]();
+      definitions.forEach((part: ExplodedPart, index) => {
         const [, meshes, explodeVector] = part;
         const group = new THREE.Group();
+        const explodedPosition = new THREE.Vector3(...explodeVector);
+        const bounds = new THREE.Box3();
+        groups.push({ group, explodedPosition, bounds });
 
         meshes.forEach((mesh: ExplodedMesh) => {
           const [geometry, x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0] = mesh;
           const fill = new THREE.Mesh(geometry, fillMaterial);
-          const edge = new THREE.LineSegments(new THREE.EdgesGeometry(geometry, 8), lineMaterial);
           fill.position.set(x, y, z);
           fill.rotation.set(rx, ry, rz);
+          group.add(fill);
+
+          const edge = new THREE.LineSegments(
+            new THREE.EdgesGeometry(geometry, 8),
+            lineMaterial,
+          );
           edge.position.set(x, y, z);
           edge.rotation.set(rx, ry, rz);
-          group.add(fill, edge);
+          group.add(edge);
         });
 
-        const box = new THREE.Box3().setFromObject(group);
-        scn.add(group);
+        bounds.setFromObject(group);
+        group.position.copy(explodedPosition);
+        content.add(group);
 
-        return { group, explodeVector: new THREE.Vector3(...explodeVector), box };
+        const start = definitions.length > 1
+          ? (index / (definitions.length - 1)) * MOTION.modelPartStagger
+          : 0;
+        const end = Math.min(1, start + MOTION.modelPartAssemblyWindow);
+        const partProgress = transformValue(() => {
+          const normalized = clamp((smoothProgress!.get() - start) / (end - start));
+          return ease(normalized);
+        });
+        const bind = threeEffect(group, {
+          x: transformValue(() =>
+            mix(explodedPosition.x, 0, partProgress.get()),
+          ),
+          y: transformValue(() =>
+            mix(explodedPosition.y, 0, partProgress.get()),
+          ),
+          z: transformValue(() =>
+            mix(explodedPosition.z, 0, partProgress.get()),
+          ),
+          rotateX: transformValue(() =>
+            mix(((index % 3) - 1) * 12, 0, partProgress.get()),
+          ),
+          rotateY: transformValue(() =>
+            mix((index % 2 === 0 ? 1 : -1) * 14, 0, partProgress.get()),
+          ),
+          rotateZ: transformValue(() =>
+            mix(((index % 4) - 1.5) * 8, 0, partProgress.get()),
+          ),
+        });
+        effectCleanups.push(bind);
       });
 
-      const explodedBounds = new THREE.Box3();
-      const projectedExplodedBounds = new THREE.Box3();
+      const modelBounds = new THREE.Box3();
+      groups.forEach(({ bounds, explodedPosition }) => {
+        modelBounds.union(bounds);
+        modelBounds.union(bounds.clone().translate(explodedPosition));
+      });
+      modelBounds.getCenter(content.position).multiplyScalar(-1);
+
+      const projectedBounds = new THREE.Box3();
       const modelRotation = new THREE.Matrix4()
         .makeRotationX(0.58)
         .multiply(new THREE.Matrix4().makeRotationY(-0.7));
-      parts.forEach((part) => {
-        const partBounds = part.box.clone().translate(part.explodeVector);
-        explodedBounds.union(partBounds);
-        for (const x of [partBounds.min.x, partBounds.max.x]) {
-          for (const y of [partBounds.min.y, partBounds.max.y]) {
-            for (const z of [partBounds.min.z, partBounds.max.z]) {
-              projectedExplodedBounds.expandByPoint(
-                new THREE.Vector3(x, y, z).applyMatrix4(modelRotation),
-              );
-            }
+      for (const x of [modelBounds.min.x, modelBounds.max.x]) {
+        for (const y of [modelBounds.min.y, modelBounds.max.y]) {
+          for (const z of [modelBounds.min.z, modelBounds.max.z]) {
+            projectedBounds.expandByPoint(
+              new THREE.Vector3(x, y, z).applyMatrix4(modelRotation),
+            );
           }
         }
-      });
-      const projectedExplodedSize = projectedExplodedBounds.getSize(new THREE.Vector3());
-      const setCameraSize = () => {
+      }
+      const projectedSize = projectedBounds.getSize(new THREE.Vector3());
+
+      render = () => {
+        if (!disposed && renderer) renderer.render(scene, camera);
+      };
+      const resize = () => {
         if (!renderer || disposed) return;
         const width = host.clientWidth || 1;
         const height = host.clientHeight || 1;
         const aspect = width / height;
         const halfHeight =
-          Math.max(
-            projectedExplodedSize.y / 2,
-            projectedExplodedSize.x / (2 * aspect),
-          ) * 1.06;
+          Math.max(projectedSize.y / 2, projectedSize.x / (2 * aspect)) * 1.06;
         camera.left = -halfHeight * aspect;
         camera.right = halfHeight * aspect;
         camera.top = halfHeight;
@@ -165,197 +247,52 @@ export function ExplodedModel({
         camera.updateProjectionMatrix();
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.setSize(width, height, false);
+        frame.render(render);
       };
 
-      const syncTheme = () => {
-        if (!fillMaterial || !lineMaterial || disposed) return;
-        const current = getComputedStyle(document.documentElement);
-        fillMaterial.color.set(current.getPropertyValue("--canvas").trim() || "#ffffff");
-        lineMaterial.color.set(current.getPropertyValue("--surface").trim() || "#000000");
-      };
+      host.replaceChildren(canvas);
+      resizeObserver = new ResizeObserver(resize);
+      resizeObserver.observe(host);
+      resize();
+      stopInView = inView(
+        host,
+        () => {
+          setReady(true);
+          frame.render(render, true);
+          return () => cancelFrame(render);
+        },
+        { amount: 0.05 },
+      );
 
-      const bounds = new THREE.Box3();
-      const center = new THREE.Vector3();
-      const render = () => {
-        if (disposed || !renderer) return;
-        const localProgress = prefersReducedMotion
-          ? 1
-          : clamp(scrollProgress.get() * serviceCount - serviceIndex);
-        const targetProgress =
-          localProgress <= MOTION.modelHoldStart
-            ? 0
-            : localProgress >= MOTION.modelAssemblyEnd
-              ? 1
-              : (localProgress - MOTION.modelHoldStart) /
-                (MOTION.modelAssemblyEnd - MOTION.modelHoldStart);
-
-        parts.forEach((part, index) => {
-          const maxStagger = Math.max(0, (parts.length - 1) * MOTION.modelPartStagger);
-          const staggeredProgress = clamp(
-            (targetProgress - index * MOTION.modelPartStagger) /
-              Math.max(0.01, 1 - maxStagger),
-          );
-          const easedProgress =
-            staggeredProgress < 0.5
-              ? 4 * staggeredProgress ** 3
-              : 1 - ((-2 * staggeredProgress + 2) ** 3) / 2;
-          const explodedAmount = 1 - easedProgress;
-          part.group.position.copy(part.explodeVector).multiplyScalar(explodedAmount);
-        });
-
-        bounds.makeEmpty();
-        parts.forEach((part) => {
-          const partBounds = part.box.clone();
-          partBounds.translate(part.group.position);
-          bounds.union(partBounds);
-        });
-        if (!bounds.isEmpty()) {
-          bounds.getCenter(center);
-          scn.position.copy(center).multiplyScalar(-1);
-        }
-
-        renderer.render(scene, camera);
-        if (!prefersReducedMotion) frameId = window.requestAnimationFrame(render);
-      };
-
-      const startRender = () => {
-        if (frameId || disposed) return;
-        if (prefersReducedMotion) render();
-        else frameId = window.requestAnimationFrame(render);
-      };
-      const stopRender = () => {
-        if (!frameId) return;
-        window.cancelAnimationFrame(frameId);
-        frameId = 0;
-      };
-
-      const handleResize = () => {
-        setCameraSize();
-        if (prefersReducedMotion && isVisible) render();
-      };
-      if (typeof ResizeObserver !== "undefined") {
-        resizeObserver = new ResizeObserver(handleResize);
-        resizeObserver.observe(host);
-      } else {
-        onResize = handleResize;
-        window.addEventListener("resize", onResize);
-      }
-
-      if (typeof IntersectionObserver !== "undefined") {
-        visibilityObserver = new IntersectionObserver(
-          (entries) => {
-            isVisible = entries.some((entry) => entry.isIntersecting);
-            if (isVisible) startRender();
-            else stopRender();
-          },
-          { threshold: 0.05 },
-        );
-        visibilityObserver.observe(host);
-      } else {
-        isVisible = true;
-      }
-
-      themeObserver = new MutationObserver(syncTheme);
-      themeObserver.observe(document.documentElement, {
-        attributes: true,
-        attributeFilter: ["data-theme", "class"],
-      });
-      colorScheme = window.matchMedia("(prefers-color-scheme: dark)");
-      onColorSchemeChange = syncTheme;
-      if (typeof colorScheme.addEventListener === "function") {
-        colorScheme.addEventListener("change", onColorSchemeChange);
-      } else {
-        colorScheme.addListener(onColorSchemeChange);
-      }
-
-      syncTheme();
-      setCameraSize();
-      if (isVisible) startRender();
-
-      return () => {
-        disposed = true;
-        stopRender();
-        resizeObserver?.disconnect();
-        visibilityObserver?.disconnect();
-        themeObserver?.disconnect();
-        if (onResize) window.removeEventListener("resize", onResize);
-        if (onColorSchemeChange) {
-          if (typeof colorScheme?.removeEventListener === "function") {
-            colorScheme.removeEventListener("change", onColorSchemeChange);
-          } else {
-            colorScheme?.removeListener(onColorSchemeChange);
-          }
-        }
-        host.replaceChildren();
-        parts.forEach(({ group }) => {
-          group.traverse((child: THREE.Object3D) => {
-            if (child instanceof THREE.Mesh || child instanceof THREE.LineSegments) {
-              child.geometry.dispose();
-            }
-          });
-        });
-        fillMaterial?.dispose();
-        lineMaterial?.dispose();
-        renderer?.dispose();
-        renderer?.forceContextLoss();
-      };
+      return cleanup;
     } catch (error) {
+      cleanup();
       console.error("Unable to initialize the exploded model renderer.", error);
-      disposed = true;
-      if (frameId) window.cancelAnimationFrame(frameId);
-      resizeObserver?.disconnect();
-      visibilityObserver?.disconnect();
-      themeObserver?.disconnect();
-      if (onResize) window.removeEventListener("resize", onResize);
-      if (onColorSchemeChange) {
-        if (typeof colorScheme?.removeEventListener === "function") {
-          colorScheme.removeEventListener("change", onColorSchemeChange);
-        } else {
-          colorScheme?.removeListener(onColorSchemeChange);
-        }
-      }
-      host.replaceChildren();
-      parts.forEach(({ group }) => {
-        group.traverse((child: THREE.Object3D) => {
-          if (child instanceof THREE.Mesh || child instanceof THREE.LineSegments) {
-            child.geometry.dispose();
-          }
-        });
-      });
-      fillMaterial?.dispose();
-      lineMaterial?.dispose();
-      renderer?.dispose();
-      renderer?.forceContextLoss();
-      window.queueMicrotask(() => setWebglFailed(true));
+      return undefined;
     }
-  }, [model, scrollProgress, serviceCount, serviceIndex, supportsWebGL]);
-
-  if (fallbackVisible) {
-    return (
-      <div
-        role="img"
-        aria-label={label}
-        className={`relative h-full w-full ${className}`}
-      >
-        {fallbackImage ? (
-          <Image
-            src={fallbackImage}
-            alt={label}
-            fill
-            sizes="(min-width: 768px) 50vw, 100vw"
-            className="object-cover"
-          />
-        ) : null}
-      </div>
-    );
-  }
+  }, [model, prefersReducedMotion, progress]);
 
   return (
     <div
-      ref={hostRef}
-      role="img"
-      aria-label={`Exploded wireframe of ${modelDescriptions[model]} assembling`}
       className={`relative h-full w-full ${className}`}
-    />
+      role="img"
+      aria-label={`${label}: exploded wireframe of ${modelDescriptions[model]} assembling`}
+    >
+      {!ready || prefersReducedMotion ? (
+        <Image
+          src={fallbackImage}
+          alt=""
+          fill
+          sizes="(min-width: 768px) 50vw, 100vw"
+          className="object-cover"
+        />
+      ) : null}
+      <div
+        ref={hostRef}
+        aria-hidden="true"
+        className="absolute inset-0"
+        style={{ opacity: ready && !prefersReducedMotion ? 1 : 0 }}
+      />
+    </div>
   );
 }

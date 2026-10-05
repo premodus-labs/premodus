@@ -3,8 +3,13 @@
 import { ButtonLink } from "@/components/ui/button";
 import { SectionTransition } from "@/components/ui/section-transition";
 import { Text } from "@/components/ui/text";
+import { motion } from "motion/react";
+import { usePrefersReducedMotion } from "@/components/ui/use-prefers-reduced-motion";
+import { DURATION, EASE } from "@/lib/design/motion";
 
 export function HomeHero() {
+  const prefersReducedMotion = usePrefersReducedMotion();
+
   return (
     <SectionTransition
       animateOnView={false}
@@ -16,9 +21,17 @@ export function HomeHero() {
             World-class technology for Malawi’s overlooked problems.
           </Text>
         </div>
-        <div className="hero-action-enter">
+        <motion.div
+          initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: prefersReducedMotion ? 0 : DURATION.fast,
+            delay: prefersReducedMotion ? 0 : DURATION.base,
+            ease: EASE,
+          }}
+        >
           <ButtonLink href="/contact">Get in touch</ButtonLink>
-        </div>
+        </motion.div>
       </div>
     </SectionTransition>
   );

@@ -1,6 +1,8 @@
 "use client";
 
-import { useScrollReveal } from "@/components/ui/use-scroll-reveal";
+import { motion } from "motion/react";
+import { usePrefersReducedMotion } from "@/components/ui/use-prefers-reduced-motion";
+import { DURATION, EASE } from "@/lib/design/motion";
 
 type SectionTransitionProps = {
   children?: React.ReactNode;
@@ -13,16 +15,23 @@ export function SectionTransition({
   className,
   animateOnView = true,
 }: SectionTransitionProps) {
-  const ref = useScrollReveal<HTMLElement>();
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const shouldAnimate = animateOnView && !prefersReducedMotion;
 
   return (
-    <section
-      ref={animateOnView ? ref : undefined}
+    <motion.section
       data-section-transition
-      data-scroll-reveal={animateOnView || undefined}
       className={className}
+      initial={shouldAnimate ? "hidden" : false}
+      whileInView={shouldAnimate ? "visible" : undefined}
+      viewport={{ once: true, amount: 0.15 }}
+      variants={{
+        hidden: { opacity: 0, y: 28 },
+        visible: { opacity: 1, y: 0 },
+      }}
+      transition={{ duration: DURATION.slow, ease: EASE }}
     >
       {children}
-    </section>
+    </motion.section>
   );
 }

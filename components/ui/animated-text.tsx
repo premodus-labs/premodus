@@ -1,53 +1,77 @@
 "use client";
 
-import { createElement } from "react";
-import { useScrollReveal } from "@/components/ui/use-scroll-reveal";
+import {
+  createElement,
+  type ComponentPropsWithoutRef,
+  type CSSProperties,
+} from "react";
+import { motion } from "motion/react";
+import { usePrefersReducedMotion } from "@/components/ui/use-prefers-reduced-motion";
+import { DURATION, EASE, TEXT_STAGGER } from "@/lib/design/motion";
 
-export type AnimatedTag = "h1" | "h2" | "h3" | "h4" | "p" | "span";
+export type AnimatedTag = "h1" | "h2" | "h3" | "h4";
+
+const motionTags: Record<AnimatedTag, React.ElementType> = {
+  h1: motion.h1,
+  h2: motion.h2,
+  h3: motion.h3,
+  h4: motion.h4,
+};
 
 type AnimatedTextProps = {
   as?: AnimatedTag;
   children: string;
-  mode?: "words" | "lines" | "chars";
+  mode?: "words" | "lines";
   stagger?: number;
   delay?: number;
   className?: string;
-};
-
-const WORD_STAGGER_MS = 24;
-const PARAGRAPH_STAGGER_MS = 12;
+} & Omit<ComponentPropsWithoutRef<AnimatedTag>, "as" | "children" | "className">;
 
 function splitText(text: string, mode: NonNullable<AnimatedTextProps["mode"]>) {
   if (mode === "lines") return text.split("\n");
-  if (mode === "chars") return Array.from(text);
   return text.split(/(\s+)/).filter(Boolean);
 }
 
 export function AnimatedText({
-  as = "span",
+  as = "h1",
   children,
   mode = "words",
-  stagger,
+  stagger = TEXT_STAGGER,
   delay = 0,
   className = "",
+  ...props
 }: AnimatedTextProps) {
-  const ref = useScrollReveal<HTMLElement>();
+  const prefersReducedMotion = usePrefersReducedMotion();
   const units = splitText(children, mode);
-  const staggerMs = stagger === undefined
-    ? as === "p" ? PARAGRAPH_STAGGER_MS : WORD_STAGGER_MS
-    : stagger * 1000;
 
+  if (prefersReducedMotion) {
+    return createElement(
+      as,
+      {
+        ...props,
+        "aria-label": children,
+        className: `block ${className}`.trim(),
+        style: { ...props.style, display: "block" },
+      },
+      children,
+    );
+  }
+
+  let wordIndex = 0;
   return createElement(
-    as,
+    motionTags[as],
     {
-      ref,
-      "data-text-reveal": true,
+      ...props,
       "aria-label": children,
       className: `block ${className}`.trim(),
-      style: { display: "block" },
+      style: { ...props.style, display: "block" } as CSSProperties,
+      initial: "hidden",
+      whileInView: "visible",
+      viewport: { once: true, amount: 0.15 },
+      variants: { hidden: {}, visible: {} },
     },
     units.map((unit, index) => {
-      if (mode === "words" && /^\s+$/.test(unit)) {
+      if (/^\s+$/.test(unit)) {
         return (
           <span key={`space-${index}`} aria-hidden="true">
             {unit}
@@ -55,19 +79,28 @@ export function AnimatedText({
         );
       }
 
+      const currentWordIndex = wordIndex++;
       return (
         <span
           key={`${unit}-${index}`}
           aria-hidden="true"
-          data-text-unit
           className={mode === "lines" ? "block overflow-hidden" : "inline-block overflow-hidden"}
-          style={{
-            paddingBottom: "0.12em",
-            marginBottom: "-0.12em",
-            animationDelay: `${delay * 1000 + index * staggerMs}ms`,
-          }}
+          style={{ paddingBottom: "0.12em", marginBottom: "-0.12em" }}
         >
-          <span>{unit}</span>
+          <motion.span
+            variants={{
+              hidden: { y: "110%" },
+              visible: { y: 0 },
+            }}
+            transition={{
+              duration: DURATION.slow,
+              delay: delay + currentWordIndex * stagger,
+              ease: EASE,
+            }}
+            style={{ display: "inline-block" }}
+          >
+            {unit}
+          </motion.span>
         </span>
       );
     }),

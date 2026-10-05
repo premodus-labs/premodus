@@ -2,44 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useRef, useState, useSyncExternalStore, useEffect, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+import { motion, useMotionValueEvent, useScroll } from "motion/react";
 import { site, siteNav } from "@/lib/constants/navigation";
+import { DURATION, EASE } from "@/lib/design/motion";
+import { usePrefersReducedMotion } from "@/components/ui/use-prefers-reduced-motion";
 
-// Pixels scrolled before the nav collapses (re-expands when you return to the top)
 const SCROLL_THRESHOLD = 48;
-// Grace period before the bar closes after the cursor leaves it
 const CLOSE_DELAY_MS = 220;
-/* -------------------------------------------------------------------------- */
-/* Scroll state                                                               */
-/* Works whether the page scrolls on the window OR inside a big container.    */
-/* Scroll events don't bubble, so we listen in the capture phase.             */
-/* -------------------------------------------------------------------------- */
-
-const scrolledContainers = new Set<Element>();
-
-function getScrolled() {
-  if (window.scrollY > SCROLL_THRESHOLD) return true;
-  for (const el of scrolledContainers) {
-    if (!el.isConnected) scrolledContainers.delete(el);
-  }
-  return scrolledContainers.size > 0;
-}
-
-function subscribeToScroll(onChange: () => void) {
-  const onScroll = (event: Event) => {
-    const target = event.target;
-    // only track big scrollers (app shell, <main>, body), not carousels / code blocks
-    if (target instanceof Element && target.clientHeight >= window.innerHeight * 0.3) {
-      if (target.scrollTop > SCROLL_THRESHOLD) scrolledContainers.add(target);
-      else scrolledContainers.delete(target);
-    }
-    onChange();
-  };
-  document.addEventListener("scroll", onScroll, { capture: true, passive: true });
-  return () => document.removeEventListener("scroll", onScroll, { capture: true });
-}
-
-/* -------------------------------------------------------------------------- */
 
 function isActive(pathname: string, href: string) {
   return href === "/"
@@ -51,23 +26,31 @@ function isActive(pathname: string, href: string) {
 function Collapsible({
   show,
   as: Tag = "div",
+  prefersReducedMotion,
   children,
 }: {
   show: boolean;
   as?: "div" | "li";
+  prefersReducedMotion: boolean;
   children: ReactNode;
 }) {
+  const Component = Tag === "li" ? motion.li : motion.div;
+
   return (
-    <Tag
-      style={{
-        display: "grid",
+    <Component
+      initial={false}
+      animate={{
         gridTemplateColumns: show ? "1fr" : "0fr",
         opacity: show ? 1 : 0,
       }}
-      className="header-collapse"
+      transition={{
+        duration: prefersReducedMotion ? 0 : DURATION.base,
+        ease: EASE,
+      }}
+      style={{ display: "grid" }}
     >
       <div style={{ minWidth: 0, overflow: "hidden" }}>{children}</div>
-    </Tag>
+    </Component>
   );
 }
 
@@ -75,18 +58,20 @@ export function SiteHeader() {
   const pathname = usePathname() as string;
   const pillRef = useRef<HTMLDivElement>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const scrolled = useSyncExternalStore(subscribeToScroll, getScrolled, () => false);
+  const scrolledRef = useRef(false);
+  const { scrollY } = useScroll();
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const [scrolled, setScrolled] = useState(false);
   const [hovered, setHovered] = useState(false); // pointer over the bar
   const [focused, setFocused] = useState(false); // keyboard focus inside the bar
 
-  // The moment scrolling starts, let go of "hovered" so the bar collapses
-  // even if the cursor is parked on it. Moving the mouse re-opens it.
-  const [prevScrolled, setPrevScrolled] = useState(scrolled);
-  if (scrolled !== prevScrolled) {
-    setPrevScrolled(scrolled);
-    if (scrolled) setHovered(false);
-  }
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const nextScrolled = latest > SCROLL_THRESHOLD;
+    if (scrolledRef.current === nextScrolled) return;
+    scrolledRef.current = nextScrolled;
+    setScrolled(nextScrolled);
+    if (nextScrolled) setHovered(false);
+  });
 
   const expanded = !scrolled || hovered || focused;
 
@@ -125,8 +110,14 @@ export function SiteHeader() {
   return (
     // Sticky wrapper is click-through; only the bar itself catches pointer events.
     <header className="pointer-events-none sticky top-0 z-50 px-page pt-header-t pb-header-b">
-      <div
+      <motion.div
         ref={pillRef}
+        initial={prefersReducedMotion ? false : { opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          duration: prefersReducedMotion ? 0 : DURATION.base,
+          ease: EASE,
+        }}
         onPointerEnter={open}
         onPointerMove={(e) => {
           if (e.pointerType !== "touch") open();
@@ -151,7 +142,7 @@ export function SiteHeader() {
         className="site-header-enter pointer-events-auto mx-auto flex h-10 w-fit max-w-full items-center rounded-xl bg-surface px-1.5 text-inverse shadow-[0_4px_20px_rgba(0,0,0,0.08)]"
       >
         {/* Logo: collapses away too */}
-        <Collapsible show={expanded}>
+        <Collapsible show={expanded} prefersReducedMotion={prefersReducedMotion}>
           <Link
             href="/"
             aria-label={site.name}
@@ -169,7 +160,12 @@ export function SiteHeader() {
               const show = isHomeLabel ? !expanded : expanded || active;
 
               return (
-                <Collapsible key={item.href} as="li" show={show}>
+                <Collapsible
+                  key={item.href}
+                  as="li"
+                  show={show}
+                  prefersReducedMotion={prefersReducedMotion}
+                >
                   <Link
                     href={item.href}
                     aria-current={active ? "page" : undefined}
@@ -180,9 +176,14 @@ export function SiteHeader() {
                   >
                     {item.label}
                     {active ? (
-                      <span
+                      <motion.span
+                        layoutId="primary-nav-active"
                         aria-hidden="true"
-                        className="nav-active-indicator pointer-events-none absolute inset-x-2 bottom-0 h-px bg-inverse"
+                        className="pointer-events-none absolute inset-x-2 bottom-0 h-px bg-inverse"
+                        transition={{
+                          duration: prefersReducedMotion ? 0 : DURATION.fast,
+                          ease: EASE,
+                        }}
                       />
                     ) : null}
                   </Link>
@@ -191,7 +192,7 @@ export function SiteHeader() {
             })}
           </ul>
         </nav>
-      </div>
+      </motion.div>
     </header>
   );
 }

@@ -59,6 +59,7 @@ export function Text<T extends ElementType = "p">({
       <AnimatedText
         as={Component}
         className={combinedClassName}
+        {...props}
       >
         {children}
       </AnimatedText>
@@ -70,6 +71,7 @@ export function Text<T extends ElementType = "p">({
       <ScrollReveal
         as={Component}
         className={`${variants[variant]} ${className}`.trim()}
+        {...props}
       >
         {children}
       </ScrollReveal>
@@ -84,13 +86,7 @@ export function Text<T extends ElementType = "p">({
 }
 
 function isAnimatedTag(tag: string): tag is AnimatedTag {
-  return (
-    tag === "h1" ||
-    tag === "h2" ||
-    tag === "h3" ||
-    tag === "h4" ||
-    tag === "p"
-  );
+  return tag === "h1" || tag === "h2" || tag === "h3" || tag === "h4";
 }
 
 function isTextTag(tag: string): tag is TextTag {

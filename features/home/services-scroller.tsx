@@ -1,19 +1,23 @@
 "use client";
 
-import Image from "next/image";
 import dynamic from "next/dynamic";
-import {
-  Component,
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
-import { useScroll, useSpring, type MotionValue } from "motion/react";
-import { ScrollReveal } from "@/components/ui/scroll-reveal";
+import {
+  motion,
+  useMotionValueEvent,
+  type MotionValue,
+} from "motion/react";
+import {
+  cubicBezier,
+  interpolate,
+  motionValue,
+  scroll,
+  transformValue,
+} from "motion";
 import { Text } from "@/components/ui/text";
-import { MOTION } from "@/lib/design/motion";
+import { usePrefersReducedMotion } from "@/components/ui/use-prefers-reduced-motion";
+import { EASE } from "@/lib/design/motion";
 
 const ExplodedModel = dynamic(
   () => import("@/components/ui/exploded-model").then((mod) => mod.ExplodedModel),
@@ -28,58 +32,74 @@ export type HomeService = {
   fallbackImage: string;
 };
 
-class ModelFallbackBoundary extends Component<
-  { children: ReactNode; fallbackImage: string; label: string },
-  { hasError: boolean }
-> {
-  state = { hasError: false };
+type ServiceMotionValues = {
+  progress: MotionValue<number>;
+  opacity: MotionValue<number>;
+  y: MotionValue<number>;
+  scale: MotionValue<number>;
+};
 
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
+const clamp = (value: number) => Math.max(0, Math.min(1, value));
+const serviceModelProgress = interpolate([0.25, 0.8], [0, 1], {
+  ease: cubicBezier(...EASE),
+});
+const serviceOpacity = interpolate([0, 0.15, 0.9, 1], [0, 1, 1, 0]);
+const serviceY = interpolate([0, 0.15, 0.9, 1], [24, 0, 0, -24]);
 
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div
-          role="img"
-          aria-label={`Static illustration of ${this.props.label.toLowerCase()}`}
-          className="relative h-full w-full"
-        >
-          <Image
-            src={this.props.fallbackImage}
-            alt={this.props.label}
-            fill
-            sizes="(min-width: 768px) 50vw, 100vw"
-            className="object-cover"
-          />
-        </div>
-      );
-    }
-    return this.props.children;
-  }
+function pad(value: number) {
+  return String(value).padStart(2, "0");
+}
+
+function useServiceMotionValues(
+  trackProgress: MotionValue<number>,
+  index: number,
+  count: number,
+): ServiceMotionValues {
+  return useMemo(() => {
+    const local = transformValue(() =>
+      clamp(trackProgress.get() * count - index),
+    );
+    const progress = transformValue(() => {
+      return serviceModelProgress(local.get());
+    });
+    const opacity = transformValue(() => serviceOpacity(local.get()));
+    const y = transformValue(() => serviceY(local.get()));
+    const scale = transformValue(() => 0.97 + opacity.get() * 0.03);
+
+    return { progress, opacity, y, scale };
+  }, [count, index, trackProgress]);
 }
 
 function ServiceSlide({
   service,
   index,
+  count,
   active,
-  scrollProgress,
-  serviceCount,
+  reducedMotion,
+  trackProgress,
 }: {
   service: HomeService;
   index: number;
+  count: number;
   active: boolean;
-  scrollProgress: MotionValue<number>;
-  serviceCount: number;
+  reducedMotion: boolean;
+  trackProgress: MotionValue<number>;
 }) {
   const flipped = index % 2 === 1;
+  const values = useServiceMotionValues(trackProgress, index, count);
+  const modelVisible = active || reducedMotion;
 
   return (
-    <ScrollReveal
-      as="article"
+    <motion.article
+      data-service-slide
+      aria-hidden={!active && !reducedMotion}
+      inert={!active && !reducedMotion}
       className="service-slide grid w-full grid-cols-1 items-center gap-3 md:grid-cols-12 md:gap-gutter"
-      delay={index * 0.08}
+      style={{
+        opacity: reducedMotion ? 1 : values.opacity,
+        y: reducedMotion ? 0 : values.y,
+        scale: reducedMotion ? 1 : values.scale,
+      }}
     >
       <div
         className={`md:col-span-4 ${flipped ? "md:col-start-9 md:row-start-1" : ""}`}
@@ -92,30 +112,15 @@ function ServiceSlide({
         className={`md:col-span-8 ${flipped ? "md:col-start-1 md:row-start-1" : "md:col-start-5"}`}
       >
         <div className="service-art relative aspect-[16/9] overflow-hidden bg-canvas">
-          <Image
-            src={service.fallbackImage}
-            alt={active ? "" : service.label}
-            fill
-            sizes="(min-width: 768px) 50vw, 100vw"
-            className="object-cover"
-          />
-          {active ? (
+          {modelVisible ? (
             <div className="absolute inset-0">
-              <ModelFallbackBoundary
-                key={service.model}
+              <ExplodedModel
+                model={service.model}
+                progress={values.progress}
                 fallbackImage={service.fallbackImage}
                 label={service.label}
-              >
-                <ExplodedModel
-                  model={service.model}
-                  scrollProgress={scrollProgress}
-                  serviceIndex={index}
-                  serviceCount={serviceCount}
-                  fallbackImage={service.fallbackImage}
-                  label={service.label}
-                  className="h-full w-full"
-                />
-              </ModelFallbackBoundary>
+                className="h-full w-full"
+              />
             </div>
           ) : null}
         </div>
@@ -132,67 +137,74 @@ function ServiceSlide({
           Learn more
         </Link>
       </div>
-    </ScrollReveal>
+    </motion.article>
   );
 }
 
 export function ServicesScroller({ services }: { services: readonly HomeService[] }) {
   const trackRef = useRef<HTMLDivElement>(null);
+  const trackProgress = useMemo(() => motionValue(0), []);
+  const prefersReducedMotion = usePrefersReducedMotion();
   const [active, setActive] = useState(0);
+  const activeRef = useRef(0);
   const count = services.length;
-  const { scrollYProgress } = useScroll({
-    target: trackRef,
-    offset: ["start start", "end end"],
-  });
-  const smoothScrollProgress = useSpring(scrollYProgress, {
-    stiffness: MOTION.modelScrollStiffness,
-    damping: MOTION.modelScrollDamping,
-    mass: MOTION.modelScrollMass,
-  });
 
   useEffect(() => {
     const track = trackRef.current;
-    if (!track || typeof IntersectionObserver === "undefined") return;
+    if (!track || prefersReducedMotion || count === 0) return;
 
-    const slides = Array.from(track.querySelectorAll<HTMLElement>(".service-slide"));
-    const ratios = new Map<Element, number>();
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          ratios.set(entry.target, entry.isIntersecting ? entry.intersectionRatio : 0);
-        });
-        const mostVisible = slides.reduce<HTMLElement | null>((current, slide) => {
-          const currentRatio = current ? ratios.get(current) ?? 0 : -1;
-          if ((ratios.get(slide) ?? 0) > currentRatio) {
-            return slide;
-          }
-          return current;
-        }, null);
-        const nextIndex = mostVisible ? slides.indexOf(mostVisible) : -1;
-        if (nextIndex >= 0 && mostVisible && (ratios.get(mostVisible) ?? 0) > 0) {
-          setActive(nextIndex);
-        }
-      },
-      { threshold: [0, 0.15, 0.35, 0.6], rootMargin: "-15% 0px -15% 0px" },
-    );
+    const stopScroll = scroll((value) => trackProgress.set(value), {
+      target: track,
+      offset: ["start start", "end end"],
+    });
+    track.classList.add("services-ready");
 
-    slides.forEach((slide) => observer.observe(slide));
-    return () => observer.disconnect();
-  }, [count]);
+    return () => {
+      stopScroll();
+      track.classList.remove("services-ready");
+    };
+  }, [count, prefersReducedMotion, trackProgress]);
+
+  useMotionValueEvent(trackProgress, "change", (value) => {
+    if (prefersReducedMotion || count === 0) return;
+    const next = Math.min(count - 1, Math.floor(clamp(value) * count));
+    if (activeRef.current === next) return;
+    activeRef.current = next;
+    setActive(next);
+  });
 
   return (
-    <div ref={trackRef} data-services-track className="services-track mt-major">
+    <div
+      ref={trackRef}
+      data-services-track
+      style={{ "--service-count": count } as CSSProperties}
+      className="services-track relative mt-major"
+    >
       <div data-services-stage className="services-stage">
         {services.map((service, index) => (
           <ServiceSlide
             key={service.label}
             service={service}
             index={index}
+            count={count}
             active={index === active}
-            scrollProgress={smoothScrollProgress}
-            serviceCount={count}
+            reducedMotion={prefersReducedMotion}
+            trackProgress={trackProgress}
           />
         ))}
+        {!prefersReducedMotion ? (
+          <div className="services-progress pointer-events-none absolute inset-x-0 bottom-8 flex items-center gap-4">
+            <Text variant="tiny" className="shrink-0 tabular-nums">
+              {pad(active + 1)} / {pad(count)}
+            </Text>
+            <div className="h-px flex-1 overflow-hidden bg-surface/20">
+              <motion.div
+                className="h-px w-full origin-left bg-surface"
+                style={{ scaleX: trackProgress }}
+              />
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );

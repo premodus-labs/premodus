@@ -90,86 +90,6 @@ body {
   font-weight: var(--weight-regular);
 }
 
-[data-scroll-reveal][data-motion-ready="true"] {
-  opacity: 0;
-  transform: translate3d(0, 20px, 0);
-}
-
-[data-scroll-reveal][data-motion-ready="true"][data-in-view="true"] {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
-  transition:
-    opacity 560ms ease var(--reveal-delay, 0ms),
-    transform 560ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms);
-}
-
-[data-text-reveal][data-motion-ready="true"] [data-text-unit] {
-  opacity: 0;
-  transform: translate3d(0, 0.7em, 0);
-}
-
-[data-text-reveal][data-in-view="true"] [data-text-unit] {
-  animation: text-rise 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.route-enter {
-  animation: route-enter 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.site-header-enter {
-  animation: header-enter 440ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.hero-action-enter {
-  animation: hero-action-enter 500ms cubic-bezier(0.22, 1, 0.36, 1) 180ms both;
-}
-
-.header-collapse {
-  transition:
-    grid-template-columns 400ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 240ms ease;
-}
-
-.nav-active-indicator {
-  transform: scaleX(1);
-  transform-origin: left;
-  animation: indicator-enter 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-@keyframes text-rise {
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-@keyframes route-enter {
-  from {
-    opacity: 0.7;
-    transform: translate3d(0, 8px, 0);
-  }
-}
-
-@keyframes header-enter {
-  from {
-    opacity: 0;
-    transform: translate3d(0, -10px, 0);
-  }
-}
-
-@keyframes hero-action-enter {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 12px, 0);
-  }
-}
-
-@keyframes indicator-enter {
-  from {
-    transform: scaleX(0);
-  }
-}
-
 .page-grid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -201,30 +121,32 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  [data-scroll-reveal][data-motion-ready="true"],
-  [data-scroll-reveal][data-motion-ready="true"][data-in-view="true"],
-  [data-text-reveal][data-motion-ready="true"] [data-text-unit] {
-    opacity: 1;
-    transform: none;
-    animation: none;
-    transition: none;
+  .services-track {
+    height: auto !important;
   }
 
-  .route-enter,
-  .site-header-enter,
-  .hero-action-enter,
-  .nav-active-indicator {
-    animation: none;
+  .services-track.services-ready .services-stage {
+    position: static;
+    display: flex;
+    height: auto;
+    padding-block: 0;
   }
 
-  .header-collapse {
-    transition: none;
+  .services-track.services-ready .service-slide {
+    position: static;
+    display: grid;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto;
   }
 
-  .service-slide {
-    opacity: 1;
-    transform: none;
+  .services-track.services-ready .services-progress {
+    display: none;
   }
+}
+
+.services-track {
+  --service-tail: 96px;
 }
 
 .services-stage {
@@ -234,7 +156,41 @@ body {
 }
 
 .service-slide {
-  scroll-margin-top: 80px;
+  width: 100%;
+}
+
+.services-track.services-ready {
+  height: calc(var(--service-count) * 250svh + 100svh + var(--service-tail));
+}
+
+.services-track.services-ready .services-stage {
+  position: sticky;
+  top: 0;
+  display: block;
+  height: 100vh;
+  height: 100svh;
+  padding-block: clamp(40px, 9vh, 80px);
+  padding-block: clamp(40px, 9svh, 80px);
+}
+
+.services-track.services-ready .service-slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.services-track.services-ready .service-slide:not([inert]) {
+  pointer-events: auto;
+}
+
+.services-progress {
+  display: none;
+}
+
+.services-track.services-ready .services-progress {
+  display: flex;
 }
 
 .service-art {
@@ -250,8 +206,21 @@ body {
 }
 
 @media (max-height: 600px) and (prefers-reduced-motion: no-preference) {
-  .service-art {
+  .services-track.services-ready .services-stage {
+    padding-block: 24px 48px;
+  }
+
+  .services-track.services-ready .service-slide {
+    align-items: flex-start;
+    padding-top: 16px;
+  }
+
+  .services-track.services-ready .service-art {
     max-height: 50vh;
     max-height: 50svh;
+  }
+
+  .services-track.services-ready .services-progress {
+    bottom: 12px;
   }
 }
