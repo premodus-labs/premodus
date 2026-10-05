@@ -1,29 +1,9 @@
 "use client";
 
-import { motion } from "motion/react";
-import { createElement, type ReactNode } from "react";
-import {
-  useIsHydrated,
-  usePrefersReducedMotion,
-} from "@/components/ui/use-prefers-reduced-motion";
-import { DURATION, EASE } from "@/lib/design/motion";
+import { createElement, type CSSProperties, type ReactNode } from "react";
+import { useScrollReveal } from "@/components/ui/use-scroll-reveal";
 
-type RevealTag = "div" | "h1" | "h2" | "h3" | "h4" | "p" | "span";
-
-const motionTags = {
-  div: motion.div,
-  h1: motion.h1,
-  h2: motion.h2,
-  h3: motion.h3,
-  h4: motion.h4,
-  p: motion.p,
-  span: motion.span,
-};
-
-const revealVariants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0 },
-};
+type RevealTag = "article" | "div" | "h1" | "h2" | "h3" | "h4" | "p" | "span";
 
 export function ScrollReveal({
   children,
@@ -36,36 +16,16 @@ export function ScrollReveal({
   delay?: number;
   as?: RevealTag;
 }) {
-  const isHydrated = useIsHydrated();
-  const prefersReducedMotion = usePrefersReducedMotion();
-  const Component = motionTags[as];
+  const ref = useScrollReveal<HTMLElement>();
 
-  if (!isHydrated || prefersReducedMotion) {
-    return createElement(
-      as,
-      {
-        "data-scroll-reveal": true,
-        className: `${as === "span" ? "inline-block" : ""} ${className ?? ""}`.trim(),
-      },
-      children,
-    );
-  }
-
-  return (
-    <Component
-      data-scroll-reveal
-      className={`${as === "span" ? "inline-block" : ""} ${className ?? ""}`.trim()}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.15 }}
-      variants={revealVariants}
-      transition={{
-        duration: DURATION.slow,
-        delay,
-        ease: EASE,
-      }}
-    >
-      {children}
-    </Component>
+  return createElement(
+    as,
+    {
+      ref,
+      "data-scroll-reveal": true,
+      className: `${as === "span" ? "inline-block" : ""} ${className ?? ""}`.trim(),
+      style: { "--reveal-delay": `${delay}s` } as CSSProperties,
+    },
+    children,
   );
 }
