@@ -43,9 +43,9 @@ export function SiteFooter() {
                 <Text as="h2" variant="h4">
                   Subscribe to our mailing list
                 </Text>
-                <p className="text-sm text-[#5f5660]">
+                <ScrollReveal as="p" className="text-sm text-[#5f5660]">
                   Get insights and updates straight to your inbox.
-                </p>
+                </ScrollReveal>
               </div>
 
               <NewsletterForm />

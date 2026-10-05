@@ -4,7 +4,6 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 import {
   Component,
-  useCallback,
   useEffect,
   useRef,
   useState,
@@ -12,13 +11,11 @@ import {
   type ReactNode,
 } from "react";
 import Link from "next/link";
-import { createTimeline } from "animejs";
+import * as THREE from "three";
+import { useScroll, useSpring, type MotionValue } from "motion/react";
 import { Text } from "@/components/ui/text";
 import { usePrefersReducedMotion } from "@/components/ui/use-prefers-reduced-motion";
 import { MOTION } from "@/lib/design/motion";
-
-const clamp = (value: number, min = 0, max = 1) =>
-  Math.min(max, Math.max(min, value));
 
 const ExplodedModel = dynamic(
   () => import("@/components/ui/exploded-model").then((mod) => mod.ExplodedModel),
@@ -35,6 +32,14 @@ export type HomeService = {
 
 function pad(index: number) {
   return String(index).padStart(2, "0");
+}
+
+function easeOutCubic(progress: number) {
+  return 1 - (1 - progress) ** 3;
+}
+
+function easeInCubic(progress: number) {
+  return progress ** 3;
 }
 
 class ModelFallbackBoundary extends Component<
@@ -73,20 +78,16 @@ function ServiceSlide({
   service,
   index,
   active,
-  modelProgress,
-  reducedMotion,
+  scrollProgress,
+  serviceCount,
 }: {
   service: HomeService;
   index: number;
   active: boolean;
-  modelProgress: React.RefObject<number[]>;
-  reducedMotion: boolean;
+  scrollProgress: MotionValue<number>;
+  serviceCount: number;
 }) {
   const flipped = index % 2 === 1;
-  const getProgress = useCallback(
-    () => (reducedMotion ? 1 : modelProgress.current[index] ?? 0),
-    [index, modelProgress, reducedMotion],
-  );
 
   return (
     <article
@@ -104,11 +105,11 @@ function ServiceSlide({
           </Text>
         </div>
         <div
-          className={`md:col-span-6 ${flipped ? "md:col-start-1 md:row-start-1" : "md:col-start-7"}`}
+          className={`md:col-span-8 ${flipped ? "md:col-start-1 md:row-start-1" : "md:col-start-5"}`}
         >
           <div
             data-service-art
-            className="relative aspect-[16/9] max-h-[28svh] overflow-hidden bg-canvas md:max-h-[42svh]"
+            className="service-art relative aspect-[16/9] overflow-hidden bg-canvas"
           >
             {active ? (
               <ModelFallbackBoundary
@@ -118,7 +119,9 @@ function ServiceSlide({
               >
                 <ExplodedModel
                   model={service.model}
-                  getProgress={getProgress}
+                  scrollProgress={scrollProgress}
+                  serviceIndex={index}
+                  serviceCount={serviceCount}
                   fallbackImage={service.fallbackImage}
                   label={service.label}
                   className="h-full w-full"
@@ -150,8 +153,16 @@ export function ServicesScroller({ services }: { services: readonly HomeService[
   const progressRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
   const [active, setActive] = useState(0);
-  const modelProgress = useRef<number[]>(services.map(() => 0));
   const count = services.length;
+  const { scrollYProgress } = useScroll({
+    target: trackRef,
+    offset: ["start start", "end end"],
+  });
+  const smoothScrollProgress = useSpring(scrollYProgress, {
+    stiffness: MOTION.modelScrollStiffness,
+    damping: MOTION.modelScrollDamping,
+    mass: MOTION.modelScrollMass,
+  });
 
   useEffect(() => {
     const track = trackRef.current;
@@ -164,105 +175,94 @@ export function ServicesScroller({ services }: { services: readonly HomeService[
     const fade = MOTION.serviceFadeMs;
     const hold = MOTION.serviceHoldMs;
     const span = 2 * fade + hold;
-    let cursor = 0;
+    const parallaxAmount = Number.parseFloat(MOTION.parallaxY);
     track.classList.add("services-ready");
 
-    const timeline = createTimeline({ defaults: { ease: "linear" } });
-
-    slides.forEach((slide, index) => {
-      const isLast = index === slides.length - 1;
-      timeline.add(
-        slide,
-        {
-          opacity: [0, 1],
-          translateY: [MOTION.serviceY, 0],
-          scale: [MOTION.serviceScaleFrom, 1],
-          duration: fade,
-          ease: MOTION.easeOutSoft,
-        },
-        cursor,
-      );
-
-      if (art[index]) {
-        timeline.add(
-          art[index],
-          {
-            translateY: [MOTION.parallaxY, `-${MOTION.parallaxY}`],
-            duration: fade + hold + (isLast ? 0 : fade),
-            ease: "linear",
-          },
-          cursor,
-        );
-      }
-
-      cursor += fade;
-      timeline.add({ duration: hold }, cursor);
-      cursor += hold;
-
-      if (!isLast) {
-        timeline.add(
-          slide,
-          {
-            opacity: 0,
-            translateY: -MOTION.serviceY,
-            scale: MOTION.serviceScaleFrom,
-            duration: fade,
-            ease: MOTION.easeIn,
-          },
-          cursor,
-        );
-        cursor += fade;
-      }
+    let duration = 0;
+    const slideStarts = slides.map((_, index) => {
+      const start = duration;
+      duration += fade + hold;
+      if (index < slides.length - 1) duration += fade;
+      return start;
     });
+    const originalSlideStyles = slides.map((slide) => ({
+      opacity: slide.style.opacity,
+      transform: slide.style.transform,
+    }));
+    const originalArtTransforms = art.map((element) => element.style.transform);
+    const originalProgressTransform = progressEl?.style.transform;
 
-    if (progressEl) {
-      timeline.add(
-        progressEl,
-        {
-          scaleX: [0, 1],
-          ease: "linear",
-          duration: timeline.duration,
-        },
-        0,
-      );
-    }
+    const interpolate = (from: number, to: number, progress: number) =>
+      THREE.MathUtils.lerp(from, to, THREE.MathUtils.clamp(progress, 0, 1));
+    const updateTimeline = (progress: number) => {
+      const time = progress * duration;
 
-    const updateTimeline = () => {
-      const stage = track.querySelector<HTMLElement>("[data-services-stage]");
-      if (!stage) return;
-      const tail =
-        Number.parseFloat(getComputedStyle(track).getPropertyValue("--service-tail")) || 0;
-      const stickyDistance =
-        track.offsetHeight - stage.offsetHeight - tail;
-      const progress = clamp(
-        -track.getBoundingClientRect().top / Math.max(1, stickyDistance),
-      );
-      const time = progress * timeline.duration;
+      slides.forEach((slide, index) => {
+        const isLast = index === slides.length - 1;
+        const start = slideStarts[index];
+        const fadeInProgress = THREE.MathUtils.clamp((time - start) / fade, 0, 1);
+        let opacity: number;
+        let translateY: number;
+        let scale: number;
 
-      timeline.seek(time);
+        if (fadeInProgress < 1) {
+          const easedProgress = easeOutCubic(fadeInProgress);
+          opacity = easedProgress;
+          translateY = interpolate(MOTION.serviceY, 0, easedProgress);
+          scale = interpolate(MOTION.serviceScaleFrom, 1, easedProgress);
+        } else {
+          const fadeOutStart = start + fade + hold;
+          if (isLast || time <= fadeOutStart) {
+            opacity = 1;
+            translateY = 0;
+            scale = 1;
+          } else {
+            const fadeOutProgress = THREE.MathUtils.clamp((time - fadeOutStart) / fade, 0, 1);
+            const easedProgress = easeInCubic(fadeOutProgress);
+            opacity = 1 - easedProgress;
+            translateY = interpolate(0, -MOTION.serviceY, easedProgress);
+            scale = interpolate(1, MOTION.serviceScaleFrom, easedProgress);
+          }
+        }
+
+        slide.style.opacity = String(opacity);
+        slide.style.transform = `translateY(${translateY}px) scale(${scale})`;
+
+        const artElement = art[index];
+        if (artElement) {
+          const artDuration = fade + hold + (isLast ? 0 : fade);
+          const artProgress = THREE.MathUtils.clamp((time - start) / artDuration, 0, 1);
+          const parallax = interpolate(parallaxAmount, -parallaxAmount, artProgress);
+          artElement.style.transform = `translateY(${parallax}%)`;
+        }
+      });
+
+      if (progressEl) {
+        progressEl.style.transform = `scaleX(${THREE.MathUtils.clamp(time / duration, 0, 1)})`;
+      }
+
       const nextActive = Math.min(slides.length - 1, Math.floor(time / span));
       setActive((current) => (current === nextActive ? current : nextActive));
-      modelProgress.current = slides.map((_, index) =>
-        clamp((time - index * span - fade) / hold),
-      );
     };
 
-    document.addEventListener("scroll", updateTimeline, {
-      capture: true,
-      passive: true,
-    });
-    window.addEventListener("resize", updateTimeline);
-    const frame = requestAnimationFrame(updateTimeline);
+    const unsubscribe = smoothScrollProgress.on("change", updateTimeline);
+    updateTimeline(smoothScrollProgress.get());
 
     return () => {
       track.classList.remove("services-ready");
-      cancelAnimationFrame(frame);
-      document.removeEventListener("scroll", updateTimeline, true);
-      window.removeEventListener("resize", updateTimeline);
-      timeline.pause();
-      timeline.revert();
+      unsubscribe();
+      slides.forEach((slide, index) => {
+        slide.style.opacity = originalSlideStyles[index].opacity;
+        slide.style.transform = originalSlideStyles[index].transform;
+      });
+      art.forEach((element, index) => {
+        element.style.transform = originalArtTransforms[index];
+      });
+      if (progressEl && originalProgressTransform !== undefined) {
+        progressEl.style.transform = originalProgressTransform;
+      }
     };
-  }, [count, prefersReducedMotion, services]);
+  }, [count, prefersReducedMotion, services, smoothScrollProgress]);
 
   return (
     <div
@@ -280,8 +280,8 @@ export function ServicesScroller({ services }: { services: readonly HomeService[
             service={service}
             index={index}
             active={prefersReducedMotion || index === active}
-            modelProgress={modelProgress}
-            reducedMotion={prefersReducedMotion}
+            scrollProgress={smoothScrollProgress}
+            serviceCount={count}
           />
         ))}
         <div

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import type { MotionValue } from "motion/react";
 import {
   SUB,
   type ExplodedMesh,
@@ -13,7 +14,9 @@ import { MOTION } from "@/lib/design/motion";
 
 export type ExplodedModelProps = {
   model: ExplodedModelName;
-  getProgress: () => number;
+  scrollProgress: MotionValue<number>;
+  serviceIndex: number;
+  serviceCount: number;
   fallbackImage?: string;
   label?: string;
   className?: string;
@@ -31,7 +34,9 @@ const modelDescriptions: Record<ExplodedModelName, string> = {
 
 export function ExplodedModel({
   model,
-  getProgress,
+  scrollProgress,
+  serviceIndex,
+  serviceCount,
   fallbackImage,
   label = "Service model",
   className = "",
@@ -62,6 +67,7 @@ export function ExplodedModel({
     let themeObserver: MutationObserver | undefined;
     let onColorSchemeChange: (() => void) | undefined;
     let colorScheme: MediaQueryList | undefined;
+    let onResize: (() => void) | undefined;
     let isVisible = false;
 
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -124,20 +130,34 @@ export function ExplodedModel({
       });
 
       const explodedBounds = new THREE.Box3();
+      const projectedExplodedBounds = new THREE.Box3();
+      const modelRotation = new THREE.Matrix4()
+        .makeRotationX(0.58)
+        .multiply(new THREE.Matrix4().makeRotationY(-0.7));
       parts.forEach((part) => {
-        explodedBounds.union(part.box.clone().translate(part.explodeVector));
+        const partBounds = part.box.clone().translate(part.explodeVector);
+        explodedBounds.union(partBounds);
+        for (const x of [partBounds.min.x, partBounds.max.x]) {
+          for (const y of [partBounds.min.y, partBounds.max.y]) {
+            for (const z of [partBounds.min.z, partBounds.max.z]) {
+              projectedExplodedBounds.expandByPoint(
+                new THREE.Vector3(x, y, z).applyMatrix4(modelRotation),
+              );
+            }
+          }
+        }
       });
-      const explodedSize = explodedBounds.getSize(new THREE.Vector3());
-      let currentProgress = 0;
-
+      const projectedExplodedSize = projectedExplodedBounds.getSize(new THREE.Vector3());
       const setCameraSize = () => {
         if (!renderer || disposed) return;
         const width = host.clientWidth || 1;
         const height = host.clientHeight || 1;
         const aspect = width / height;
         const halfHeight =
-          Math.max(explodedSize.y / 2, explodedSize.x / (2 * aspect), explodedSize.length() / 3) *
-          1.12;
+          Math.max(
+            projectedExplodedSize.y / 2,
+            projectedExplodedSize.x / (2 * aspect),
+          ) * 1.06;
         camera.left = -halfHeight * aspect;
         camera.right = halfHeight * aspect;
         camera.top = halfHeight;
@@ -158,16 +178,22 @@ export function ExplodedModel({
       const center = new THREE.Vector3();
       const render = () => {
         if (disposed || !renderer) return;
-        const targetProgress = prefersReducedMotion ? 1 : clamp(getProgress());
-        currentProgress = prefersReducedMotion
+        const localProgress = prefersReducedMotion
           ? 1
-          : currentProgress + (targetProgress - currentProgress) * 0.08;
+          : clamp(scrollProgress.get() * serviceCount - serviceIndex);
+        const targetProgress =
+          localProgress <= MOTION.modelHoldStart
+            ? 0
+            : localProgress >= MOTION.modelAssemblyEnd
+              ? 1
+              : (localProgress - MOTION.modelHoldStart) /
+                (MOTION.modelAssemblyEnd - MOTION.modelHoldStart);
 
         parts.forEach((part, index) => {
-            const maxStagger = Math.max(0, (parts.length - 1) * MOTION.modelPartStagger);
+          const maxStagger = Math.max(0, (parts.length - 1) * MOTION.modelPartStagger);
           const staggeredProgress = clamp(
-              (currentProgress - index * MOTION.modelPartStagger) /
-                Math.max(0.01, 1 - maxStagger),
+            (targetProgress - index * MOTION.modelPartStagger) /
+              Math.max(0.01, 1 - maxStagger),
           );
           const easedProgress =
             staggeredProgress < 0.5
@@ -203,21 +229,31 @@ export function ExplodedModel({
         frameId = 0;
       };
 
-      resizeObserver = new ResizeObserver(() => {
+      const handleResize = () => {
         setCameraSize();
         if (prefersReducedMotion && isVisible) render();
-      });
-      resizeObserver.observe(host);
+      };
+      if (typeof ResizeObserver !== "undefined") {
+        resizeObserver = new ResizeObserver(handleResize);
+        resizeObserver.observe(host);
+      } else {
+        onResize = handleResize;
+        window.addEventListener("resize", onResize);
+      }
 
-      visibilityObserver = new IntersectionObserver(
-        (entries) => {
-          isVisible = entries.some((entry) => entry.isIntersecting);
-          if (isVisible) startRender();
-          else stopRender();
-        },
-        { threshold: 0.05 },
-      );
-      visibilityObserver.observe(host);
+      if (typeof IntersectionObserver !== "undefined") {
+        visibilityObserver = new IntersectionObserver(
+          (entries) => {
+            isVisible = entries.some((entry) => entry.isIntersecting);
+            if (isVisible) startRender();
+            else stopRender();
+          },
+          { threshold: 0.05 },
+        );
+        visibilityObserver.observe(host);
+      } else {
+        isVisible = true;
+      }
 
       themeObserver = new MutationObserver(syncTheme);
       themeObserver.observe(document.documentElement, {
@@ -226,7 +262,11 @@ export function ExplodedModel({
       });
       colorScheme = window.matchMedia("(prefers-color-scheme: dark)");
       onColorSchemeChange = syncTheme;
-      colorScheme.addEventListener("change", onColorSchemeChange);
+      if (typeof colorScheme.addEventListener === "function") {
+        colorScheme.addEventListener("change", onColorSchemeChange);
+      } else {
+        colorScheme.addListener(onColorSchemeChange);
+      }
 
       syncTheme();
       setCameraSize();
@@ -238,7 +278,14 @@ export function ExplodedModel({
         resizeObserver?.disconnect();
         visibilityObserver?.disconnect();
         themeObserver?.disconnect();
-        if (onColorSchemeChange) colorScheme?.removeEventListener("change", onColorSchemeChange);
+        if (onResize) window.removeEventListener("resize", onResize);
+        if (onColorSchemeChange) {
+          if (typeof colorScheme?.removeEventListener === "function") {
+            colorScheme.removeEventListener("change", onColorSchemeChange);
+          } else {
+            colorScheme?.removeListener(onColorSchemeChange);
+          }
+        }
         host.replaceChildren();
         parts.forEach(({ group }) => {
           group.traverse((child: THREE.Object3D) => {
@@ -259,7 +306,14 @@ export function ExplodedModel({
       resizeObserver?.disconnect();
       visibilityObserver?.disconnect();
       themeObserver?.disconnect();
-      if (onColorSchemeChange) colorScheme?.removeEventListener("change", onColorSchemeChange);
+      if (onResize) window.removeEventListener("resize", onResize);
+      if (onColorSchemeChange) {
+        if (typeof colorScheme?.removeEventListener === "function") {
+          colorScheme.removeEventListener("change", onColorSchemeChange);
+        } else {
+          colorScheme?.removeListener(onColorSchemeChange);
+        }
+      }
       host.replaceChildren();
       parts.forEach(({ group }) => {
         group.traverse((child: THREE.Object3D) => {
@@ -274,7 +328,7 @@ export function ExplodedModel({
       renderer?.forceContextLoss();
       window.queueMicrotask(() => setWebglFailed(true));
     }
-  }, [getProgress, model, supportsWebGL]);
+  }, [model, scrollProgress, serviceCount, serviceIndex, supportsWebGL]);
 
   if (fallbackVisible) {
     return (

@@ -99,6 +99,7 @@ body {
 
 /* Full-screen editorial panels keep the pacing intentional on laptop layouts. */
 .section-panel {
+  min-height: 88vh;
   min-height: 88svh;
   display: flex;
   flex-direction: column;
@@ -106,6 +107,7 @@ body {
 }
 
 .home-section-beat {
+  min-height: 90vh;
   min-height: 90svh;
   display: flex;
   flex-direction: column;
@@ -132,8 +134,14 @@ body {
 
 .services-track {
   --service-count: 4;
-  --service-scroll-distance: 250svh;
+  --service-scroll-distance: 250vh;
   --service-tail: 96px;
+}
+
+@supports (height: 100svh) {
+  .services-track {
+    --service-scroll-distance: 250svh;
+  }
 }
 
 .services-stage {
@@ -144,6 +152,18 @@ body {
 
 .service-slide {
   width: 100%;
+}
+
+.service-art {
+  max-height: 42vh;
+  max-height: 42svh;
+}
+
+@media (min-width: 768px) {
+  .service-art {
+    max-height: 56vh;
+    max-height: 56svh;
+  }
 }
 
 .services-progress {
@@ -159,7 +179,9 @@ body {
     position: sticky;
     top: 0;
     display: block;
+    height: 100vh;
     height: 100svh;
+    padding-block: clamp(40px, 9vh, 80px);
     padding-block: clamp(40px, 9svh, 80px);
   }
 
@@ -192,7 +214,8 @@ body {
   }
 
   .services-track.services-ready [data-service-art] {
-    max-height: 22svh;
+    max-height: 50vh;
+    max-height: 50svh;
   }
 
   .services-track.services-ready .services-progress {
