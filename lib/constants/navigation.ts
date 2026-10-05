@@ -7,5 +7,5 @@ export const siteNav = [
 
 export const site = {
   name: "Premodus Labs",
-  email: "info@premodus.com",
+  email: "info@premodus.tech",
 } as const;

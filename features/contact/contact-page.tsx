@@ -4,14 +4,14 @@ import { SectionTransition } from "@/components/ui/section-transition";
 import { Text } from "@/components/ui/text";
 
 const fields = [
-  { id: "name", label: "Name", placeholder: "John Smith", type: "text" },
+  { id: "name", label: "Name", placeholder: "Milton", type: "text" },
   {
     id: "organization",
     label: "Organization",
     placeholder: "ABC Company LTD",
     type: "text",
   },
-  { id: "email", label: "Email", placeholder: "johnsmith@abc.org", type: "email" },
+  { id: "email", label: "Email", placeholder: "Milton@premodus.tech", type: "email" },
   {
     id: "phone",
     label: "Phone number",
