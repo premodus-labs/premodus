@@ -142,21 +142,35 @@ body {
   }
 
   .services-track.services-ready .services-stage {
-    padding-block: 24px 56px;
+    padding-block: 24px 72px;
   }
 
   .services-track.services-ready .service-slide {
-    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
   }
 
-  .services-track .service-title {
+  .services-track .service-label {
     display: none;
   }
 
-  .service-art {
-    height: min(48svh, 360px);
+  .services-track .service-copy {
+    width: 100%;
+    text-align: center;
+  }
+
+  .services-track .service-art {
+    height: min(42svh, 320px);
     max-height: none;
     aspect-ratio: auto;
+  }
+
+  .services-track .service-copy > :not(.service-art) {
+    max-width: 32rem;
+    margin-inline: auto;
   }
 }
 
