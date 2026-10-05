@@ -52,11 +52,11 @@ export function HomePage() {
       <SectionTransition animateOnView={false} className="px-page pt-section pb-major">
         <div className="mx-auto max-w-5xl">
           <ScrollReveal>
-            <div className="flex items-end justify-between gap-8">
+            <div className="flex w-full flex-col gap-4 lg:flex-row lg:items-end lg:justify-between lg:gap-8">
               <Text as="h2" variant="h2" className="max-w-xl">
                 World-class starts with how we treat each piece of the work.
               </Text>
-              <Text variant="tiny" className="hidden sm:block">
+              <Text variant="tiny" className="hidden shrink-0 lg:block">
                 How we work
               </Text>
             </div>
