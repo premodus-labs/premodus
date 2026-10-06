@@ -226,9 +226,13 @@ body {
 .services-track.services-ready .service-slide {
   position: absolute;
   inset: 0;
-  display: flex;
+  display: grid;
   align-items: center;
   pointer-events: none;
+}
+
+.services-track.services-ready .service-copy {
+  width: 100%;
 }
 
 .services-track.services-ready .service-slide:not([inert]) {

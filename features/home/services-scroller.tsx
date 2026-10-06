@@ -43,8 +43,8 @@ const clamp = (value: number) => Math.max(0, Math.min(1, value));
 const serviceModelProgress = interpolate([0.25, 0.8], [0, 1], {
   ease: cubicBezier(...EASE),
 });
-const serviceOpacity = interpolate([0, 0.15, 0.9, 1], [0, 1, 1, 0]);
-const serviceY = interpolate([0, 0.15, 0.9, 1], [24, 0, 0, -24]);
+const serviceOpacity = interpolate([0, 0.82, 1], [1, 1, 0]);
+const serviceY = interpolate([0, 0.82, 1], [0, 0, -24]);
 
 function pad(value: number) {
   return String(value).padStart(2, "0");
@@ -56,14 +56,23 @@ function useServiceMotionValues(
   count: number,
 ): ServiceMotionValues {
   return useMemo(() => {
-    const local = transformValue(() =>
-      clamp(trackProgress.get() * count - index),
-    );
+    const local = transformValue(() => trackProgress.get() * count - index);
     const progress = transformValue(() => {
-      return serviceModelProgress(local.get());
+      const value = local.get();
+      if (value <= 0) return 0;
+      if (value >= 1) return 1;
+      return serviceModelProgress(value);
     });
-    const opacity = transformValue(() => serviceOpacity(local.get()));
-    const y = transformValue(() => serviceY(local.get()));
+    const opacity = transformValue(() => {
+      const value = local.get();
+      if (value < 0 || value > 1) return 0;
+      return serviceOpacity(value);
+    });
+    const y = transformValue(() => {
+      const value = local.get();
+      if (value < 0 || value > 1) return 24;
+      return serviceY(value);
+    });
     const scale = transformValue(() => 0.97 + opacity.get() * 0.03);
 
     return { progress, opacity, y, scale };

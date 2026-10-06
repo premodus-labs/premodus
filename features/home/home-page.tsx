@@ -1,10 +1,10 @@
-import Image from "next/image";
 import { ButtonLink } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import { SectionTransition } from "@/components/ui/section-transition";
 import { Text } from "@/components/ui/text";
-import { getBoilerImage } from "@/lib/constants/boiler-images";
+import { projects } from "@/lib/constants/projects";
 import { HomeHero } from "@/features/home/home-hero";
+import { ProjectGrid } from "@/features/work/project-grid";
 import { ServicesScroller } from "@/features/home/services-scroller";
 
 const services = [
@@ -41,8 +41,6 @@ const services = [
     fallbackImage: "/images/services/cybersecurity.jpg",
   },
 ] as const;
-
-const projects = ["OpenData Malawi", "E-Pay", "Z.AI"] as const;
 
 export function HomePage() {
   return (
@@ -108,33 +106,7 @@ export function HomePage() {
             What we’re building
           </Text>
         </ScrollReveal>
-        <div className="mt-major grid grid-cols-1 gap-gutter md:grid-cols-3">
-          {projects.map((project, index) => {
-            const image = getBoilerImage(index);
-
-            return (
-              <ScrollReveal key={project} delay={index * 0.12}>
-                <article>
-                  <div className="relative aspect-[4/5] overflow-hidden bg-surface">
-                    <Image
-                      src={image.src}
-                      alt={image.alt}
-                      fill
-                      sizes="(min-width: 768px) 33vw, 100vw"
-                      className="object-cover"
-                    />
-                  </div>
-                  <Text as="h3" variant="h4" className="mt-4">
-                    {project}
-                  </Text>
-                  <Text variant="small" className="mt-2">
-                    Designed around a problem worth solving.
-                  </Text>
-                </article>
-              </ScrollReveal>
-            );
-          })}
-        </div>
+        <ProjectGrid projects={projects.slice(0, 3)} />
       </SectionTransition>
 
       <SectionTransition className="section-panel px-page py-section text-center">
