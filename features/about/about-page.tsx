@@ -7,7 +7,7 @@ import { getBoilerImage } from "@/lib/constants/boiler-images";
 const team = [
   ["PG", "Perani Gondwe", "Managing Director", "Leads how the work gets built."],
   ["TM", "Tanthwe Mtema", "Head of Business Operations", "Leads how the business runs."],
-  ["AN", "Albert Ngonda", "Technical Director", "Leads how the work stays secure."],
+  ["AN", "Albert Ngonda", "Technical Director", "Leads how the work stays secure.", "/images/founders/bert.jpg"],
 ] as const;
 
 export function AboutPage() {
@@ -60,12 +60,12 @@ export function AboutPage() {
           Three people, no layers between the work and the person doing it.
         </Text>
         <div className="mt-major grid grid-cols-1 gap-gutter md:grid-cols-3">
-          {team.map(([initials, name, role, description], index) => (
+          {team.map(([initials, name, role, description, imagePath], index) => (
             <article key={name}>
               <div className="relative aspect-[4/5] overflow-hidden bg-surface">
                 <Image
-                  src={getBoilerImage(index).src}
-                  alt={getBoilerImage(index).alt}
+                  src={imagePath ? imagePath : getBoilerImage(index).src}
+                  alt={name}
                   fill
                   sizes="(min-width: 768px) 33vw, 100vw"
                   className="object-cover"
