@@ -138,7 +138,7 @@ body {
 
   /* Mobile gets a slower scrub and an animation-first composition. */
   .services-track.services-ready {
-    height: calc(var(--service-count) * 300svh + 100svh + var(--service-tail));
+    height: calc(var(--service-count) * 100svh + 100svh + var(--service-tail));
   }
 
   .services-track.services-ready .services-stage {
@@ -210,7 +210,7 @@ body {
 }
 
 .services-track.services-ready {
-  height: calc(var(--service-count) * 250svh + 100svh + var(--service-tail));
+  height: calc(var(--service-count) * 100svh + 100svh + var(--service-tail));
 }
 
 .services-track.services-ready .services-stage {

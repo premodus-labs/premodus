@@ -1,10 +1,16 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useRef, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
-import { motion, type MotionValue } from "motion/react";
-import { cubicBezier, interpolate, motionValue, transformValue } from "motion";
+import { motion, useMotionValueEvent, type MotionValue } from "motion/react";
+import {
+  cubicBezier,
+  interpolate,
+  motionValue,
+  scroll,
+  transformValue,
+} from "motion";
 import { Text } from "@/components/ui/text";
 import { usePrefersReducedMotion } from "@/components/ui/use-prefers-reduced-motion";
 import { EASE } from "@/lib/design/motion";
@@ -143,8 +149,28 @@ export function ServicesScroller({ services }: { services: readonly HomeService[
       return;
     }
 
-    track.classList.remove("services-ready");
+    const stopScroll = scroll((value) => trackProgress.set(value), {
+      target: track,
+      offset: ["start start", "end end"],
+    });
+    track.classList.add("services-ready");
+
+    return () => {
+      stopScroll();
+      track.classList.remove("services-ready");
+    };
   }, [count, prefersReducedMotion, trackProgress]);
+
+  const [active, setActive] = useState(0);
+  const activeRef = useRef(0);
+
+  useMotionValueEvent(trackProgress, "change", (value) => {
+    if (prefersReducedMotion || count === 0) return;
+    const next = Math.min(count - 1, Math.floor(Math.max(0, Math.min(1, value)) * count));
+    if (activeRef.current === next) return;
+    activeRef.current = next;
+    setActive(next);
+  });
 
   return (
     <div
@@ -160,7 +186,7 @@ export function ServicesScroller({ services }: { services: readonly HomeService[
             service={service}
             index={index}
             count={count}
-            active={true}
+            active={index === active}
             reducedMotion={prefersReducedMotion}
             trackProgress={trackProgress}
           />
