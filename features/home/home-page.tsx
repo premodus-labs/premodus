@@ -103,7 +103,7 @@ export function HomePage() {
       <SectionTransition className="home-section-beat px-page py-major mb-section">
         <ScrollReveal>
           <Text as="h2" variant="h2">
-            What we’re building
+            Work we’ve done
           </Text>
         </ScrollReveal>
         <ProjectGrid projects={projects.slice(0, 3)} />

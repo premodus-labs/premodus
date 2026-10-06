@@ -76,6 +76,7 @@ export const projects: Project[] = [
     role: "Design and development",
     stack: ["Web design", "UX", "Content structure"],
     url: "https://designstudio.must.ac.mw",
+    image: "/images/work/design.png",
   },
   {
     slug: "rugare-mental-health",

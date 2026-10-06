@@ -1,20 +1,10 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, type CSSProperties } from "react";
 import Link from "next/link";
-import {
-  motion,
-  useMotionValueEvent,
-  type MotionValue,
-} from "motion/react";
-import {
-  cubicBezier,
-  interpolate,
-  motionValue,
-  scroll,
-  transformValue,
-} from "motion";
+import { motion, type MotionValue } from "motion/react";
+import { cubicBezier, interpolate, motionValue, transformValue } from "motion";
 import { Text } from "@/components/ui/text";
 import { usePrefersReducedMotion } from "@/components/ui/use-prefers-reduced-motion";
 import { EASE } from "@/lib/design/motion";
@@ -39,16 +29,11 @@ type ServiceMotionValues = {
   scale: MotionValue<number>;
 };
 
-const clamp = (value: number) => Math.max(0, Math.min(1, value));
 const serviceModelProgress = interpolate([0.25, 0.8], [0, 1], {
   ease: cubicBezier(...EASE),
 });
 const serviceOpacity = interpolate([0, 0.82, 1], [1, 1, 0]);
 const serviceY = interpolate([0, 0.82, 1], [0, 0, -24]);
-
-function pad(value: number) {
-  return String(value).padStart(2, "0");
-}
 
 function useServiceMotionValues(
   trackProgress: MotionValue<number>,
@@ -147,33 +132,19 @@ export function ServicesScroller({ services }: { services: readonly HomeService[
   const trackRef = useRef<HTMLDivElement>(null);
   const trackProgress = useMemo(() => motionValue(0), []);
   const prefersReducedMotion = usePrefersReducedMotion();
-  const [active, setActive] = useState(0);
-  const activeRef = useRef(0);
   const count = services.length;
 
   useEffect(() => {
     const track = trackRef.current;
-    if (!track || prefersReducedMotion || count === 0) return;
+    if (!track || count === 0) return;
 
-    const stopScroll = scroll((value) => trackProgress.set(value), {
-      target: track,
-      offset: ["start start", "end end"],
-    });
-    track.classList.add("services-ready");
-
-    return () => {
-      stopScroll();
+    if (prefersReducedMotion) {
       track.classList.remove("services-ready");
-    };
-  }, [count, prefersReducedMotion, trackProgress]);
+      return;
+    }
 
-  useMotionValueEvent(trackProgress, "change", (value) => {
-    if (prefersReducedMotion || count === 0) return;
-    const next = Math.min(count - 1, Math.floor(clamp(value) * count));
-    if (activeRef.current === next) return;
-    activeRef.current = next;
-    setActive(next);
-  });
+    track.classList.remove("services-ready");
+  }, [count, prefersReducedMotion, trackProgress]);
 
   return (
     <div
@@ -189,24 +160,11 @@ export function ServicesScroller({ services }: { services: readonly HomeService[
             service={service}
             index={index}
             count={count}
-            active={index === active}
+            active={true}
             reducedMotion={prefersReducedMotion}
             trackProgress={trackProgress}
           />
         ))}
-        {!prefersReducedMotion ? (
-          <div className="services-progress pointer-events-none absolute inset-x-0 bottom-8 flex items-center gap-4">
-            <Text variant="tiny" className="shrink-0 tabular-nums">
-              {pad(active + 1)} / {pad(count)}
-            </Text>
-            <div className="h-px flex-1 overflow-hidden bg-surface/20">
-              <motion.div
-                className="h-px w-full origin-left bg-surface"
-                style={{ scaleX: trackProgress }}
-              />
-            </div>
-          </div>
-        ) : null}
       </div>
     </div>
   );
