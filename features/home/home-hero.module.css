@@ -1,0 +1,96 @@
+.hero {
+  /* Tune the backdrop color and viewport height to suit your hero media. */
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+  background: #1a1a1a;
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.overlay {
+  /* Adjust the left-side darkness if the headline needs more contrast. */
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgb(26 26 26 / 0.72) 0%,
+    rgb(26 26 26 / 0.38) 58%,
+    rgb(26 26 26 / 0.08) 100%
+  );
+}
+
+.copy {
+  /* Keep this layer above the shader; pointer events pass through except on the CTA. */
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: inherit;
+  align-items: center;
+  padding: var(--spacing-section) var(--spacing-page);
+  pointer-events: none;
+}
+
+.copyInner {
+  display: flex;
+  width: min(100%, 64rem);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.title {
+  max-width: 15ch;
+  color: #ffffff;
+}
+
+.subhead {
+  max-width: 38rem;
+  color: rgb(255 255 255 / 0.84);
+}
+
+.cta {
+  /* Change the accent here to customize the CTA hover color. */
+  border: 1px solid rgb(255 255 255 / 0.72);
+  background-color: transparent;
+  color: #ffffff;
+  pointer-events: auto;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.cta:hover,
+.cta:focus-visible {
+  border-color: #298372;
+  background-color: #298372;
+  color: #ffffff;
+  opacity: 1;
+}
+
+@media (max-width: 767px) {
+  .copy {
+    padding-block: var(--spacing-major);
+  }
+
+  .overlay {
+    background: linear-gradient(
+      90deg,
+      rgb(26 26 26 / 0.76) 0%,
+      rgb(26 26 26 / 0.48) 72%,
+      rgb(26 26 26 / 0.24) 100%
+    );
+  }
+}
