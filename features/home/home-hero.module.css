@@ -1,24 +1,12 @@
 .hero {
-  /* Tune the white backdrop and viewport height to suit your hero media. */
+  /* Pull the canvas beneath the sticky navigation instead of leaving header space above it. */
   position: relative;
+  margin-top: calc(-1 * (var(--spacing-header-t) + 40px + var(--spacing-header-b)));
   min-height: 100vh;
   min-height: 100svh;
   overflow: hidden;
   isolation: isolate;
   background: var(--canvas);
-}
-
-.hero::after {
-  /* Tune this 120px fade if the hero changes height or the next section changes color. */
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 1;
-  height: 120px;
-  pointer-events: none;
-  content: "";
-  background: linear-gradient(to bottom, transparent, var(--canvas));
 }
 
 .canvas {
@@ -28,20 +16,6 @@
   display: block;
   width: 100%;
   height: 100%;
-}
-
-.overlay {
-  /* Keep this light enough for the dark subject to remain legible as ASCII. */
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    90deg,
-    rgb(255 255 255 / 0.6) 0%,
-    rgb(255 255 255 / 0.28) 58%,
-    rgb(255 255 255 / 0) 100%
-  );
 }
 
 .copy {
@@ -104,13 +78,4 @@
     max-width: 18ch;
   }
 
-  .overlay {
-    /* Slightly stronger than desktop, without washing out the square portrait crop. */
-    background: linear-gradient(
-      90deg,
-      rgb(255 255 255 / 0.68) 0%,
-      rgb(255 255 255 / 0.38) 70%,
-      rgb(255 255 255 / 0.08) 100%
-    );
-  }
 }

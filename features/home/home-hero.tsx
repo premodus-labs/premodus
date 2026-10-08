@@ -75,7 +75,6 @@ export function HomeHero() {
         className={styles.canvas}
         aria-hidden="true"
       />
-      <div className={styles.overlay} aria-hidden="true" />
       <div className={styles.copy}>
         <div className={styles.copyInner}>
           <h1 id="home-hero-title" className={`text-heading-2 ${styles.title}`}>
