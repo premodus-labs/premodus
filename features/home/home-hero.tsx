@@ -43,8 +43,10 @@ export function HomeHero() {
       radius: 110,
       cellSize: 10,
       gap: 0.3,
+      // Tune between 1.2 and 1.7 if the subject needs more or less definition.
       contrast: 1.5,
-      // Dark glyphs on white canvas keep the shader consistent with the site.
+      // Invert luminance so dark glyphs describe dark parts of the image.
+      invert: true,
       fg: "#1A1A1A",
       bg: "#FFFFFF",
       accent: "#298372",
@@ -76,7 +78,7 @@ export function HomeHero() {
       <div className={styles.overlay} aria-hidden="true" />
       <div className={styles.copy}>
         <div className={styles.copyInner}>
-          <h1 id="home-hero-title" className={`text-display ${styles.title}`}>
+          <h1 id="home-hero-title" className={`text-heading-2 ${styles.title}`}>
             World-class technology for Malawi’s overlooked problems.
           </h1>
           <p className={`text-body ${styles.subhead}`}>

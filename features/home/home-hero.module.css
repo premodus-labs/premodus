@@ -8,6 +8,19 @@
   background: var(--canvas);
 }
 
+.hero::after {
+  /* Tune this 120px fade if the hero changes height or the next section changes color. */
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  height: 120px;
+  pointer-events: none;
+  content: "";
+  background: linear-gradient(to bottom, transparent, var(--canvas));
+}
+
 .canvas {
   position: absolute;
   inset: 0;
@@ -18,53 +31,55 @@
 }
 
 .overlay {
-  /* Keep shader detail behind the copy low-contrast for readable black text. */
+  /* Tune opacity stops to preserve a 4.5:1 contrast ratio beneath the copy. */
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
   background: linear-gradient(
     90deg,
-    rgb(255 255 255 / 0.9) 0%,
-    rgb(255 255 255 / 0.66) 50%,
-    rgb(255 255 255 / 0.12) 100%
+    rgb(255 255 255 / 0.85) 0%,
+    rgb(255 255 255 / 0.7) 75%,
+    rgb(255 255 255 / 0) 100%
   );
 }
 
 .copy {
   /* Keep this layer above the shader; pointer events pass through except on the CTA. */
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: flex;
   min-height: inherit;
   align-items: center;
+  justify-content: center;
   padding: var(--spacing-section) var(--spacing-page);
   pointer-events: none;
+  text-align: center;
 }
 
 .copyInner {
   display: flex;
-  width: min(100%, 64rem);
+  width: min(100%, 42rem);
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 1.5rem;
 }
 
 .title {
-  max-width: 15ch;
-  color: var(--ink-strong);
+  max-width: 22ch;
+  color: #1a1a1a;
 }
 
 .subhead {
   max-width: 38rem;
-  color: var(--ink-medium);
+  color: rgb(26 26 26 / 0.75);
 }
 
 .cta {
   /* Change the accent here to customize the CTA hover color. */
-  border: 1px solid var(--surface);
-  background-color: var(--surface);
-  color: var(--inverse);
+  border: 1px solid #1a1a1a;
+  background-color: transparent;
+  color: #1a1a1a;
   pointer-events: auto;
   transition:
     background-color 180ms ease,
@@ -85,12 +100,17 @@
     padding-block: var(--spacing-major);
   }
 
+  .title {
+    max-width: 18ch;
+  }
+
   .overlay {
+    /* Stronger coverage keeps the narrower mobile text column readable. */
     background: linear-gradient(
       90deg,
-      rgb(255 255 255 / 0.92) 0%,
-      rgb(255 255 255 / 0.7) 72%,
-      rgb(255 255 255 / 0.3) 100%
+      rgb(255 255 255 / 0.98) 0%,
+      rgb(255 255 255 / 0.82) 80%,
+      rgb(255 255 255 / 0.65) 100%
     );
   }
 }
