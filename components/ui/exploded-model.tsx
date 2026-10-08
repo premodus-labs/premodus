@@ -111,6 +111,8 @@ export function ExplodedModel({
 
     try {
       const canvas = document.createElement("canvas");
+      const compactViewport = window.matchMedia("(max-width: 767px)").matches;
+      const maxPixelRatio = compactViewport ? 1 : 1.5;
       canvas.style.width = "100%";
       canvas.style.height = "100%";
       canvas.style.display = "block";
@@ -119,10 +121,10 @@ export function ExplodedModel({
         canvas,
         alpha: true,
         antialias: true,
-        powerPreference: "high-performance",
+        powerPreference: compactViewport ? "low-power" : "high-performance",
       });
       renderer.setClearColor(0x000000, 0);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, maxPixelRatio));
 
       const scene = new THREE.Scene();
       const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, -200, 200);
@@ -245,7 +247,7 @@ export function ExplodedModel({
         camera.top = halfHeight;
         camera.bottom = -halfHeight;
         camera.updateProjectionMatrix();
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, maxPixelRatio));
         renderer.setSize(width, height, false);
         frame.render(render);
       };

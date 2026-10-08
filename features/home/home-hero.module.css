@@ -16,27 +16,31 @@
   display: block;
   width: 100%;
   height: 100%;
+  pointer-events: none;
 }
 
 .copy {
-  /* Keep this layer above the shader; pointer events pass through except on the CTA. */
+  /* Keep the copy readable without washing out the shader outside this panel. */
   position: relative;
   z-index: 2;
   display: flex;
   min-height: inherit;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   padding: var(--spacing-section) var(--spacing-page);
   pointer-events: none;
-  text-align: center;
+  text-align: left;
+  transform: translateZ(1px);
 }
 
 .copyInner {
   display: flex;
   width: min(100%, 42rem);
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 1.5rem;
+  padding: 2rem;
+  background: var(--canvas);
 }
 
 .title {
@@ -71,7 +75,15 @@
 
 @media (max-width: 767px) {
   .copy {
-    padding-block: var(--spacing-major);
+    align-items: flex-end;
+    justify-content: center;
+    padding: var(--spacing-major) var(--spacing-page) 3rem;
+    text-align: center;
+  }
+
+  .copyInner {
+    align-items: center;
+    padding: 1.5rem;
   }
 
   .title {

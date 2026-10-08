@@ -12,9 +12,9 @@ const services = [
     label: "Software Development",
     title: "Built to hold up under real use, not just under a demo.",
     description:
-      "We write the version that still works when the traffic spikes, the data’s messy, and someone’s using it on a bad connection — not the version that only works in the sales deck.",
+      "We write the version that still works when the traffic spikes, the data’s messy, and someone’s using it on a bad connection  not the version that only works in the sales deck.",
     model: "computer",
-    fallbackImage: "/images/services/software-development.jpg",
+    fallbackImage: "/images/services/softwaredevelopment.jpg",
   },
   {
     label: "Digital Transformation",
@@ -22,7 +22,7 @@ const services = [
     description:
       "We don’t turn digital transformation projects into a problem no one had. We start with how the institution actually runs today, and build toward something better.",
     model: "wall",
-    fallbackImage: "/images/services/digital-transformation.jpg",
+    fallbackImage: "/images/services/digitaltransformation.jpg",
   },
   {
     label: "IT Consulting",
@@ -30,7 +30,7 @@ const services = [
     description:
       "We ask what you’re solving before we recommend the next one — because a recommendation that ignores the local context sets up the next problem.",
     model: "paper",
-    fallbackImage: "/images/services/it-consulting.jpg",
+    fallbackImage: "/images/services/itconsulting.jpg",
   },
   {
     label: "Cybersecurity",
@@ -47,12 +47,12 @@ export function HomePage() {
     <>
       <HomeHero />
 
-      <SectionTransition animateOnView={false} className="px-page pt-section pb-major">
-        <div className="mx-auto max-w-5xl">
+      <SectionTransition animateOnView={false} className="pxpage ptsection pbmajor">
+        <div className="mxauto maxw5xl">
           <ScrollReveal>
-            <div className="w-full">
-              <Text as="h2" variant="h2" className="max-w-xl">
-                World-class starts with how we treat each piece of the work.
+            <div className="wfull">
+              <Text as="h2" variant="h2" className="maxwxl">
+                Worldclass starts with how we treat each piece of the work.
               </Text>
             </div>
           </ScrollReveal>
@@ -60,15 +60,15 @@ export function HomePage() {
         </div>
       </SectionTransition>
 
-      <SectionTransition className="home-section-beat px-page py-major mb-section">
-        <div className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-8 border-t border-surface pt-8 lg:grid-cols-12 lg:gap-gutter">
-          <ScrollReveal className="lg:col-span-5">
+      <SectionTransition className="homesectionbeat pxpage pymajor mbsection">
+        <div className="mxauto grid wfull maxw5xl gridcols1 gap8 bordert bordersurface pt8 lg:gridcols12 lg:gapgutter">
+          <ScrollReveal className="lg:colspan5">
             <Text variant="small-bold">What this means for you</Text>
-            <Text variant="h3" className="mt-4">
+            <Text variant="h3" className="mt4">
               Early conversations, not sales pitches.
             </Text>
           </ScrollReveal>
-          <ScrollReveal className="lg:col-span-5 lg:col-start-7" delay={0.12}>
+          <ScrollReveal className="lg:colspan5 lg:colstart7" delay={0.12}>
             <Text variant="small">
               We’d rather understand the actual problem than lead with a
               proposal. Every engagement starts with the same question: what
@@ -79,28 +79,41 @@ export function HomePage() {
         </div>
       </SectionTransition>
 
-      <SectionTransition className="home-section-beat px-page py-major mb-section">
+      <SectionTransition className="homesectionbeat pxpage pymajor mbsection">
         <ScrollReveal>
           <Text as="h2" variant="h2">
             A small team that moves like one.
           </Text>
         </ScrollReveal>
-        <div className="mt-major grid grid-cols-1 gap-major md:grid-cols-3">
-          {["Small, fast, high-agency", "Question the default", "Impact before optics"].map(
-            (title, index) => (
-              <ScrollReveal key={title} delay={index * 0.12}>
-                <Text variant="small-bold">{title}</Text>
-                <Text variant="small" className="mt-4">
-                  The people closest to the problem make the decisions, with the
-                  responsibility to see the work through.
-                </Text>
-              </ScrollReveal>
-            ),
-          )}
+        <div className="mtmajor grid gridcols1 gapmajor md:gridcols3">
+          {[
+            {
+              title: "Small, fast, high agency",
+              description:
+                "The people closest to the problem make the decisions, with the responsibility to see the work through.",
+            },
+            {
+              title: "Question the default",
+              description:
+                "We ask why before we copy what works elsewhere, because Malawi’s networks, budgets and users rarely match the template.",
+            },
+            {
+              title: "Impact before optics",
+              description:
+                "We judge the work by whether it holds up and helps people, not by how it looks in a pitch deck or a press release.",
+            },
+          ].map(({ title, description }, index) => (
+            <ScrollReveal key={title} delay={index * 0.12}>
+              <Text variant="small-bold">{title}</Text>
+              <Text variant="small" className="mt4">
+                {description}
+              </Text>
+            </ScrollReveal>
+          ))}
         </div>
       </SectionTransition>
 
-      <SectionTransition className="home-section-beat px-page py-major mb-section">
+      <SectionTransition className="homesectionbeat pxpage pymajor mbsection">
         <ScrollReveal>
           <Text as="h2" variant="h2">
             Work we’ve done
@@ -109,8 +122,8 @@ export function HomePage() {
         <ProjectGrid projects={projects.slice(0, 3)} />
       </SectionTransition>
 
-      <SectionTransition className="section-panel px-page py-section text-center">
-        <div className="mx-auto flex max-w-xl flex-col items-center gap-6">
+      <SectionTransition className="sectionpanel pxpage pysection textcenter">
+        <div className="mxauto flex maxwxl flexcol itemscenter gap6">
           <ScrollReveal>
             <Text as="h2" variant="h2">
               Need something built?
@@ -122,7 +135,7 @@ export function HomePage() {
             </Text>
           </ScrollReveal>
           <ScrollReveal delay={0.24}>
-            <div className="flex flex-wrap justify-center gap-4">
+            <div className="flex flexwrap justifycenter gap4">
               <ButtonLink href="/contact">Get in touch</ButtonLink>
             </div>
           </ScrollReveal>

@@ -35,6 +35,7 @@ export function HomeHero() {
     if (!canvas || !window.AsciiShader) return;
 
     let controller: AsciiShaderController | null = null;
+    const compactViewport = window.matchMedia("(max-width: 767px)").matches;
 
     controller = window.AsciiShader.create(canvas, {
       source: HERO_IMAGE,
@@ -51,8 +52,9 @@ export function HomeHero() {
       bg: "#FFFFFF",
       accent: "#298372",
       ramp: " .:-=+*#%@", // glyphs Space Mono actually has
-      maxFps: 30,
-      maxDpr: 2,
+      // Mobile keeps the same CSS-size grid while rendering fewer GPU pixels per frame.
+      maxFps: compactViewport ? 20 : 30,
+      maxDpr: compactViewport ? 1 : 2,
       fontFamily: spaceMono.style.fontFamily,
       respectReducedMotion: true,
       onError: (err: unknown) => console.error("[home-hero] shader error", err),
