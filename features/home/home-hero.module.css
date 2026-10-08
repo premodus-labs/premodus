@@ -19,6 +19,20 @@
   pointer-events: none;
 }
 
+.overlay {
+  /* Protect copy on desktop while leaving the right side of the shader clear. */
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgb(255 255 255 / 0.94) 0%,
+    rgb(255 255 255 / 0.78) 46%,
+    rgb(255 255 255 / 0) 72%
+  );
+}
+
 .copy {
   /* Keep the copy readable without washing out the shader outside this panel. */
   position: relative;
@@ -39,8 +53,6 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 1.5rem;
-  padding: 2rem;
-  background: var(--canvas);
 }
 
 .title {
@@ -83,7 +95,16 @@
 
   .copyInner {
     align-items: center;
-    padding: 1.5rem;
+  }
+
+  .overlay {
+    /* Keep the top of the hero raw; only the lower copy area receives a fade. */
+    background: linear-gradient(
+      to top,
+      rgb(255 255 255 / 0.96) 0%,
+      rgb(255 255 255 / 0.82) 45%,
+      rgb(255 255 255 / 0) 72%
+    );
   }
 
   .title {
