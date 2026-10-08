@@ -44,7 +44,7 @@ export function HomeHero() {
       cellSize: 10,
       gap: 0.3,
       // Tune between 1.2 and 1.7 if the subject needs more or less definition.
-      contrast: 1.5,
+      contrast: 1.7,
       // Invert luminance so dark glyphs describe dark parts of the image.
       invert: true,
       fg: "#1A1A1A",
