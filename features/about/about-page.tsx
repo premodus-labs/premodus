@@ -24,13 +24,6 @@ const principles = [
   ],
 ] as const;
 
-// DRAFT COPY: replace with verified figures before launch.
-const stats = [
-  ["3", "Co-founders"],
-  ["0", "Layers between the work and the person doing it"],
-  ["2+", "Years every system is built to outlast"],
-] as const;
-
 const team = [
   ["PG", "Perani Gondwe", "Managing Director", "Leads how the work gets built."],
   ["TM", "Tanthwe Mtema", "Head of Business Operations", "Leads how the business runs."],
@@ -101,23 +94,6 @@ export function AboutPage() {
                   {body}
                 </Text>
               </article>
-            ))}
-          </div>
-        </div>
-      </SectionTransition>
-
-      <SectionTransition className="px-page pb-section">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid grid-cols-1 gap-gutter md:grid-cols-3">
-            {stats.map(([value, label]) => (
-              <div key={label} className="border-t border-black/15 pt-6">
-                <p className="text-7xl font-medium leading-none tracking-tight tabular-nums text-ink-strong md:text-8xl">
-                  {value}
-                </p>
-                <Text variant="small" className="mt-4 max-w-[28ch]" animate={false}>
-                  {label}
-                </Text>
-              </div>
             ))}
           </div>
         </div>

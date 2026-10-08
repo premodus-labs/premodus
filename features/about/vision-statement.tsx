@@ -4,6 +4,7 @@ import { useRef } from "react";
 import {
   motion,
   useScroll,
+  useSpring,
   useTransform,
   type MotionValue,
 } from "motion/react";
@@ -18,7 +19,7 @@ type WordProps = {
 function Word({ word, progress, range }: WordProps) {
   const opacity = useTransform(progress, range, [0.15, 1]);
 
-  return <motion.span style={{ opacity }}>{word} </motion.span>;
+  return <motion.span style={{ opacity, willChange: "opacity" }}>{word} </motion.span>;
 }
 
 type VisionStatementProps = {
@@ -36,6 +37,11 @@ export function VisionStatement({ label, statement }: VisionStatementProps) {
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end end"],
+  });
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 28,
+    mass: 0.25,
   });
   const words = statement.split(" ");
 
@@ -57,7 +63,7 @@ export function VisionStatement({ label, statement }: VisionStatementProps) {
   return (
     <section
       ref={sectionRef}
-      className="relative h-[240svh]"
+      className="relative h-[200svh] md:h-[240svh]"
       aria-labelledby="vision-label"
     >
       <div className="sticky top-0 flex h-svh items-center px-page">
@@ -77,7 +83,7 @@ export function VisionStatement({ label, statement }: VisionStatementProps) {
                 <Word
                   key={`${word}-${index}`}
                   word={word}
-                  progress={scrollYProgress}
+                  progress={smoothProgress}
                   range={[start, end]}
                 />
               );
