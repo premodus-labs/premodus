@@ -1,33 +1,18 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Script from "next/script";
 import { ButtonLink } from "@/components/ui/button";
 import { SectionTransition } from "@/components/ui/section-transition";
 import { spaceMono } from "@/lib/design/fonts";
 import styles from "./home-hero.module.css";
 
-type AsciiShaderController = {
-  destroy: () => void;
-};
+// ── Tweak this ──────────────────────────────────────────────
+const HERO_IMAGE = "/media/image.png";
+// ────────────────────────────────────────────────────────────
 
-type AsciiShaderOptions = {
-  source: string;
-  poster: string;
-  effect: "bulge";
-  strength: number;
-  radius: number;
-  cellSize: number;
-  gap: number;
-  contrast: number;
-  fg: string;
-  bg: string;
-  accent: string;
-  maxFps: number;
-  maxDpr: number;
-  fontFamily: string;
-  respectReducedMotion: boolean;
-};
+type AsciiShaderController = { destroy: () => void };
+type AsciiShaderOptions = Record<string, unknown>;
 
 declare global {
   interface Window {
@@ -42,50 +27,39 @@ declare global {
 
 export function HomeHero() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const controllerRef = useRef<AsciiShaderController | null>(null);
+  const [scriptReady, setScriptReady] = useState(false);
 
-  const initializeShader = useCallback(() => {
+  useEffect(() => {
+    if (!scriptReady) return;
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || !window.AsciiShader) return;
 
-    if (!window.AsciiShader) {
-      console.error("[home-hero] ascii-shader.js did not expose AsciiShader.");
-      return;
-    }
+    let controller: AsciiShaderController | null = null;
 
-    controllerRef.current?.destroy();
-    controllerRef.current = window.AsciiShader.create(canvas, {
-      // Replace these paths when your hero media is ready.
-      source: "/media/hero.mp4",
-      poster: "/media/hero-poster.jpg",
+    controller = window.AsciiShader.create(canvas, {
+      source: HERO_IMAGE,
       effect: "bulge",
       strength: 0.4,
       radius: 110,
       cellSize: 10,
       gap: 0.3,
       contrast: 1.5,
-      fg: "#FFFFFF",
-      bg: "#1A1A1A",
+      // Dark glyphs on white canvas keep the shader consistent with the site.
+      fg: "#1A1A1A",
+      bg: "#FFFFFF",
       accent: "#298372",
+      ramp: " .:-=+*#%@", // glyphs Space Mono actually has
       maxFps: 30,
       maxDpr: 2,
       fontFamily: spaceMono.style.fontFamily,
       respectReducedMotion: true,
-      // For cross-origin media, add crossOrigin: "anonymous" and enable CORS on its host.
+      onError: (err: unknown) => console.error("[home-hero] shader error", err),
     });
-  }, []);
 
-  const reportScriptError = useCallback((error: Error) => {
-    console.error("[home-hero] Failed to load ascii-shader.js.", error);
-  }, []);
-
-  useEffect(
-    () => () => {
-      controllerRef.current?.destroy();
-      controllerRef.current = null;
-    },
-    [],
-  );
+    return () => {
+      controller?.destroy();
+    };
+  }, [scriptReady]);
 
   return (
     <SectionTransition
@@ -117,8 +91,8 @@ export function HomeHero() {
       <Script
         src="/scripts/ascii-shader.js"
         strategy="afterInteractive"
-        onReady={initializeShader}
-        onError={reportScriptError}
+        onReady={() => setScriptReady(true)}
+        onError={(e) => console.error("[home-hero] ascii-shader.js failed", e)}
       />
     </SectionTransition>
   );

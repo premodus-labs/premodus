@@ -1,11 +1,11 @@
 .hero {
-  /* Tune the backdrop color and viewport height to suit your hero media. */
+  /* Tune the white backdrop and viewport height to suit your hero media. */
   position: relative;
   min-height: 100vh;
   min-height: 100svh;
   overflow: hidden;
   isolation: isolate;
-  background: #1a1a1a;
+  background: var(--canvas);
 }
 
 .canvas {
@@ -18,16 +18,16 @@
 }
 
 .overlay {
-  /* Adjust the left-side darkness if the headline needs more contrast. */
+  /* Keep shader detail behind the copy low-contrast for readable black text. */
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
   background: linear-gradient(
     90deg,
-    rgb(26 26 26 / 0.72) 0%,
-    rgb(26 26 26 / 0.38) 58%,
-    rgb(26 26 26 / 0.08) 100%
+    rgb(255 255 255 / 0.9) 0%,
+    rgb(255 255 255 / 0.66) 50%,
+    rgb(255 255 255 / 0.12) 100%
   );
 }
 
@@ -52,19 +52,19 @@
 
 .title {
   max-width: 15ch;
-  color: #ffffff;
+  color: var(--ink-strong);
 }
 
 .subhead {
   max-width: 38rem;
-  color: rgb(255 255 255 / 0.84);
+  color: var(--ink-medium);
 }
 
 .cta {
   /* Change the accent here to customize the CTA hover color. */
-  border: 1px solid rgb(255 255 255 / 0.72);
-  background-color: transparent;
-  color: #ffffff;
+  border: 1px solid var(--surface);
+  background-color: var(--surface);
+  color: var(--inverse);
   pointer-events: auto;
   transition:
     background-color 180ms ease,
@@ -76,7 +76,7 @@
 .cta:focus-visible {
   border-color: #298372;
   background-color: #298372;
-  color: #ffffff;
+  color: var(--inverse);
   opacity: 1;
 }
 
@@ -88,9 +88,9 @@
   .overlay {
     background: linear-gradient(
       90deg,
-      rgb(26 26 26 / 0.76) 0%,
-      rgb(26 26 26 / 0.48) 72%,
-      rgb(26 26 26 / 0.24) 100%
+      rgb(255 255 255 / 0.92) 0%,
+      rgb(255 255 255 / 0.7) 72%,
+      rgb(255 255 255 / 0.3) 100%
     );
   }
 }
