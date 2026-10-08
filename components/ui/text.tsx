@@ -38,17 +38,27 @@ type TextProps<T extends ElementType> = {
   as?: T;
   variant?: Variant;
   className?: string;
+  animate?: boolean;
 } & Omit<ComponentPropsWithoutRef<T>, "as" | "variant" | "className">;
 
 export function Text<T extends ElementType = "p">({
   as,
   variant = "body",
   className = "",
+  animate = true,
   children,
   ...props
 }: TextProps<T>) {
   const Component = as ?? defaultElements[variant];
   const combinedClassName = `${variants[variant]} ${className}`.trim();
+
+  if (!animate) {
+    return (
+      <Component className={combinedClassName} {...props}>
+        {children}
+      </Component>
+    );
+  }
 
   if (
     typeof Component === "string" &&

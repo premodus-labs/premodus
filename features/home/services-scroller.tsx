@@ -106,7 +106,7 @@ function ServiceSlide({
       >
         <div className="service-art relative aspect-[16/9] overflow-hidden bg-canvas">
           {modelVisible ? (
-            <div className="absolute inset-0">
+            <div className="absolute inset-0 [&_img]:hidden">
               <ExplodedModel
                 model={service.model}
                 progress={reducedMotion ? assembledProgress : values.progress}

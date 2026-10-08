@@ -30,8 +30,8 @@ export function NewsletterForm() {
           name="email"
           required
           autoComplete="email"
-          placeholder="you@example.com"
-          className="min-w-0 flex-1 border-l-2 border-transparent bg-ink-strong/5 px-3 py-2.5 text-sm font-semibold text-black outline-none transition-all duration-200 placeholder:text-ink-weak focus:border-ink-weak focus-visible:ring-2 focus-visible:ring-ink-weak"
+          placeholder="yourname@email.com"
+          className="min-w-0 flex-1 border-l-2 border-transparent bg-ink-strong/5 px-3 py-2.5 text-sm font-semibold text-black outline-none transition-all duration-200 placeholder:text-ink-medium focus:border-ink-weak focus-visible:ring-2 focus-visible:ring-ink-weak"
         />
         <button
           type="submit"

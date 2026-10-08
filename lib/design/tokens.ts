@@ -13,6 +13,7 @@ export const colors = {
   canvas: "#ffffff",
   surface: "#000000",
   inverse: "#ffffff",
+  accentPink: "#F4C4D0",
 } as const;
 
 export const font = {

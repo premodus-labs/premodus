@@ -12,6 +12,7 @@
   --canvas: #ffffff;
   --surface: #000000;
   --inverse: #ffffff;
+  --accent-pink: #F4C4D0;
 
   --weight-regular: 400;
   --weight-medium: 500;
@@ -26,6 +27,7 @@
   --color-canvas: var(--canvas);
   --color-surface: var(--surface);
   --color-inverse: var(--inverse);
+  --color-accent-pink: var(--accent-pink);
 
   --font-weight-regular: var(--weight-regular);
   --font-weight-medium: var(--weight-medium);

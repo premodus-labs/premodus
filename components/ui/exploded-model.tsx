@@ -59,7 +59,7 @@ export function ExplodedModel({
 
   useEffect(() => {
     const host = hostRef.current;
-    if (!host || prefersReducedMotion) return;
+    if (!host) return;
 
     let disposed = false;
     let renderer: THREE.WebGLRenderer | undefined;
