@@ -15,6 +15,7 @@ const team = [
 export function AboutPage() {
   return (
     <>
+      {/* HERO — one oversized, left-aligned statement anchored to the bottom */}
       <section
         className="px-6 pb-section pt-header-t md:px-page"
         aria-labelledby="about-title"
@@ -90,7 +91,7 @@ export function AboutPage() {
                     alt={name}
                     fill
                     sizes="(min-width: 768px) 33vw, 100vw"
-                    className="object-cover"
+                    className="object-cover grayscale transition duration-500 group-hover:grayscale-0 motion-reduce:transition-none"
                   />
                   <span className="sr-only">{initials}</span>
                 </div>
@@ -119,6 +120,7 @@ export function AboutPage() {
           </div>
         </div>
       </section>
+
       <CallToAction
         title="Want to know more about what we’re building?"
         description="Get in touch, or take a look at the work."
