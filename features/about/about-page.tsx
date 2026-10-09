@@ -32,138 +32,146 @@ const team = [
 export function AboutPage() {
   return (
     <>
+      {/* HERO — one oversized, left-aligned statement anchored to the bottom */}
       <section
-        className="flex min-h-[65svh] flex-col items-center justify-center px-6 py-major text-center md:px-page"
+        className="flex min-h-[80svh] flex-col justify-end px-6 pb-major pt-section md:px-page"
         aria-labelledby="about-title"
       >
-        <div className="mx-auto flex max-w-5xl flex-col items-center">
-          <Text
-            as="p"
-            variant="small-bold"
-            className={heroStyles.label}
-            animate={false}
-          >
-            About
-          </Text>
+        <div className="mx-auto w-full max-w-7xl">
           <Text
             as="h1"
             variant="display"
             id="about-title"
-            className={`mt-6 ${heroStyles.title}`}
+            className={`max-w-6xl text-left tracking-tight ${heroStyles.title}`}
             animate={false}
           >
             The gap was never talent. It was standards.
           </Text>
-          <Text
-            variant="body"
-            className={`mt-major max-w-3xl ${heroStyles.intro}`}
-            animate={false}
-          >
-            Most software built here has been built to be functional, not good —
-            shipped fast, patched later, judged by whether it works today rather than
-            whether it will still work in two years.
-          </Text>
-        </div>
-      </section>
-
-      <section className="px-6 py-section md:px-page">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-major md:grid-cols-12">
-          <div className="md:col-span-5 md:col-start-7">
-            <div className="flex flex-col gap-6">
-              <Text variant="body">
-                We started Premodus to set a different assumption: that Malawian
-                developers, held to an international standard and given a fair chance,
-                could build things that compete anywhere.
-              </Text>
-              <Text variant="body-bold">
-                We’re three co-founders who’d rather prove that slowly and correctly
-                than claim it before we have.
-              </Text>
-            </div>
+          <div className="mt-major grid grid-cols-1 gap-major border-t border-black/15 pt-6 md:grid-cols-12">
+            <Text variant="small-bold" className="md:col-span-4">
+              About Premodus
+            </Text>
+            <Text
+              variant="body"
+              className={`md:col-span-6 md:col-start-7 ${heroStyles.intro}`}
+              animate={false}
+            >
+              Most software built here has been built to be functional, not good —
+              shipped fast, patched later, judged by whether it works today rather
+              than whether it will still work in two years.
+            </Text>
           </div>
         </div>
       </section>
 
+      {/* STORY — label left, statement right */}
       <section className="px-6 py-section md:px-page">
-        <div className="mx-auto max-w-7xl border-t border-black/15 pt-major">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-major border-t border-black/15 pt-major md:grid-cols-12">
+          <Text variant="small-bold" className="md:col-span-4">
+            Why we started
+          </Text>
+          <div className="flex flex-col gap-8 md:col-span-7 md:col-start-6">
+            <Text variant="h3">
+              We started Premodus to set a different assumption: that Malawian
+              developers, held to an international standard and given a fair chance,
+              could build things that compete anywhere.
+            </Text>
+            <Text variant="body-bold">
+              We’re three co-founders who’d rather prove that slowly and correctly
+              than claim it before we have.
+            </Text>
+          </div>
+        </div>
+      </section>
+
+      {/* MISSION + VISION — full-bleed black block for contrast */}
+      <section className="bg-black px-6 py-section text-white md:px-page">
+        <div className="mx-auto flex max-w-7xl flex-col gap-section">
           <div className="grid grid-cols-1 gap-major md:grid-cols-12">
-            <Text variant="small-bold">
+            <Text variant="small-bold" className="md:col-span-4">
               Our mission
             </Text>
-            <Text
-              variant="h3"
-              className="md:col-span-7 md:col-start-6"
-            >
+            <Text variant="h2" className="md:col-span-8">
               We build technology at a world-class standard to solve the problems
               Malawi’s tech industry has overlooked.
             </Text>
           </div>
-        </div>
-      </section>
-
-      <section className="px-6 py-section md:px-page">
-        <div className="mx-auto max-w-7xl border-t border-black/15 pt-major">
-          <Text variant="small-bold">
-            Our vision
-          </Text>
-          <Text variant="h2" className="mt-4 max-w-5xl">
-            {vision}
-          </Text>
-        </div>
-      </section>
-
-      <section className="px-6 py-section md:px-page">
-        <div className="mx-auto max-w-7xl">
-          <Text variant="small-bold">
-            What we hold ourselves to
-          </Text>
-          <div className="mt-major grid grid-cols-1 gap-gutter md:grid-cols-3">
-            {principles.map(([title, body]) => (
-              <article key={title} className="border-t border-black/15 pt-6">
-                <Text as="h3" variant="h4">
-                  {title}
-                </Text>
-                <Text variant="body" className="mt-3">
-                  {body}
-                </Text>
-              </article>
-            ))}
+          <div className="grid grid-cols-1 gap-major border-t border-white/20 pt-major md:grid-cols-12">
+            <Text variant="small-bold" className="md:col-span-4">
+              Our vision
+            </Text>
+            <Text variant="h2" className="md:col-span-8">
+              {vision}
+            </Text>
           </div>
         </div>
       </section>
 
-      <section className="px-6 pb-section md:px-page">
+      {/* PRINCIPLES — ruled rows: title left, description right */}
+      <section className="px-6 py-section md:px-page">
         <div className="mx-auto max-w-7xl">
           <Text as="h2" variant="h2" className="max-w-3xl">
-            Three people, no layers between the work and the person doing it.
+            What we hold ourselves to
           </Text>
-          <div className="mt-major grid grid-cols-1 gap-gutter md:grid-cols-3">
+          <ul className="mt-major">
+            {principles.map(([title, body]) => (
+              <li
+                key={title}
+                className="grid grid-cols-1 gap-4 border-t border-black/15 py-8 last:border-b md:grid-cols-12 md:gap-major"
+              >
+                <Text as="h3" variant="h4" className="md:col-span-5">
+                  {title}
+                </Text>
+                <Text variant="body" className="md:col-span-6 md:col-start-7">
+                  {body}
+                </Text>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* TEAM — large portraits, grayscale until hovered */}
+      <section className="px-6 pb-section md:px-page">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid grid-cols-1 gap-major border-t border-black/15 pt-major md:grid-cols-12">
+            <Text variant="small-bold" className="md:col-span-4">
+              Leadership
+            </Text>
+            <Text as="h2" variant="h2" className="md:col-span-8">
+              Three people, no layers between the work and the person doing it.
+            </Text>
+          </div>
+          <div className="mt-major grid grid-cols-1 gap-x-gutter gap-y-major md:grid-cols-3">
             {team.map(([initials, name, role, description, imagePath], index) => (
-              <article key={name}>
+              <article key={name} className="group">
                 <div className="relative aspect-[4/5] overflow-hidden bg-surface">
                   <Image
                     src={imagePath ? imagePath : getBoilerImage(index).src}
                     alt={name}
                     fill
                     sizes="(min-width: 768px) 33vw, 100vw"
-                    className="object-cover"
+                    className="object-cover grayscale transition duration-500 group-hover:grayscale-0 motion-reduce:transition-none"
                   />
                   <span className="sr-only">{initials}</span>
                 </div>
-                <Text as="h3" variant="h4" className="mt-4">
-                  {name}
-                </Text>
-                <Text variant="small-bold" className="mt-1">
-                  {role}
-                </Text>
-                <Text variant="small" className="mt-2">
-                  {description}
-                </Text>
+                <div className="mt-4 border-t border-black/15 pt-4">
+                  <Text as="h3" variant="h4">
+                    {name}
+                  </Text>
+                  <Text variant="small-bold" className="mt-1">
+                    {role}
+                  </Text>
+                  <Text variant="small" className="mt-2">
+                    {description}
+                  </Text>
+                </div>
               </article>
             ))}
           </div>
         </div>
       </section>
+
       <CallToAction
         title="Want to know more about what we’re building?"
         description="Get in touch, or take a look at the work."
