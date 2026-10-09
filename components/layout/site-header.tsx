@@ -8,7 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { motion, useMotionValueEvent, useScroll } from "motion/react";
+import { motion } from "motion/react";
 import { site, siteNav } from "@/lib/constants/navigation";
 import { DURATION, EASE } from "@/lib/design/motion";
 import { usePrefersReducedMotion } from "@/components/ui/use-prefers-reduced-motion";
@@ -59,21 +59,30 @@ export function SiteHeader() {
   const pillRef = useRef<HTMLDivElement>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scrolledRef = useRef(false);
-  const { scrollY } = useScroll();
   const prefersReducedMotion = usePrefersReducedMotion();
   const [scrolled, setScrolled] = useState(false);
   const [hovered, setHovered] = useState(false); // pointer over the bar
   const [focused, setFocused] = useState(false); // keyboard focus inside the bar
 
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    const nextScrolled = latest > SCROLL_THRESHOLD;
-    if (scrolledRef.current === nextScrolled) return;
-    scrolledRef.current = nextScrolled;
-    setScrolled(nextScrolled);
-    if (nextScrolled) setHovered(false);
-  });
+  const keepExpanded = pathname === "/about" || pathname.startsWith("/about/");
 
-  const expanded = !scrolled || hovered || focused;
+  useEffect(() => {
+    if (keepExpanded) return;
+
+    const updateScrollState = () => {
+      const nextScrolled = window.scrollY > SCROLL_THRESHOLD;
+      if (scrolledRef.current === nextScrolled) return;
+      scrolledRef.current = nextScrolled;
+      setScrolled(nextScrolled);
+      if (nextScrolled) setHovered(false);
+    };
+
+    updateScrollState();
+    window.addEventListener("scroll", updateScrollState, { passive: true });
+    return () => window.removeEventListener("scroll", updateScrollState);
+  }, [keepExpanded]);
+
+  const expanded = keepExpanded || !scrolled || hovered || focused;
 
   // Tapping outside closes the bar (touch screens have no "hover out")
   useEffect(() => {

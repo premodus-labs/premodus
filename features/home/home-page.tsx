@@ -14,7 +14,6 @@ const services = [
     description:
       "We write the version that still works when the traffic spikes, the data’s messy, and someone’s using it on a bad connection — not the version that only works in the sales deck.",
     model: "computer",
-    fallbackImage: "/images/services/software-development.jpg",
   },
   {
     label: "Digital Transformation",
@@ -22,7 +21,6 @@ const services = [
     description:
       "We don’t turn digital transformation projects into a problem no one had. We start with how the institution actually runs today, and build toward something better.",
     model: "wall",
-    fallbackImage: "/images/services/digital-transformation.jpg",
   },
   {
     label: "IT Consulting",
@@ -30,7 +28,6 @@ const services = [
     description:
       "We ask what you’re solving before we recommend the next one — because a recommendation that ignores the local context sets up the next problem.",
     model: "paper",
-    fallbackImage: "/images/services/it-consulting.jpg",
   },
   {
     label: "Cybersecurity",
@@ -38,7 +35,6 @@ const services = [
     description:
       "Malawi has particular threats, particular network patterns, and risks here don’t look like the risks in a generic framework.",
     model: "shield",
-    fallbackImage: "/images/services/cybersecurity.jpg",
   },
 ] as const;
 

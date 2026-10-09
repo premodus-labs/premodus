@@ -134,71 +134,16 @@ body {
     min-height: auto;
   }
 
-  .services-track {
-    --service-tail: 48px;
-  }
-
-  /* Mobile gets a slower scrub and an animation-first composition. */
-  .services-track.services-ready {
-    height: calc(var(--service-count) * 100svh + 100svh + var(--service-tail));
-  }
-
-  .services-track.services-ready .services-stage {
-    padding-block: 24px 72px;
-  }
-
-  .services-track.services-ready .service-slide {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0;
-  }
-
   .services-track .service-copy {
     width: 100%;
     text-align: center;
   }
 
   .services-track .service-art {
-    height: min(42svh, 320px);
+    height: min(50svh, 360px);
     max-height: none;
     aspect-ratio: auto;
   }
-
-  .services-track .service-copy > :not(.service-art) {
-    max-width: 32rem;
-    margin-inline: auto;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .services-track {
-    height: auto !important;
-  }
-
-  .services-track.services-ready .services-stage {
-    position: static;
-    display: flex;
-    height: auto;
-    padding-block: 0;
-  }
-
-  .services-track.services-ready .service-slide {
-    position: static;
-    display: grid;
-    opacity: 1 !important;
-    transform: none !important;
-    pointer-events: auto;
-  }
-
-  .services-track.services-ready .services-progress {
-    display: none;
-  }
-}
-
-.services-track {
-  --service-tail: 96px;
 }
 
 .services-stage {
@@ -211,72 +156,12 @@ body {
   width: 100%;
 }
 
-.services-track.services-ready {
-  height: calc(var(--service-count) * 100svh + 100svh + var(--service-tail));
-}
-
-.services-track.services-ready .services-stage {
-  position: sticky;
-  top: 0;
-  display: block;
-  height: 100vh;
-  height: 100svh;
-  padding-block: clamp(40px, 9vh, 80px);
-  padding-block: clamp(40px, 9svh, 80px);
-}
-
-.services-track.services-ready .service-slide {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  align-items: center;
-  pointer-events: none;
-}
-
-.services-track.services-ready .service-copy {
-  width: 100%;
-}
-
-.services-track.services-ready .service-slide:not([inert]) {
-  pointer-events: auto;
-}
-
-.services-progress {
-  display: none;
-}
-
-.services-track.services-ready .services-progress {
-  display: flex;
-}
-
 .service-art {
-  max-height: 42vh;
-  max-height: 42svh;
+  max-height: 50svh;
 }
 
 @media (min-width: 768px) {
   .service-art {
-    max-height: 56vh;
-    max-height: 56svh;
-  }
-}
-
-@media (max-height: 600px) and (prefers-reduced-motion: no-preference) {
-  .services-track.services-ready .services-stage {
-    padding-block: 24px 48px;
-  }
-
-  .services-track.services-ready .service-slide {
-    align-items: flex-start;
-    padding-top: 16px;
-  }
-
-  .services-track.services-ready .service-art {
-    max-height: 50vh;
-    max-height: 50svh;
-  }
-
-  .services-track.services-ready .services-progress {
-    bottom: 12px;
+    max-height: 70svh;
   }
 }

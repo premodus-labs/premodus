@@ -23,13 +23,17 @@ export function SiteFooter() {
             >
               {site.name}
             </Link>
-            {/* DRAFT COPY: confirm this footer summary before launch. */}
             <p className="mt-4 max-w-sm text-small text-inverse/75">
               Technology built for the problems that matter here.
             </p>
             <div className="mt-8 max-w-md border-t border-inverse/25 pt-4">
               <p className="text-tiny text-inverse/60">Stay in touch</p>
-              <Text as="h2" variant="h4" animate={false} className="mt-2 !text-inverse">
+              <Text
+                as="h2"
+                variant="h4"
+                animate={false}
+                className="mt-2 !text-inverse"
+              >
                 Subscribe to our mailing list
               </Text>
               <p className="mt-2 text-small text-inverse/75">

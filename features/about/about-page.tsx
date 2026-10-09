@@ -1,9 +1,7 @@
 import Image from "next/image";
 import { CallToAction } from "@/components/ui/call-to-action";
-import { SectionTransition } from "@/components/ui/section-transition";
 import { Text } from "@/components/ui/text";
 import { getBoilerImage } from "@/lib/constants/boiler-images";
-import { VisionStatement } from "@/features/about/vision-statement";
 
 const vision =
   "A Malawi that runs on its own ideas — productive, efficient, and self-sustaining, powered by technology built at home.";
@@ -33,7 +31,7 @@ const team = [
 export function AboutPage() {
   return (
     <>
-      <SectionTransition className="px-page pt-16 pb-section">
+      <section className="px-page pt-16 pb-section">
         <div className="mx-auto max-w-7xl">
           <Text as="h1" variant="display" className="max-w-5xl" animate={false}>
             The gap was never talent. It was standards.
@@ -57,9 +55,9 @@ export function AboutPage() {
             </div>
           </div>
         </div>
-      </SectionTransition>
+      </section>
 
-      <SectionTransition className="px-page pb-section">
+      <section className="px-page pb-section">
         <div className="mx-auto max-w-7xl border-t border-black/15 pt-major">
           <div className="grid grid-cols-1 gap-major md:grid-cols-12">
             <Text variant="small-bold" animate={false}>
@@ -75,11 +73,20 @@ export function AboutPage() {
             </Text>
           </div>
         </div>
-      </SectionTransition>
+      </section>
 
-      <VisionStatement label="Our vision" statement={vision} />
+      <section className="px-page py-section">
+        <div className="mx-auto max-w-7xl border-t border-black/15 pt-major">
+          <Text variant="small-bold" animate={false}>
+            Our vision
+          </Text>
+          <Text variant="h2" className="mt-4 max-w-5xl" animate={false}>
+            {vision}
+          </Text>
+        </div>
+      </section>
 
-      <SectionTransition className="px-page py-section">
+      <section className="px-page py-section">
         <div className="mx-auto max-w-7xl">
           <Text variant="small-bold" animate={false}>
             What we hold ourselves to
@@ -97,9 +104,9 @@ export function AboutPage() {
             ))}
           </div>
         </div>
-      </SectionTransition>
+      </section>
 
-      <SectionTransition className="px-page pb-section">
+      <section className="px-page pb-section">
         <div className="mx-auto max-w-7xl">
           <Text as="h2" variant="h2" className="max-w-3xl" animate={false}>
             Three people, no layers between the work and the person doing it.
@@ -130,11 +137,12 @@ export function AboutPage() {
             ))}
           </div>
         </div>
-      </SectionTransition>
+      </section>
       <CallToAction
         title="Want to know more about what we’re building?"
         description="Get in touch, or take a look at the work."
         secondaryHref="/work"
+        animateOnView={false}
       />
     </>
   );

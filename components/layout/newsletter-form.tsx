@@ -1,23 +1,4 @@
-"use client";
-
-import { useSyncExternalStore } from "react";
-
-function subscribe() {
-  return () => {};
-}
-
 export function NewsletterForm() {
-  const hydrated = useSyncExternalStore(subscribe, () => true, () => false);
-
-  if (!hydrated) {
-    return (
-      <div
-        aria-hidden="true"
-        className="min-h-[96px] sm:min-h-[42px]"
-      />
-    );
-  }
-
   return (
     <form className="flex flex-col gap-4">
       <div className="flex flex-col gap-3 sm:flex-row">
@@ -30,12 +11,12 @@ export function NewsletterForm() {
           name="email"
           required
           autoComplete="email"
-          placeholder="yourname@email.com"
-          className="min-w-0 flex-1 border-l-2 border-transparent bg-ink-strong/5 px-3 py-2.5 text-sm font-semibold text-black outline-none transition-all duration-200 placeholder:text-ink-medium focus:border-ink-weak focus-visible:ring-2 focus-visible:ring-ink-weak"
+          placeholder="you@example.com"
+          className="min-w-0 flex-1 border-l-2 border-inverse/40 bg-inverse/10 px-3 py-2.5 text-sm font-semibold text-inverse outline-none transition-all duration-200 placeholder:text-inverse/60 focus:border-inverse focus-visible:ring-2 focus-visible:ring-inverse"
         />
         <button
           type="submit"
-          className="border border-transparent bg-ink-strong/10 px-5 py-2.5 text-sm font-semibold text-black transition-colors duration-200 hover:bg-ink-strong/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-weak"
+          className="border border-inverse bg-inverse px-5 py-2.5 text-sm font-semibold text-surface transition-colors duration-200 hover:bg-inverse/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-inverse"
         >
           Subscribe
         </button>
