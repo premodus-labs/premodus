@@ -23,6 +23,61 @@ const principles = [
   ],
 ] as const;
 
+const iconProps = {
+  width: 28,
+  height: 28,
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 1.75,
+  strokeLinecap: "round",
+  strokeLinejoin: "round",
+  "aria-hidden": true,
+} as const;
+
+const icons = {
+  mission: (
+    <svg {...iconProps}>
+      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="12" r="4.5" />
+      <circle cx="12" cy="12" r="0.75" fill="currentColor" />
+    </svg>
+  ),
+  vision: (
+    <svg {...iconProps}>
+      <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  ),
+  lasting: (
+    <svg {...iconProps}>
+      <rect x="3" y="4" width="18" height="6" rx="1.5" />
+      <rect x="3" y="14" width="18" height="6" rx="1.5" />
+      <path d="M7 7h.01M7 17h.01" />
+    </svg>
+  ),
+  secure: (
+    <svg {...iconProps}>
+      <path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3Z" />
+      <path d="m9 12 2 2 4-4" />
+    </svg>
+  ),
+  standard: (
+    <svg {...iconProps}>
+      <path d="M5 20V10M12 20V4M19 20v-7" />
+    </svg>
+  ),
+} as const;
+
+// Cards for the black section. span = columns on a 6-col desktop grid.
+const cards = [
+  { icon: icons.mission, title: "Our mission", body: "We build technology at a world-class standard to solve the problems Malawi’s tech industry has overlooked.", span: "md:col-span-3" },
+  { icon: icons.vision, title: "Our vision", body: vision, span: "md:col-span-3" },
+  { icon: icons.lasting, title: principles[0][0], body: principles[0][1], span: "md:col-span-2" },
+  { icon: icons.secure, title: principles[1][0], body: principles[1][1], span: "md:col-span-2" },
+  { icon: icons.standard, title: principles[2][0], body: principles[2][1], span: "md:col-span-2" },
+] as const;
+
 const team = [
   ["PG", "Perani Gondwe", "Managing Director", "Leads how the work gets built."],
   ["TM", "Tanthwe Mtema", "Head of Business Operations", "Leads how the business runs."],
@@ -84,50 +139,46 @@ export function AboutPage() {
         </div>
       </section>
 
-      {/* MISSION + VISION — full-bleed black block for contrast */}
-      <section className="bg-black px-6 py-section text-white md:px-page">
-        <div className="mx-auto flex max-w-7xl flex-col gap-section">
-          <div className="grid grid-cols-1 gap-major md:grid-cols-12">
-            <Text variant="small-bold" className="md:col-span-4">
-              Our mission
+      {/* WHAT DRIVES US — inset black panel with icon cards */}
+      <section className="px-2 py-2">
+        <div className="mx-auto max-w-[1600px] rounded-3xl bg-black px-6 py-section md:px-page">
+          <div className="mx-auto max-w-7xl">
+            <Text
+              as="h2"
+              variant="h2"
+              className="!text-white"
+              animate={false}
+            >
+              What drives us
             </Text>
-            <Text variant="h2" className="md:col-span-8">
-              We build technology at a world-class standard to solve the problems
-              Malawi’s tech industry has overlooked.
-            </Text>
+            <div className="mt-major grid grid-cols-1 gap-3 md:grid-cols-6">
+              {cards.map(({ icon, title, body, span }) => (
+                <article
+                  key={title}
+                  className={`flex flex-col rounded-3xl bg-[#222] p-8 md:p-10 ${span}`}
+                >
+                  <div className="flex size-20 items-center justify-center rounded-2xl bg-white/10 text-white/80">
+                    {icon}
+                  </div>
+                  <Text
+                    as="h3"
+                    variant="h4"
+                    className="mt-12 !text-white"
+                    animate={false}
+                  >
+                    {title}
+                  </Text>
+                  <Text
+                    variant="body"
+                    className="mt-4 !text-white/80"
+                    animate={false}
+                  >
+                    {body}
+                  </Text>
+                </article>
+              ))}
+            </div>
           </div>
-          <div className="grid grid-cols-1 gap-major border-t border-white/20 pt-major md:grid-cols-12">
-            <Text variant="small-bold" className="md:col-span-4">
-              Our vision
-            </Text>
-            <Text variant="h2" className="md:col-span-8">
-              {vision}
-            </Text>
-          </div>
-        </div>
-      </section>
-
-      {/* PRINCIPLES — ruled rows: title left, description right */}
-      <section className="px-6 py-section md:px-page">
-        <div className="mx-auto max-w-7xl">
-          <Text as="h2" variant="h2" className="max-w-3xl">
-            What we hold ourselves to
-          </Text>
-          <ul className="mt-major">
-            {principles.map(([title, body]) => (
-              <li
-                key={title}
-                className="grid grid-cols-1 gap-4 border-t border-black/15 py-8 last:border-b md:grid-cols-12 md:gap-major"
-              >
-                <Text as="h3" variant="h4" className="md:col-span-5">
-                  {title}
-                </Text>
-                <Text variant="body" className="md:col-span-6 md:col-start-7">
-                  {body}
-                </Text>
-              </li>
-            ))}
-          </ul>
         </div>
       </section>
 
