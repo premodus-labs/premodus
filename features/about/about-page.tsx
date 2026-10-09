@@ -31,13 +31,46 @@ const team = [
 export function AboutPage() {
   return (
     <>
-      <section className="px-page pt-16 pb-section">
-        <div className="mx-auto max-w-7xl">
-          <Text as="h1" variant="display" className="max-w-5xl" animate={false}>
-            The gap was never talent. It was standards.
-          </Text>
-          <div className="mt-major grid grid-cols-1 gap-major md:grid-cols-12">
-            <div className="flex flex-col gap-6 md:col-span-5 md:col-start-7">
+      <section className="px-6 pt-4 md:px-page" aria-labelledby="about-title">
+        <div className="relative isolate mx-auto aspect-[4/5] max-w-7xl overflow-hidden bg-surface md:aspect-[16/9]">
+          <Image
+            src="/boiler/download%20(1).jpg"
+            alt=""
+            fill
+            priority
+            sizes="(min-width: 1280px) 1200px, (min-width: 768px) 94vw, 100vw"
+            className="object-cover"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-gradient-to-t from-surface via-surface/25 to-surface/5"
+          />
+          <div className="absolute inset-x-0 bottom-0 p-6 text-inverse sm:p-10 md:p-16">
+            <Text
+              as="p"
+              variant="small-bold"
+              className="!text-inverse"
+              animate={false}
+            >
+              About
+            </Text>
+            <Text
+              as="h1"
+              variant="display"
+              id="about-title"
+              className="mt-4 max-w-5xl !text-inverse"
+              animate={false}
+            >
+              The gap was never talent. It was standards.
+            </Text>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-6 py-section md:px-page">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-major md:grid-cols-12">
+          <div className="md:col-span-5 md:col-start-7">
+            <div className="flex flex-col gap-6">
               <Text variant="body" animate={false}>
                 Most software built here has been built to be functional, not good —
                 shipped fast, patched later, judged by whether it works today rather than
@@ -57,7 +90,7 @@ export function AboutPage() {
         </div>
       </section>
 
-      <section className="px-page pb-section">
+      <section className="px-6 py-section md:px-page">
         <div className="mx-auto max-w-7xl border-t border-black/15 pt-major">
           <div className="grid grid-cols-1 gap-major md:grid-cols-12">
             <Text variant="small-bold" animate={false}>
@@ -75,7 +108,7 @@ export function AboutPage() {
         </div>
       </section>
 
-      <section className="px-page py-section">
+      <section className="px-6 py-section md:px-page">
         <div className="mx-auto max-w-7xl border-t border-black/15 pt-major">
           <Text variant="small-bold" animate={false}>
             Our vision
@@ -86,7 +119,7 @@ export function AboutPage() {
         </div>
       </section>
 
-      <section className="px-page py-section">
+      <section className="px-6 py-section md:px-page">
         <div className="mx-auto max-w-7xl">
           <Text variant="small-bold" animate={false}>
             What we hold ourselves to
@@ -106,7 +139,7 @@ export function AboutPage() {
         </div>
       </section>
 
-      <section className="px-page pb-section">
+      <section className="px-6 pb-section md:px-page">
         <div className="mx-auto max-w-7xl">
           <Text as="h2" variant="h2" className="max-w-3xl" animate={false}>
             Three people, no layers between the work and the person doing it.
