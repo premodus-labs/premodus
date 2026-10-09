@@ -17,15 +17,7 @@ export function SiteFooter() {
       <div className="mx-auto max-w-7xl">
         <div className="grid grid-cols-1 gap-major border-t border-inverse/25 pt-8 md:grid-cols-12 md:gap-gutter">
           <div className="md:col-span-5">
-            <Link
-              href="/"
-              className="text-heading-3 text-inverse focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-inverse"
-            >
-              {site.name}
-            </Link>
-            <p className="mt-4 max-w-sm text-small text-inverse/75">
-              Technology built for the problems that matter here.
-            </p>
+           
             <div className="mt-8 max-w-md border-t border-inverse/25 pt-4">
               <p className="text-tiny text-inverse/60">Stay in touch</p>
               <Text

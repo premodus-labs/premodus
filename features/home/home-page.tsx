@@ -44,10 +44,11 @@ export function HomePage() {
       <HomeHero />
 
       <SectionTransition animateOnView={false} className="px-page pt-section pb-major">
-        <div className="mx-auto max-w-5xl">
+        {/* Left-anchored (no mx-auto) and wide, so content fills the desktop width */}
+        <div className="w-full max-w-[1600px]">
           <ScrollReveal>
             <div className="w-full">
-              <Text as="h2" variant="h2" className="max-w-xl">
+              <Text as="h2" variant="h2" className="max-w-3xl">
                 World-class starts with how we treat each piece of the work.
               </Text>
             </div>
@@ -57,14 +58,14 @@ export function HomePage() {
       </SectionTransition>
 
       <SectionTransition className="home-section-beat px-page py-major mb-section">
-        <div className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-8 border-t border-surface pt-8 lg:grid-cols-12 lg:gap-gutter">
+        <div className="grid w-full max-w-[1600px] grid-cols-1 gap-8 border-t border-surface pt-8 lg:grid-cols-12 lg:gap-gutter">
           <ScrollReveal className="lg:col-span-5">
             <Text variant="small-bold">What this means for you</Text>
             <Text variant="h3" className="mt-4">
               Early conversations, not sales pitches.
             </Text>
           </ScrollReveal>
-          <ScrollReveal className="lg:col-span-5 lg:col-start-7" delay={0.12}>
+          <ScrollReveal className="lg:col-span-5 lg:col-start-8" delay={0.12}>
             <Text variant="small">
               We’d rather understand the actual problem than lead with a
               proposal. Every engagement starts with the same question: what
