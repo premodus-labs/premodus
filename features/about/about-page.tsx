@@ -2,6 +2,7 @@ import Image from "next/image";
 import { CallToAction } from "@/components/ui/call-to-action";
 import { Text } from "@/components/ui/text";
 import { getBoilerImage } from "@/lib/constants/boiler-images";
+import heroStyles from "./about-hero.module.css";
 
 const vision =
   "A Malawi that runs on its own ideas — productive, efficient, and self-sustaining, powered by technology built at home.";
@@ -31,39 +32,37 @@ const team = [
 export function AboutPage() {
   return (
     <>
-      <section className="px-6 pt-4 md:px-page" aria-labelledby="about-title">
-        <div className="relative isolate mx-auto aspect-[4/5] max-w-7xl overflow-hidden bg-surface md:aspect-[16/9]">
-          <Image
-            src="/boiler/download%20(1).jpg"
-            alt=""
-            fill
-            priority
-            sizes="(min-width: 1280px) 1200px, (min-width: 768px) 94vw, 100vw"
-            className="object-cover"
-          />
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-t from-surface via-surface/25 to-surface/5"
-          />
-          <div className="absolute inset-x-0 bottom-0 p-6 text-inverse sm:p-10 md:p-16">
-            <Text
-              as="p"
-              variant="small-bold"
-              className="!text-inverse"
-              animate={false}
-            >
-              About
-            </Text>
-            <Text
-              as="h1"
-              variant="display"
-              id="about-title"
-              className="mt-4 max-w-5xl !text-inverse"
-              animate={false}
-            >
-              The gap was never talent. It was standards.
-            </Text>
-          </div>
+      <section
+        className="flex min-h-[65svh] flex-col items-center justify-center px-6 py-major text-center md:px-page"
+        aria-labelledby="about-title"
+      >
+        <div className="mx-auto flex max-w-5xl flex-col items-center">
+          <Text
+            as="p"
+            variant="small-bold"
+            className={heroStyles.label}
+            animate={false}
+          >
+            About
+          </Text>
+          <Text
+            as="h1"
+            variant="display"
+            id="about-title"
+            className={`mt-6 ${heroStyles.title}`}
+            animate={false}
+          >
+            The gap was never talent. It was standards.
+          </Text>
+          <Text
+            variant="body"
+            className={`mt-major max-w-3xl ${heroStyles.intro}`}
+            animate={false}
+          >
+            Most software built here has been built to be functional, not good —
+            shipped fast, patched later, judged by whether it works today rather than
+            whether it will still work in two years.
+          </Text>
         </div>
       </section>
 
@@ -71,17 +70,12 @@ export function AboutPage() {
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-major md:grid-cols-12">
           <div className="md:col-span-5 md:col-start-7">
             <div className="flex flex-col gap-6">
-              <Text variant="body" animate={false}>
-                Most software built here has been built to be functional, not good —
-                shipped fast, patched later, judged by whether it works today rather than
-                whether it will still work in two years.
-              </Text>
-              <Text variant="body" animate={false}>
+              <Text variant="body">
                 We started Premodus to set a different assumption: that Malawian
                 developers, held to an international standard and given a fair chance,
                 could build things that compete anywhere.
               </Text>
-              <Text variant="body-bold" animate={false}>
+              <Text variant="body-bold">
                 We’re three co-founders who’d rather prove that slowly and correctly
                 than claim it before we have.
               </Text>
@@ -93,13 +87,12 @@ export function AboutPage() {
       <section className="px-6 py-section md:px-page">
         <div className="mx-auto max-w-7xl border-t border-black/15 pt-major">
           <div className="grid grid-cols-1 gap-major md:grid-cols-12">
-            <Text variant="small-bold" animate={false}>
+            <Text variant="small-bold">
               Our mission
             </Text>
             <Text
               variant="h3"
               className="md:col-span-7 md:col-start-6"
-              animate={false}
             >
               We build technology at a world-class standard to solve the problems
               Malawi’s tech industry has overlooked.
@@ -110,10 +103,10 @@ export function AboutPage() {
 
       <section className="px-6 py-section md:px-page">
         <div className="mx-auto max-w-7xl border-t border-black/15 pt-major">
-          <Text variant="small-bold" animate={false}>
+          <Text variant="small-bold">
             Our vision
           </Text>
-          <Text variant="h2" className="mt-4 max-w-5xl" animate={false}>
+          <Text variant="h2" className="mt-4 max-w-5xl">
             {vision}
           </Text>
         </div>
@@ -121,16 +114,16 @@ export function AboutPage() {
 
       <section className="px-6 py-section md:px-page">
         <div className="mx-auto max-w-7xl">
-          <Text variant="small-bold" animate={false}>
+          <Text variant="small-bold">
             What we hold ourselves to
           </Text>
           <div className="mt-major grid grid-cols-1 gap-gutter md:grid-cols-3">
             {principles.map(([title, body]) => (
               <article key={title} className="border-t border-black/15 pt-6">
-                <Text as="h3" variant="h4" animate={false}>
+                <Text as="h3" variant="h4">
                   {title}
                 </Text>
-                <Text variant="body" className="mt-3" animate={false}>
+                <Text variant="body" className="mt-3">
                   {body}
                 </Text>
               </article>
@@ -141,7 +134,7 @@ export function AboutPage() {
 
       <section className="px-6 pb-section md:px-page">
         <div className="mx-auto max-w-7xl">
-          <Text as="h2" variant="h2" className="max-w-3xl" animate={false}>
+          <Text as="h2" variant="h2" className="max-w-3xl">
             Three people, no layers between the work and the person doing it.
           </Text>
           <div className="mt-major grid grid-cols-1 gap-gutter md:grid-cols-3">
@@ -157,13 +150,13 @@ export function AboutPage() {
                   />
                   <span className="sr-only">{initials}</span>
                 </div>
-                <Text as="h3" variant="h4" className="mt-4" animate={false}>
+                <Text as="h3" variant="h4" className="mt-4">
                   {name}
                 </Text>
-                <Text variant="small-bold" className="mt-1" animate={false}>
+                <Text variant="small-bold" className="mt-1">
                   {role}
                 </Text>
-                <Text variant="small" className="mt-2" animate={false}>
+                <Text variant="small" className="mt-2">
                   {description}
                 </Text>
               </article>
@@ -175,7 +168,6 @@ export function AboutPage() {
         title="Want to know more about what we’re building?"
         description="Get in touch, or take a look at the work."
         secondaryHref="/work"
-        animateOnView={false}
       />
     </>
   );
