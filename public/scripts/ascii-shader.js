@@ -163,7 +163,7 @@ void main(){
     ramp: '  ░▒▓█',
     cellSize: 10,
     gap: 0.3,
-    contrast: 1.5,
+    contrast: 1.3,
     fg: '#FFFFFF',
     bg: '#1A1A1A',
     accent: '#298372',
@@ -182,7 +182,7 @@ void main(){
     onError: null
   };
 
-  function noop() {}
+  function noop() { }
 
   function assign(t) {
     for (var i = 1; i < arguments.length; i++) {
@@ -254,7 +254,7 @@ void main(){
     var gl = null;
     try {
       gl = canvas.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'low-power' }) ||
-           canvas.getContext('experimental-webgl');
+        canvas.getContext('experimental-webgl');
     } catch (e) { gl = null; }
     var staticMode = reduce || !gl;
 
@@ -351,7 +351,7 @@ void main(){
       gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 
       ['uImg', 'uAtlas', 'uRes', 'uImgSize', 'uMouse', 'uFg', 'uBg', 'uAccent', 'uCell', 'uN',
-       'uRadius', 'uStr', 'uMode', 'uTime', 'uContrast', 'uInvert', 'uHasImg', 'uUseAccent', 'uGap']
+        'uRadius', 'uStr', 'uMode', 'uTime', 'uContrast', 'uInvert', 'uHasImg', 'uUseAccent', 'uGap']
         .forEach(function (n) { U[n] = gl.getUniformLocation(prog, n); });
 
       function makeTex(unit) {

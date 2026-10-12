@@ -8,7 +8,7 @@ import { spaceMono } from "@/lib/design/fonts";
 import styles from "./home-hero.module.css";
 
 // ── Tweak this ──────────────────────────────────────────────
-const HERO_IMAGE = "/media/image.png";
+const HERO_IMAGE = "/media/typing.mp4";
 // ────────────────────────────────────────────────────────────
 
 type AsciiShaderController = { destroy: () => void };
@@ -28,6 +28,30 @@ declare global {
 export function HomeHero() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [scriptReady, setScriptReady] = useState(false);
+  const [aspectRatio, setAspectRatio] = useState<string>("16 / 9");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const isVideo = /\.(mp4|webm|mov|m4v|ogv)(\?|#|$)/i.test(HERO_IMAGE);
+    if (isVideo) {
+      const v = document.createElement("video");
+      v.preload = "metadata";
+      v.onloadedmetadata = () => {
+        if (v.videoWidth && v.videoHeight) {
+          setAspectRatio(`${v.videoWidth} / ${v.videoHeight}`);
+        }
+      };
+      v.src = HERO_IMAGE;
+    } else {
+      const img = new Image();
+      img.onload = () => {
+        if (img.naturalWidth && img.naturalHeight) {
+          setAspectRatio(`${img.naturalWidth} / ${img.naturalHeight}`);
+        }
+      };
+      img.src = HERO_IMAGE;
+    }
+  }, []);
 
   useEffect(() => {
     if (!scriptReady) return;
@@ -42,16 +66,15 @@ export function HomeHero() {
       effect: "bulge",
       strength: 0.4,
       radius: 110,
-      cellSize: 10,
+      cellSize: 5,
       gap: 0.3,
       // Tune between 1.2 and 1.7 if the subject needs more or less definition.
-      contrast: 1.7,
+      contrast: 1.3,
       // Invert luminance so dark glyphs describe dark parts of the image.
-      invert: true,
-      fg: "#1A1A1A",
-      bg: "#FFFFFF",
+      invert: false,
+      fg: "#FFFFFF",
+      bg: "#1A1A1A",
       accent: "#298372",
-      ramp: " .:-=+*#%@", // glyphs Space Mono actually has
       // Mobile keeps the same CSS-size grid while rendering fewer GPU pixels per frame.
       maxFps: compactViewport ? 20 : 30,
       maxDpr: compactViewport ? 1 : 2,
@@ -71,22 +94,23 @@ export function HomeHero() {
       className={styles.hero}
       aria-labelledby="home-hero-title"
     >
-      <canvas
-        id="hero-ascii"
-        ref={canvasRef}
-        className={styles.canvas}
-        aria-hidden="true"
-      />
-      <div className={styles.overlay} aria-hidden="true" />
+      <div className={styles.canvasContainer} style={{ aspectRatio }}>
+        <canvas
+          id="hero-ascii"
+          ref={canvasRef}
+          className={styles.canvas}
+          aria-hidden="true"
+        />
+      </div>
       <div className={styles.copy}>
         <div className={styles.copyInner}>
-          <h1 id="home-hero-title" className={`text-heading-2 ${styles.title}`}>
+          <h1 id="home-hero-title" className={`text-display md:text-heading-1 ${styles.title}`}>
             World-class technology for Malawi’s overlooked problems.
           </h1>
-          <p className={`text-body ${styles.subhead}`}>
+          {/* <p className={`text-body ${styles.subhead}`}>
             We build technology at a world-class standard to solve the problems
             Malawi’s tech industry has overlooked.
-          </p>
+          </p> */}
           <ButtonLink href="/contact" className={styles.cta}>
             Get in touch
           </ButtonLink>
