@@ -118,7 +118,7 @@ export function SiteHeader() {
 
   return (
     // Sticky wrapper is click-through; only the bar itself catches pointer events.
-    <header className="pointer-events-none sticky top-0 z-50 px-page pt-header-t pb-header-b">
+    <header className="pointer-events-none sticky top-0 z-50 px-page pt-header-t pb-header-t">
       <motion.div
         ref={pillRef}
         initial={prefersReducedMotion ? false : { opacity: 0, y: -8 }}
@@ -148,7 +148,7 @@ export function SiteHeader() {
         onBlur={(e) => {
           if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setFocused(false);
         }}
-        className="site-header-enter pointer-events-auto mx-auto flex h-10 w-fit max-w-full items-center rounded-xl bg-surface px-1.5 text-inverse shadow-[0_4px_20px_rgba(0,0,0,0.08)]"
+        className="font-sans site-header-enter pointer-events-auto mx-auto flex h-10 w-fit max-w-full items-center rounded-lg bg-surface px-1.5 text-inverse shadow-[0_4px_20px_rgba(0,0,0,0.08)]"
       >
         {/* Logo: collapses away too */}
         <Collapsible show={expanded} prefersReducedMotion={prefersReducedMotion}>
@@ -179,9 +179,7 @@ export function SiteHeader() {
                     href={item.href}
                     aria-current={active ? "page" : undefined}
                     tabIndex={show ? undefined : -1}
-                    className={`relative block whitespace-nowrap rounded-lg px-2 py-1 text-tiny text-inverse transition-[background-color,color] duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
-                      active ? "bg-white/15" : "hover:bg-white/10"
-                    }`}
+                    className={`relative block whitespace-nowrap rounded-sm px-2 py-1 text- text-inverse transition-[background-color,color] duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white hover:bg-white/20`}
                   >
                     {item.label}
                     {active ? (
