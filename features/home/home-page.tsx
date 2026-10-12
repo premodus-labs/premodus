@@ -57,7 +57,7 @@ export function HomePage() {
         </div>
       </SectionTransition>
 
-      <SectionTransition className="home-section-beat px-page py-major mb-section">
+      <SectionTransition className="px-page py-major">
         <div className="grid w-full max-w-[1600px] grid-cols-1 gap-8 border-t border-surface pt-8 lg:grid-cols-12 lg:gap-gutter">
           <ScrollReveal className="lg:col-span-5">
             <Text variant="small-bold">What this means for you</Text>
@@ -78,7 +78,7 @@ export function HomePage() {
 
       <SectionTransition
         animateOnView={false}
-        className="home-section-beat px-page py-major mb-section"
+        className="px-page py-major"
       >
         <ScrollReveal>
           <Text as="h2" variant="h2">
@@ -113,7 +113,7 @@ export function HomePage() {
         </div>
       </SectionTransition>
 
-      <SectionTransition className="home-section-beat px-page py-major mb-section">
+      <SectionTransition className="px-page py-major">
         <ScrollReveal>
           <Text as="h2" variant="h2">
             Work we’ve done
@@ -122,7 +122,7 @@ export function HomePage() {
         <ProjectGrid projects={projects.slice(0, 3)} />
       </SectionTransition>
 
-      <SectionTransition className="section-panel px-page py-section text-center">
+      <SectionTransition className="px-page py-major text-center">
         <div className="mx-auto flex max-w-xl flex-col items-center gap-6">
           <ScrollReveal>
             <Text as="h2" variant="h2">

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { AnimatedText } from "@/components/ui/animated-text";
 import { CallToAction } from "@/components/ui/call-to-action";
 import { Text } from "@/components/ui/text";
 import { getBoilerImage } from "@/lib/constants/boiler-images";
@@ -21,16 +22,14 @@ export function AboutPage() {
         aria-labelledby="about-title"
       >
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-major md:grid-cols-12">
-          <Text
+          <AnimatedText
             as="h1"
-            variant="h2"
             id="about-title"
-            className="max-w-xl md:col-span-5"
+            mode="lines"
+            className="text-heading-2 text-ink-strong max-w-xl whitespace-pre-line md:col-span-5"
           >
-            The gap was never talent.
-            <br />
-            It was standards.
-          </Text>
+            {"The gap was never talent.\nIt was standards."}
+          </AnimatedText>
           <div className="flex flex-col gap-4 md:col-span-5 md:col-start-6 md:pt-major">
             <Text variant="small">
               Most software built here has been built to be functional, not good —
@@ -84,7 +83,7 @@ export function AboutPage() {
           </Text>
           <div className="mt-6 grid grid-cols-1 gap-gutter md:grid-cols-3">
             {team.map(([initials, name, role, description, imagePath], index) => (
-              <article key={name}>
+              <article key={name} className="group">
                 <div className="relative aspect-[3/4] overflow-hidden bg-surface">
                   <Image
                     src={imagePath ? imagePath : getBoilerImage(index).src}

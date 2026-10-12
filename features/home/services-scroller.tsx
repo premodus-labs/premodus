@@ -16,20 +16,40 @@ export type HomeService = {
   model: "computer" | "wall" | "paper" | "shield";
 };
 
-function ServiceSlide({ service }: { service: HomeService }) {
+function ServiceSlide({
+  service,
+  index,
+}: {
+  service: HomeService;
+  index: number;
+}) {
+  const isReversed = index % 2 === 1;
+
   return (
     <article
       data-service-slide
       className="service-slide grid w-full grid-cols-1 gap-3 md:grid-cols-12 md:gap-gutter"
     >
-      <div className="service-art relative col-span-full aspect-[16/9] overflow-hidden bg-canvas">
-        <ExplodedModel
-          model={service.model}
-          label={service.label}
-          className="h-full w-full"
-        />
-      </div>
-      <div className="service-copy md:col-span-8 md:col-start-3">
+      <Text
+        variant="tiny-bold"
+        className={`order-1 md:col-span-5 md:pt-1 ${
+          isReversed ? "md:col-start-8" : "md:col-start-1"
+        }`}
+      >
+        {service.label}
+      </Text>
+      <div
+        className={`service-copy order-2 ${
+          isReversed ? "md:col-span-5 md:col-start-1" : "md:col-span-5 md:col-start-8"
+        }`}
+      >
+        <div className="service-art relative aspect-[16/9] overflow-hidden bg-canvas">
+          <ExplodedModel
+            model={service.model}
+            label={service.label}
+            className="h-full w-full"
+          />
+        </div>
         <Text as="h3" variant="h4" className="service-title mt-4">
           {service.title}
         </Text>
@@ -55,8 +75,8 @@ export function ServicesScroller({
   return (
     <div data-services-track className="services-track relative mt-major">
       <div data-services-stage className="services-stage">
-        {services.map((service) => (
-          <ServiceSlide key={service.label} service={service} />
+        {services.map((service, index) => (
+          <ServiceSlide key={service.label} service={service} index={index} />
         ))}
       </div>
     </div>
