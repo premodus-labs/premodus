@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   useEffect,
@@ -157,7 +158,13 @@ export function SiteHeader() {
             aria-label={site.name}
             className="flex h-7 items-center rounded-lg px-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
-            <span className="block size-4 rounded-[4px] bg-inverse" />
+            <Image
+              src="/brand/premodus-mark-white.svg"
+              alt=""
+              width={18}
+              height={18}
+              className="size-[18px] object-contain"
+            />
           </Link>
         </Collapsible>
 

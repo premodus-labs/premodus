@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { NewsletterForm } from "@/components/layout/newsletter-form";
 import { Text } from "@/components/ui/text";
 import { site, siteNav } from "@/lib/constants/navigation";
@@ -17,7 +18,19 @@ export function SiteFooter() {
       <div className="mx-auto max-w-7xl">
         <div className="grid grid-cols-1 gap-major border-t border-inverse/25 pt-8 md:grid-cols-12 md:gap-gutter">
           <div className="md:col-span-5">
-           
+            <Link
+              href="/"
+              aria-label={site.name}
+              className="inline-flex rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-inverse"
+            >
+              <Image
+                src="/brand/premodus-mark-white.svg"
+                alt=""
+                width={40}
+                height={40}
+                className="size-10 object-contain"
+              />
+            </Link>
             <div className="mt-8 max-w-md border-t border-inverse/25 pt-4">
               <p className="text-tiny text-inverse/60">Stay in touch</p>
               <Text
