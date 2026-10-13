@@ -156,14 +156,14 @@ export function SiteHeader() {
           <Link
             href="/"
             aria-label={site.name}
-            className="flex h-8 items-center rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            className="flex h-7 items-center rounded-lg px-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
             <Image
               src="/brand/premodus-light-tile.svg"
               alt=""
-              width={32}
-              height={32}
-              className="size-8 object-contain"
+              width={24}
+              height={24}
+              className="size-6 object-contain"
             />
           </Link>
         </Collapsible>
