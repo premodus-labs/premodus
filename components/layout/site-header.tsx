@@ -159,11 +159,11 @@ export function SiteHeader() {
             className="flex h-7 items-center rounded-lg px-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
             <Image
-              src="/brand/premodus-mark-white.svg"
+              src="/brand/premodus-light-tile.svg"
               alt=""
-              width={18}
-              height={18}
-              className="size-[18px] object-contain"
+              width={24}
+              height={24}
+              className="size-6 object-contain"
             />
           </Link>
         </Collapsible>
