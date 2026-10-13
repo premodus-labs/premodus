@@ -163,7 +163,7 @@ export function SiteHeader() {
               alt=""
               width={24}
               height={24}
-              className="size-6 object-contain"
+              className="size-6 rounded-lg object-contain"
             />
           </Link>
         </Collapsible>

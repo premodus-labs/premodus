@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Script from "next/script";
 import { ButtonLink } from "@/components/ui/button";
 import { SectionTransition } from "@/components/ui/section-transition";
@@ -9,6 +10,7 @@ import styles from "./home-hero.module.css";
 
 // ── Tweak this ──────────────────────────────────────────────
 const HERO_IMAGE = "/media/typing.mp4";
+const HERO_FALLBACK_IMAGE = "/media/image.png";
 // ────────────────────────────────────────────────────────────
 
 type AsciiShaderController = { destroy: () => void };
@@ -25,10 +27,27 @@ declare global {
   }
 }
 
+function webglSupported() {
+  try {
+    const canvas = document.createElement("canvas");
+    return Boolean(canvas.getContext("webgl2") || canvas.getContext("webgl"));
+  } catch {
+    return false;
+  }
+}
+
 export function HomeHero() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [scriptReady, setScriptReady] = useState(false);
+  const [useShader, setUseShader] = useState(false);
   const [aspectRatio, setAspectRatio] = useState<string>("16 / 9");
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      setUseShader(webglSupported());
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -43,7 +62,7 @@ export function HomeHero() {
       };
       v.src = HERO_IMAGE;
     } else {
-      const img = new Image();
+      const img = new window.Image();
       img.onload = () => {
         if (img.naturalWidth && img.naturalHeight) {
           setAspectRatio(`${img.naturalWidth} / ${img.naturalHeight}`);
@@ -54,7 +73,7 @@ export function HomeHero() {
   }, []);
 
   useEffect(() => {
-    if (!scriptReady) return;
+    if (!useShader || !scriptReady) return;
     const canvas = canvasRef.current;
     if (!canvas || !window.AsciiShader) return;
 
@@ -79,14 +98,14 @@ export function HomeHero() {
       maxFps: compactViewport ? 20 : 30,
       maxDpr: compactViewport ? 1 : 2,
       fontFamily: spaceMono.style.fontFamily,
-      respectReducedMotion: true,
+      respectReducedMotion: false,
       onError: (err: unknown) => console.error("[home-hero] shader error", err),
     });
 
     return () => {
       controller?.destroy();
     };
-  }, [scriptReady]);
+  }, [scriptReady, useShader]);
 
   return (
     <SectionTransition
@@ -95,12 +114,23 @@ export function HomeHero() {
       aria-labelledby="home-hero-title"
     >
       <div className={styles.canvasContainer} style={{ aspectRatio }}>
-        <canvas
-          id="hero-ascii"
-          ref={canvasRef}
-          className={styles.canvas}
-          aria-hidden="true"
-        />
+        {useShader ? (
+          <canvas
+            id="hero-ascii"
+            ref={canvasRef}
+            className={styles.canvas}
+            aria-hidden="true"
+          />
+        ) : (
+          <Image
+            src={HERO_FALLBACK_IMAGE}
+            alt=""
+            fill
+            priority
+            sizes="(max-width: 767px) 100vw, 60vw"
+            className={styles.fallback}
+          />
+        )}
       </div>
       <div className={styles.copy}>
         <div className={styles.copyInner}>
@@ -116,12 +146,14 @@ export function HomeHero() {
           </ButtonLink>
         </div>
       </div>
-      <Script
-        src="/scripts/ascii-shader.js"
-        strategy="afterInteractive"
-        onReady={() => setScriptReady(true)}
-        onError={(e) => console.error("[home-hero] ascii-shader.js failed", e)}
-      />
+      {useShader ? (
+        <Script
+          src="/scripts/ascii-shader.js"
+          strategy="afterInteractive"
+          onReady={() => setScriptReady(true)}
+          onError={(e) => console.error("[home-hero] ascii-shader.js failed", e)}
+        />
+      ) : null}
     </SectionTransition>
   );
 }
