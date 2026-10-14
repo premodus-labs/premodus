@@ -160,8 +160,16 @@ body {
   max-height: 50svh;
 }
 
+.services-stage {
+  gap: 32px;
+}
+
 @media (min-width: 768px) {
   .service-art {
     max-height: 70svh;
+  }
+
+  .services-stage {
+    gap: var(--spacing-major);
   }
 }

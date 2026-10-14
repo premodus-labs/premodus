@@ -10,6 +10,14 @@ export const metadata: Metadata = {
   },
   description:
     "We build technology at a world-class standard to solve the problems Malawi’s tech industry has overlooked.",
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: ["/icon.svg"],
+    apple: ["/icon.svg"],
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

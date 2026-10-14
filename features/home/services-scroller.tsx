@@ -28,7 +28,7 @@ function ServiceSlide({
   return (
     <article
       data-service-slide
-      className="service-slide grid w-full grid-cols-1 gap-3 md:grid-cols-12 md:gap-gutter"
+      className="service-slide grid w-full grid-cols-1 gap-2 md:grid-cols-12 md:gap-gutter"
     >
       <Text
         variant="tiny-bold"
@@ -50,15 +50,15 @@ function ServiceSlide({
             className="h-full w-full"
           />
         </div>
-        <Text as="h3" variant="h4" className="service-title mt-4">
+        <Text as="h3" variant="h4" className="service-title mt-3">
           {service.title}
         </Text>
-        <Text variant="small" className="mt-3">
+        <Text variant="small" className="mt-2">
           {service.description}
         </Text>
         <Link
           href="/services"
-          className="mt-4 inline-block text-tiny-bold text-ink-strong underline underline-offset-4 transition-colors duration-200 hover:text-ink-medium"
+          className="mt-3 inline-block text-tiny-bold text-ink-strong underline underline-offset-4 transition-colors duration-200 hover:text-ink-medium"
         >
           Learn more
         </Link>
@@ -73,7 +73,7 @@ export function ServicesScroller({
   services: readonly HomeService[];
 }) {
   return (
-    <div data-services-track className="services-track relative mt-major">
+    <div data-services-track className="services-track relative mt-8 md:mt-major">
       <div data-services-stage className="services-stage">
         {services.map((service, index) => (
           <ServiceSlide key={service.label} service={service} index={index} />
