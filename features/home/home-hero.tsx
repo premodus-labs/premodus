@@ -6,6 +6,7 @@ import Script from "next/script";
 import { ButtonLink } from "@/components/ui/button";
 import { SectionTransition } from "@/components/ui/section-transition";
 import { spaceMono } from "@/lib/design/fonts";
+import type { RegionName } from "@/lib/constants/geo";
 import styles from "./home-hero.module.css";
 
 // ── Tweak this ──────────────────────────────────────────────
@@ -36,7 +37,7 @@ function webglSupported() {
   }
 }
 
-export function HomeHero() {
+export function HomeHero({ region }: { region: RegionName }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [scriptReady, setScriptReady] = useState(false);
   const [useShader, setUseShader] = useState(false);
@@ -135,12 +136,8 @@ export function HomeHero() {
       <div className={styles.copy}>
         <div className={styles.copyInner}>
           <h1 id="home-hero-title" className={`text-display md:text-heading-1 ${styles.title}`}>
-            World-class technology for Malawi’s overlooked problems.
+            World-class technology for {region}’s overlooked problems.
           </h1>
-          {/* <p className={`text-body ${styles.subhead}`}>
-            We build technology at a world-class standard to solve the problems
-            Malawi’s tech industry has overlooked.
-          </p> */}
           <ButtonLink href="/contact" className={styles.cta}>
             Get in touch
           </ButtonLink>
