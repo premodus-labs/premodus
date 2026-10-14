@@ -151,12 +151,12 @@ export function SiteHeader() {
         }}
         className="font-sans site-header-enter pointer-events-auto mx-auto flex h-10 w-fit max-w-full items-center rounded-lg bg-surface px-1.5 text-inverse shadow-[0_4px_20px_rgba(0,0,0,0.08)]"
       >
-        {/* Logo: collapses away too */}
+        {/* Logo link collapses with the expanded navigation. */}
         <Collapsible show={expanded} prefersReducedMotion={prefersReducedMotion}>
           <Link
             href="/"
             aria-label={site.name}
-            className="flex h-7 items-center rounded-lg px-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            className="flex h-7 items-center gap-1 rounded-lg px-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
             <Image
               src="/brand/premodus-light-tile.svg"
@@ -165,6 +165,9 @@ export function SiteHeader() {
               height={24}
               className="size-6 rounded-lg object-contain"
             />
+            <span className="whitespace-nowrap text-small text-inverse">
+              {site.name}
+            </span>
           </Link>
         </Collapsible>
 
