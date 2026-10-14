@@ -41,7 +41,7 @@ const services = [
 export function HomePage() {
   return (
     <>
-      <HomeHero />
+      <HomeHero region={"global" as any} />
 
       <SectionTransition animateOnView={false} className="px-page pt-section pb-major">
         {/* Left-anchored (no mx-auto) and wide, so content fills the desktop width */}
