@@ -165,9 +165,7 @@ export function SiteHeader() {
               height={24}
               className="size-6 rounded-lg object-contain"
             />
-            <span className="hidden whitespace-nowrap text-small text-inverse sm:inline">
-              {site.name}
-            </span>
+          
           </Link>
         </Collapsible>
 
