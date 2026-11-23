@@ -4,7 +4,6 @@ import { SectionTransition } from "@/components/ui/section-transition";
 import { Text } from "@/components/ui/text";
 import { projects } from "@/lib/constants/projects";
 import { HomeHero } from "@/features/home/home-hero";
-import { ServicesGrid } from "@/features/home/services-grid";
 import { FeaturedWork } from "@/features/home/featured-work";
 
 const services = [
@@ -34,25 +33,7 @@ const services = [
 export function HomePage() {
   return (
     <>
-      <HomeHero />
-
-      <SectionTransition
-        animateOnView={false}
-        className="bg-surface px-6 py-[90px] text-inverse md:px-page"
-      >
-        <ScrollReveal>
-          <Text
-            as="h2"
-            variant="h1"
-            className="max-w-[630px] font-semibold !text-inverse capitalize"
-          >
-            World-class starts with how we treat each piece of the work.
-          </Text>
-        </ScrollReveal>
-        <div className="mt-major">
-          <ServicesGrid services={services} />
-        </div>
-      </SectionTransition>
+      <HomeHero services={services} />
 
       <SectionTransition animateOnView={false} className="bg-surface">
         <FeaturedWork projects={projects.slice(0, 3)} />

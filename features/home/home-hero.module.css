@@ -1,6 +1,6 @@
 .scrollTrack {
   position: relative;
-  height: 200vh;
+  height: 500vh;
   background: var(--canvas);
 }
 
@@ -21,6 +21,7 @@
   isolation: isolate;
   background: var(--canvas);
   overflow: visible;
+  overflow-x: clip;
 }
 
 .heroReduced {
@@ -50,6 +51,33 @@
   inset: 0;
   background: var(--surface);
   pointer-events: none;
+}
+
+.servicesOverlay {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 8px var(--spacing-page);
+  color: var(--inverse);
+}
+
+.servicesReduced {
+  position: relative;
+  z-index: 5;
+  align-self: stretch;
+  margin: var(--spacing-major) calc(0px - var(--spacing-page)) 0;
+  padding: var(--spacing-section) var(--spacing-page);
+  background: var(--surface);
+  color: var(--inverse);
+}
+
+.servicesContent {
+  width: 100%;
+  margin-inline: auto;
 }
 
 .canvas {

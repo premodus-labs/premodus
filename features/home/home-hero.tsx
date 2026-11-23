@@ -3,10 +3,16 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Script from "next/script";
-import { motion, useScroll, useTransform } from "motion/react";
+import {
+  motion,
+  useMotionValueEvent,
+  useScroll,
+  useTransform,
+} from "motion/react";
 import { ButtonLink } from "@/components/ui/button";
 import { usePrefersReducedMotion } from "@/components/ui/use-prefers-reduced-motion";
 import { spaceMono } from "@/lib/design/fonts";
+import { ServicesGrid, type HomeService } from "@/features/home/services-grid";
 import styles from "./home-hero.module.css";
 
 // ── Tweak this ──────────────────────────────────────────────
@@ -37,7 +43,7 @@ function webglSupported() {
   }
 }
 
-export function HomeHero() {
+export function HomeHero({ services }: { services: readonly HomeService[] }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const scrollTrackRef = useRef<HTMLElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
@@ -55,21 +61,50 @@ export function HomeHero() {
   const copyOpacity = useTransform(scrollYProgress, [0.05, 0.25], [1, 0]);
   const mediaScale = useTransform(
     scrollYProgress,
-    [0.12, 0.62],
+    [0.3, 0.42],
     [1, fillTransform.scale],
   );
   const mediaY = useTransform(
     scrollYProgress,
-    [0.12, 0.62],
+    [0.3, 0.42],
     [0, fillTransform.y],
   );
-  const mediaRadius = useTransform(scrollYProgress, [0.12, 0.62], [8, 0]);
-  const inkOpacity = useTransform(scrollYProgress, [0.62, 0.78], [0, 1]);
+  const mediaRadius = useTransform(scrollYProgress, [0.3, 0.42], [8, 0]);
+  const inkOpacity = useTransform(scrollYProgress, [0.42, 0.46], [0, 1]);
   const stageBackground = useTransform(
     scrollYProgress,
-    [0.62, 0.78],
+    [0.42, 0.46],
     ["#F2F1E8", "#1A1B18"],
   );
+  const servicesOpacity = useTransform(
+    scrollYProgress,
+    [0.46, 0.5],
+    [0, 1],
+  );
+  const servicesHeadingOpacity = useTransform(
+    scrollYProgress,
+    [0.46, 0.5],
+    [0, 1],
+  );
+
+  useMotionValueEvent(inkOpacity, "change", (progress) => {
+    if (prefersReducedMotion) return;
+
+    const root = document.documentElement;
+    root.style.setProperty(
+      "--home-hero-ink-progress",
+      `${progress * 100}%`,
+    );
+    root.style.setProperty("--home-hero-ink-logo-opacity", `${1 - progress}`);
+    root.style.setProperty("--home-hero-paper-logo-opacity", `${progress}`);
+  });
+  useMotionValueEvent(servicesOpacity, "change", (progress) => {
+    if (prefersReducedMotion) return;
+    document.documentElement.style.setProperty(
+      "--home-services-progress",
+      `${progress}`,
+    );
+  });
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -130,6 +165,25 @@ export function HomeHero() {
       window.removeEventListener("resize", updateFillTransform);
     };
   }, [aspectRatio, prefersReducedMotion]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const progress = prefersReducedMotion ? 0 : inkOpacity.get();
+    root.style.setProperty("--home-hero-ink-progress", `${progress * 100}%`);
+    root.style.setProperty("--home-hero-ink-logo-opacity", `${1 - progress}`);
+    root.style.setProperty("--home-hero-paper-logo-opacity", `${progress}`);
+    root.style.setProperty(
+      "--home-services-progress",
+      `${prefersReducedMotion ? 0 : servicesOpacity.get()}`,
+    );
+
+    return () => {
+      root.style.removeProperty("--home-hero-ink-progress");
+      root.style.removeProperty("--home-hero-ink-logo-opacity");
+      root.style.removeProperty("--home-hero-paper-logo-opacity");
+      root.style.removeProperty("--home-services-progress");
+    };
+  }, [inkOpacity, prefersReducedMotion, servicesOpacity]);
 
   useEffect(() => {
     if (!useShader || !scriptReady) return;
@@ -234,6 +288,31 @@ export function HomeHero() {
             className={styles.inkOverlay}
             style={{ opacity: prefersReducedMotion ? 0 : inkOpacity }}
           />
+        </motion.div>
+        <motion.div
+          className={
+            prefersReducedMotion ? styles.servicesReduced : styles.servicesOverlay
+          }
+          style={{ opacity: prefersReducedMotion ? 1 : servicesOpacity }}
+        >
+          <div className={styles.servicesContent}>
+            <motion.div
+              style={{
+                opacity: prefersReducedMotion ? 1 : servicesHeadingOpacity,
+              }}
+            >
+              <h2 className="text-heading-2 font-semibold !text-inverse mb-[40px]">
+                World-class starts with how we treat each piece of the work.
+              </h2>
+            </motion.div>
+            <div className="mt-4">
+              <ServicesGrid
+                services={services}
+                progress={scrollYProgress}
+                animate={!prefersReducedMotion}
+              />
+            </div>
+          </div>
         </motion.div>
       </motion.div>
       {useShader ? (
