@@ -3,10 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Script from "next/script";
+import { motion, useScroll, useTransform } from "motion/react";
 import { ButtonLink } from "@/components/ui/button";
-import { SectionTransition } from "@/components/ui/section-transition";
+import { usePrefersReducedMotion } from "@/components/ui/use-prefers-reduced-motion";
 import { spaceMono } from "@/lib/design/fonts";
-import type { RegionName } from "@/lib/constants/geo";
 import styles from "./home-hero.module.css";
 
 // ── Tweak this ──────────────────────────────────────────────
@@ -37,11 +37,39 @@ function webglSupported() {
   }
 }
 
-export function HomeHero({ region }: { region: RegionName }) {
+export function HomeHero() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const scrollTrackRef = useRef<HTMLElement | null>(null);
+  const stageRef = useRef<HTMLDivElement | null>(null);
+  const mediaRef = useRef<HTMLDivElement | null>(null);
   const [scriptReady, setScriptReady] = useState(false);
   const [useShader, setUseShader] = useState(false);
   const [aspectRatio, setAspectRatio] = useState<string>("16 / 9");
+  const [fillTransform, setFillTransform] = useState({ scale: 1, y: 0 });
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: scrollTrackRef,
+    offset: ["start start", "end end"],
+  });
+  const copyY = useTransform(scrollYProgress, [0.05, 0.28], [0, -240]);
+  const copyOpacity = useTransform(scrollYProgress, [0.05, 0.25], [1, 0]);
+  const mediaScale = useTransform(
+    scrollYProgress,
+    [0.12, 0.62],
+    [1, fillTransform.scale],
+  );
+  const mediaY = useTransform(
+    scrollYProgress,
+    [0.12, 0.62],
+    [0, fillTransform.y],
+  );
+  const mediaRadius = useTransform(scrollYProgress, [0.12, 0.62], [8, 0]);
+  const inkOpacity = useTransform(scrollYProgress, [0.62, 0.78], [0, 1]);
+  const stageBackground = useTransform(
+    scrollYProgress,
+    [0.62, 0.78],
+    ["#F2F1E8", "#1A1B18"],
+  );
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -74,6 +102,36 @@ export function HomeHero({ region }: { region: RegionName }) {
   }, []);
 
   useEffect(() => {
+    if (prefersReducedMotion) return;
+
+    const updateFillTransform = () => {
+      const stage = stageRef.current;
+      const media = mediaRef.current;
+      if (!stage || !media) return;
+
+      const width = media.offsetWidth;
+      const height = media.offsetHeight;
+      if (!width || !height) return;
+
+      setFillTransform({
+        scale: Math.max(stage.clientWidth / width, stage.clientHeight / height),
+        y: stage.clientHeight / 2 - media.offsetTop - height / 2,
+      });
+    };
+
+    updateFillTransform();
+    const resizeObserver = new ResizeObserver(updateFillTransform);
+    if (stageRef.current) resizeObserver.observe(stageRef.current);
+    if (mediaRef.current) resizeObserver.observe(mediaRef.current);
+    window.addEventListener("resize", updateFillTransform);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updateFillTransform);
+    };
+  }, [aspectRatio, prefersReducedMotion]);
+
+  useEffect(() => {
     if (!useShader || !scriptReady) return;
     const canvas = canvasRef.current;
     if (!canvas || !window.AsciiShader) return;
@@ -92,8 +150,8 @@ export function HomeHero({ region }: { region: RegionName }) {
       contrast: 1.3,
       // Invert luminance so dark glyphs describe dark parts of the image.
       invert: false,
-      fg: "#FFFFFF",
-      bg: "#1A1A1A",
+      fg: "#F2F1E8",
+      bg: "#1A1B18",
       accent: "#298372",
       // Mobile keeps the same CSS-size grid while rendering fewer GPU pixels per frame.
       maxFps: compactViewport ? 20 : 30,
@@ -109,40 +167,75 @@ export function HomeHero({ region }: { region: RegionName }) {
   }, [scriptReady, useShader]);
 
   return (
-    <SectionTransition
-      animateOnView={false}
-      className={styles.hero}
+    <section
+      ref={scrollTrackRef}
       aria-labelledby="home-hero-title"
+      className={
+        prefersReducedMotion ? styles.scrollTrackReduced : styles.scrollTrack
+      }
     >
-      <div className={styles.canvasContainer} style={{ aspectRatio }}>
-        {useShader ? (
-          <canvas
-            id="hero-ascii"
-            ref={canvasRef}
-            className={styles.canvas}
+      <motion.div
+        ref={stageRef}
+        className={`${styles.hero} ${prefersReducedMotion ? styles.heroReduced : ""}`}
+        style={
+          prefersReducedMotion ? undefined : { backgroundColor: stageBackground }
+        }
+      >
+        <motion.div
+          className={styles.copy}
+          style={
+            prefersReducedMotion
+              ? undefined
+              : { y: copyY, opacity: copyOpacity }
+          }
+        >
+          <div className={styles.copyInner}>
+            <h1
+              id="home-hero-title"
+              className={`text-display md:text-heading-1 ${styles.title}`}
+            >
+              Premodus Labs is a technology company based in Malawi, building
+              software and securing it for organizations anywhere.
+            </h1>
+            <ButtonLink href="/work" className={styles.cta}>
+              See our work
+            </ButtonLink>
+          </div>
+        </motion.div>
+        <motion.div
+          ref={mediaRef}
+          className={`${styles.canvasContainer} rounded-lg`}
+          style={{
+            aspectRatio,
+            ...(prefersReducedMotion
+              ? {}
+              : { y: mediaY, scale: mediaScale, borderRadius: mediaRadius }),
+          }}
+        >
+          {useShader ? (
+            <canvas
+              id="hero-ascii"
+              ref={canvasRef}
+              className={styles.canvas}
+              aria-hidden="true"
+            />
+          ) : (
+            <Image
+              src={HERO_FALLBACK_IMAGE}
+              alt=""
+              fill
+              priority
+              sizes="calc(100vw - 160px)"
+              className={styles.fallback}
+            />
+          )}
+          <motion.div
             aria-hidden="true"
+            className={styles.inkOverlay}
+            style={{ opacity: prefersReducedMotion ? 0 : inkOpacity }}
           />
-        ) : (
-          <Image
-            src={HERO_FALLBACK_IMAGE}
-            alt=""
-            fill
-            priority
-            sizes="(max-width: 767px) 100vw, 60vw"
-            className={styles.fallback}
-          />
-        )}
-      </div>
-      <div className={styles.copy}>
-        <div className={styles.copyInner}>
-          <h1 id="home-hero-title" className={`text-display md:text-heading-1 ${styles.title}`}>
-            World-class technology for {region}’s overlooked problems.
-          </h1>
-          <ButtonLink href="/contact" className={styles.cta}>
-            Get in touch
-          </ButtonLink>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
       {useShader ? (
         <Script
           src="/scripts/ascii-shader.js"
@@ -151,6 +244,6 @@ export function HomeHero({ region }: { region: RegionName }) {
           onError={(e) => console.error("[home-hero] ascii-shader.js failed", e)}
         />
       ) : null}
-    </SectionTransition>
+    </section>
   );
 }

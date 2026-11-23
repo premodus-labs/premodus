@@ -105,13 +105,13 @@ export function ExplodedModel({
         yaw.add(content);
 
         fillMaterial = new THREE.MeshBasicMaterial({
-          color: new THREE.Color("#ffffff"),
+          color: new THREE.Color("#F2F1E8"),
           polygonOffset: true,
           polygonOffsetFactor: 1,
           polygonOffsetUnits: 1,
         });
         lineMaterial = new THREE.LineBasicMaterial({
-          color: new THREE.Color("#000000"),
+          color: new THREE.Color("#1A1B18"),
         });
 
         const definitions = SUB[model]();

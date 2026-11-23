@@ -23,18 +23,18 @@ const fields = [
 export function ContactPage() {
   return (
     <SectionTransition className="px-page pt-16 pb-section">
-      <div className="mx-auto w-full max-w-7xl">
+      <div className="w-full">
         <Text as="h1" variant="h1">
           Contact
         </Text>
 
-        <div className="mt-major grid grid-cols-1 gap-major border-y border-surface py-major lg:grid-cols-12 lg:gap-gutter">
+        <div className="mt-major grid grid-cols-1 gap-major border-y border-rule/25 py-major lg:grid-cols-12 lg:gap-gutter">
           <ScrollReveal className="flex items-center lg:col-span-5">
             <div className="max-w-md">
               <Text as="h2" variant="h2">
                 Start with a conversation, not a commitment.
               </Text>
-              <Text variant="small" className="mt-4">
+              <Text variant="body" className="mt-4">
                 Whether you need cybersecurity support, software development,
                 IT consulting, or digital transformation, the enquiry form is
                 the direct path to start a conversation.
@@ -46,25 +46,25 @@ export function ContactPage() {
             <form className="flex flex-col gap-6" aria-label="Project enquiry">
               {fields.map((field) => (
                 <label key={field.id} htmlFor={field.id} className="flex flex-col gap-2">
-                  <span className="text-small-bold text-ink-strong">{field.label}</span>
+                  <span className="text-body-medium text-ink-strong">{field.label}</span>
                   <input
                     id={field.id}
                     name={field.id}
                     type={field.type}
                     placeholder={field.placeholder}
-                    className="w-full border-b border-surface bg-transparent pb-3 text-small text-ink-strong placeholder:text-ink-weak focus:outline-none"
+                    className="w-full border-b border-rule/25 bg-transparent pb-3 text-body text-ink-strong placeholder:text-ink-weak focus:outline-none"
                   />
                 </label>
               ))}
 
               <label htmlFor="project" className="flex flex-col gap-2">
-                <span className="text-small-bold text-ink-strong">Project description</span>
+                <span className="text-body-medium text-ink-strong">Project description</span>
                 <textarea
                   id="project"
                   name="project"
                   rows={3}
                   placeholder="Describe your challenge here."
-                  className="w-full resize-y border-b border-surface bg-transparent pb-3 text-small text-ink-strong placeholder:text-ink-weak focus:outline-none"
+                  className="w-full resize-y border-b border-rule/25 bg-transparent pb-3 text-body text-ink-strong placeholder:text-ink-weak focus:outline-none"
                 />
               </label>
 

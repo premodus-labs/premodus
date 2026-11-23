@@ -6,18 +6,15 @@ import { ProjectGrid } from "@/features/work/project-grid";
 
 export function WorkPage() {
   return (
-    <>
-      <SectionTransition className="px-page pt-16 pb-section">
-        <div className="mx-auto max-w-7xl">
-          <div className="max-w-2xl">
-            <Text as="h1" variant="h1">
-              The work
-            </Text>
-            <Text variant="h3" className="mt-4">
-              A running record of what we’ve built, who it’s for, and what it solved.
+    <div className="bg-surface text-inverse">
+      <SectionTransition className="px-page pt-4 pb-section">
+        <div className="mx-auto">
+          <div className="max-w-3xl">
+            <Text variant="h1" className="mt-4 !text-inverse">
+              A Running Record Of What We’ve Built, Who It’s For, and What It Solved.
             </Text>
           </div>
-          <ProjectGrid projects={projects} />
+          <ProjectGrid projects={projects} inverse />
         </div>
       </SectionTransition>
       <CallToAction
@@ -25,7 +22,8 @@ export function WorkPage() {
         description="Let us know what you need built."
         secondaryHref="/services"
         secondaryLabel="Explore services"
+        variant="inverse"
       />
-    </>
+    </div>
   );
 }

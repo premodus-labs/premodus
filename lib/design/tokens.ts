@@ -6,18 +6,20 @@
 
 export const colors = {
   ink: {
-    strong: "#000000",
-    medium: "rgb(0 0 0 / 0.75)",
-    weak: "rgb(0 0 0 / 0.6)",
+    strong: "#1A1B18",
+    medium: "rgb(26 27 24 / 0.75)",
+    weak: "rgb(26 27 24 / 0.6)",
   },
-  canvas: "#ffffff",
-  surface: "#000000",
-  inverse: "#ffffff",
+  canvas: "#F2F1E8",
+  surface: "#1A1B18",
+  inverse: "#F2F1E8",
+  rule: "#5C767F",
+  rule25: "rgb(92 118 127 / 0.25)",
   accentPink: "#F4C4D0",
 } as const;
 
 export const font = {
-  family: "Space Grotesk",
+  family: "Host Grotesk",
   weight: {
     regular: 400,
     medium: 500,
@@ -33,8 +35,8 @@ export const type = {
   heading4: { size: 20, weight: 500 },
   body: { size: 16, weight: 400 },
   bodyBold: { size: 16, weight: 500 },
-  small: { size: 14, weight: 400 },
-  smallBold: { size: 14, weight: 500 },
+  small: { size: 16, weight: 400 },
+  smallBold: { size: 16, weight: 500 },
   tiny: { size: 12, weight: 400 },
   /** Figma: "Tiny bold — 12px, regular" */
   tinyBold: { size: 12, weight: 400 },
@@ -46,7 +48,7 @@ export const space = {
   /** Between major elements within a section */
   major: 60,
   /** Page left/right margin; 12-column gutter */
-  page: 40,
+  page: 80,
   headerTop: 24,
   headerBottom: 60,
   footerY: 120,

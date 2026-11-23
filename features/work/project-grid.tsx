@@ -9,7 +9,13 @@ import type { Project } from "@/lib/constants/projects";
 
 const DURATION = 300;
 
-export function ProjectGrid({ projects }: { projects: Project[] }) {
+export function ProjectGrid({
+  projects,
+  inverse = false,
+}: {
+  projects: Project[];
+  inverse?: boolean;
+}) {
   const [active, setActive] = useState<number | null>(null);
   const [open, setOpen] = useState(false);
 
@@ -40,7 +46,7 @@ export function ProjectGrid({ projects }: { projects: Project[] }) {
 
   return (
     <>
-      <div className="mt-major grid grid-cols-1 gap-x-gutter gap-y-major md:grid-cols-12">
+      <div className="mt-[40px] grid grid-cols-2 items-start gap-x-[20px] gap-y-major">
         {projects.map((p, index) => {
           const image = imageFor(p, index);
           return (
@@ -48,11 +54,11 @@ export function ProjectGrid({ projects }: { projects: Project[] }) {
               key={p.slug}
               type="button"
               onClick={() => openProject(index)}
-              className="group cursor-pointer text-left md:col-span-4"
+              className="group w-full self-start cursor-pointer text-left"
               aria-haspopup="dialog"
             >
               <div
-                className={`relative flex aspect-[4/5] items-end overflow-hidden border border-surface p-6 ${
+                className={`relative flex aspect-[3/2] w-full items-end overflow-hidden rounded-lg p-6 ${
                   p.slug === "rugare-mental-health" ? "bg-white" : "bg-surface"
                 }`}
               >
@@ -60,20 +66,25 @@ export function ProjectGrid({ projects }: { projects: Project[] }) {
                   src={image.src}
                   alt={image.alt}
                   fill
-                  sizes="(min-width: 768px) 33vw, 100vw"
+                  sizes="(min-width: 768px) 50vw, 50vw"
                   className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                 />
                 <Text variant="tiny-bold" className="relative text-inverse">
                   {p.label}
                 </Text>
               </div>
-              <Text as="h2" variant="h3" className="mt-4">
+              <Text as="h2" variant="h3" className={`mt-5 ${inverse ? "!text-inverse" : ""}`}>
                 {p.name}
               </Text>
-              <Text variant="small" className="mt-1 max-w-md">
+              <Text variant="body" className={`mt-1 ${inverse ? "!text-inverse/75" : ""}`}>
                 {p.summary}
               </Text>
-              <Text variant="small-bold" className="mt-3 transition-transform group-hover:translate-x-1">
+              <Text
+                variant="small-bold"
+                className={`mt-3 transition-transform group-hover:translate-x-1 ${
+                  inverse ? "!text-inverse" : ""
+                }`}
+              >
                 View project →
               </Text>
             </button>
@@ -94,7 +105,9 @@ export function ProjectGrid({ projects }: { projects: Project[] }) {
             style={{ transitionDuration: `${DURATION}ms` }}
           />
           <div
-            className={`relative max-h-[90vh] w-full max-w-4xl overflow-y-auto bg-canvas transition-all ease-out ${
+            className={`relative max-h-[90vh] w-full max-w-4xl overflow-y-auto ${
+              inverse ? "bg-surface text-inverse" : "bg-canvas"
+            } transition-all ease-out ${
               open ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
             }`}
             style={{ transitionDuration: `${DURATION}ms` }}
@@ -113,22 +126,28 @@ export function ProjectGrid({ projects }: { projects: Project[] }) {
               />
             </div>
             <div className="p-6 md:p-8">
-              <Text variant="tiny-bold">{project.label}</Text>
-              <Text as="h2" variant="h2" className="mt-2">
+              <Text variant="tiny-bold" className={inverse ? "!text-inverse/75" : ""}>
+                {project.label}
+              </Text>
+              <Text as="h2" variant="h2" className={`mt-2 ${inverse ? "!text-inverse" : ""}`}>
                 {project.name}
               </Text>
-              <Text variant="body" className="mt-4">
+              <Text variant="body" className={`mt-4 ${inverse ? "!text-inverse/75" : ""}`}>
                 {project.description}
               </Text>
 
               {project.highlights && project.highlights.length > 0 && (
-                <dl className="mt-8 grid grid-cols-1 gap-4 border-y border-surface py-6 md:grid-cols-3">
+                <dl className="mt-8 grid grid-cols-1 gap-4 border-y border-rule/25 py-6 md:grid-cols-3">
                   {project.highlights.map((h) => (
                     <div key={h.label}>
                       <dt className="sr-only">{h.label}</dt>
                       <dd>
-                        <Text variant="h3">{h.value}</Text>
-                        <Text variant="small">{h.label}</Text>
+                        <Text variant="h3" className={inverse ? "!text-inverse" : ""}>
+                          {h.value}
+                        </Text>
+                        <Text variant="small" className={inverse ? "!text-inverse/75" : ""}>
+                          {h.label}
+                        </Text>
                       </dd>
                     </div>
                   ))}
@@ -137,8 +156,10 @@ export function ProjectGrid({ projects }: { projects: Project[] }) {
 
               {project.audience && (
                 <div className="mt-8">
-                  <Text variant="small-bold">Who it’s for</Text>
-                  <Text variant="small" className="mt-2">
+                  <Text variant="small-bold" className={inverse ? "!text-inverse" : ""}>
+                    Who it’s for
+                  </Text>
+                  <Text variant="small" className={`mt-2 ${inverse ? "!text-inverse/75" : ""}`}>
                     {project.audience}
                   </Text>
                 </div>
@@ -146,12 +167,16 @@ export function ProjectGrid({ projects }: { projects: Project[] }) {
 
               {project.features && project.features.length > 0 && (
                 <div className="mt-8">
-                  <Text variant="small-bold">What the system does</Text>
+                  <Text variant="small-bold" className={inverse ? "!text-inverse" : ""}>
+                    What the system does
+                  </Text>
                   <ul className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2">
                     {project.features.map((f) => (
                       <li key={f.title}>
-                        <Text variant="small-bold">{f.title}</Text>
-                        <Text variant="small" className="mt-1">
+                        <Text variant="small-bold" className={inverse ? "!text-inverse" : ""}>
+                          {f.title}
+                        </Text>
+                        <Text variant="small" className={`mt-1 ${inverse ? "!text-inverse/75" : ""}`}>
                           {f.text}
                         </Text>
                       </li>
@@ -162,8 +187,10 @@ export function ProjectGrid({ projects }: { projects: Project[] }) {
 
               {project.role && (
                 <div className="mt-8">
-                  <Text variant="small-bold">Our role</Text>
-                  <Text variant="small" className="mt-2">
+                  <Text variant="small-bold" className={inverse ? "!text-inverse" : ""}>
+                    Our role
+                  </Text>
+                  <Text variant="small" className={`mt-2 ${inverse ? "!text-inverse/75" : ""}`}>
                     {project.role}
                   </Text>
                 </div>
@@ -171,8 +198,10 @@ export function ProjectGrid({ projects }: { projects: Project[] }) {
 
               {project.stack && project.stack.length > 0 && (
                 <div className="mt-8">
-                  <Text variant="small-bold">Built with</Text>
-                  <Text variant="small" className="mt-2">
+                  <Text variant="small-bold" className={inverse ? "!text-inverse" : ""}>
+                    Built with
+                  </Text>
+                  <Text variant="small" className={`mt-2 ${inverse ? "!text-inverse/75" : ""}`}>
                     {project.stack.join(" · ")}
                   </Text>
                 </div>
@@ -180,11 +209,16 @@ export function ProjectGrid({ projects }: { projects: Project[] }) {
 
               <div className="mt-10 flex flex-wrap items-center gap-4">
                 {project.url && (
-                  <ButtonLink href={project.url} target="_blank" rel="noopener noreferrer">
+                  <ButtonLink
+                    href={project.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={inverse ? "!bg-inverse !text-surface" : ""}
+                  >
                     Visit live site ↗
                   </ButtonLink>
                 )}
-                <button type="button" onClick={close} className="px-4 py-2 text-sm underline">
+                <button type="button" onClick={close} className="px-4 py-2 text-small underline">
                   Close
                 </button>
               </div>

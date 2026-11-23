@@ -1,9 +1,10 @@
-import { Space_Grotesk, Space_Mono } from "next/font/google";
+import { Host_Grotesk, Space_Mono } from "next/font/google";
 
-export const spaceGrotesk = Space_Grotesk({
+export const hostGrotesk = Host_Grotesk({
+  weight: "variable",
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-space-grotesk",
+  variable: "--font-host-grotesk",
 });
 
 export const spaceMono = Space_Mono({

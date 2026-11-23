@@ -76,12 +76,12 @@ export function ServicesPage() {
             ))}
           </ul>
         </nav>
-        <div className="mt-major border-t border-surface">
+        <div className="mt-major border-t border-rule/25">
           {services.map((service, index) => (
             <article
               key={service.title}
               id={service.title.replaceAll(" ", "-")}
-              className="grid grid-cols-1 gap-8 border-b border-surface py-8 md:grid-cols-12 md:gap-gutter"
+              className="grid grid-cols-1 gap-8 border-b border-rule/25 py-8 md:grid-cols-12 md:gap-gutter"
             >
               <ScrollReveal
                 className="md:col-span-5"
@@ -105,7 +105,7 @@ export function ServicesPage() {
                   ))}
                 </ul>
                 <ScrollReveal delay={0.16}>
-                  <div className="mt-6 border-l border-surface pl-4">
+                  <div className="mt-6 border-l border-rule/25 pl-4">
                     <Text variant="tiny" className="block">When you’d reach for this</Text>
                     <Text variant="small" className="mt-2">{service.fit}</Text>
                   </div>

@@ -3,19 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import {
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
-import { motion } from "motion/react";
 import { site, siteNav } from "@/lib/constants/navigation";
-import { DURATION, EASE } from "@/lib/design/motion";
-import { usePrefersReducedMotion } from "@/components/ui/use-prefers-reduced-motion";
-
-const SCROLL_THRESHOLD = 48;
-const CLOSE_DELAY_MS = 220;
 
 function isActive(pathname: string, href: string) {
   return href === "/"
@@ -23,191 +11,66 @@ function isActive(pathname: string, href: string) {
     : pathname === href || pathname.startsWith(`${href}/`);
 }
 
-/** Slides its children between their natural width and zero. */
-function Collapsible({
-  show,
-  as: Tag = "div",
-  prefersReducedMotion,
-  children,
+export function SiteHeader({
+  variant = "default",
 }: {
-  show: boolean;
-  as?: "div" | "li";
-  prefersReducedMotion: boolean;
-  children: ReactNode;
+  variant?: "default" | "inverse";
 }) {
-  const Component = Tag === "li" ? motion.li : motion.div;
-
-  return (
-    <Component
-      initial={false}
-      animate={{
-        gridTemplateColumns: show ? "1fr" : "0fr",
-        opacity: show ? 1 : 0,
-      }}
-      transition={{
-        duration: prefersReducedMotion ? 0 : DURATION.base,
-        ease: EASE,
-      }}
-      style={{ display: "grid" }}
-    >
-      <div style={{ minWidth: 0, overflow: "hidden" }}>{children}</div>
-    </Component>
-  );
-}
-
-export function SiteHeader() {
   const pathname = usePathname() as string;
-  const pillRef = useRef<HTMLDivElement>(null);
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const scrolledRef = useRef(false);
-  const prefersReducedMotion = usePrefersReducedMotion();
-  const [scrolled, setScrolled] = useState(false);
-  const [hovered, setHovered] = useState(false); // pointer over the bar
-  const [focused, setFocused] = useState(false); // keyboard focus inside the bar
-
-  const keepExpanded = pathname === "/about" || pathname.startsWith("/about/");
-
-  useEffect(() => {
-    if (keepExpanded) return;
-
-    const updateScrollState = () => {
-      const nextScrolled = window.scrollY > SCROLL_THRESHOLD;
-      if (scrolledRef.current === nextScrolled) return;
-      scrolledRef.current = nextScrolled;
-      setScrolled(nextScrolled);
-      if (nextScrolled) setHovered(false);
-    };
-
-    updateScrollState();
-    window.addEventListener("scroll", updateScrollState, { passive: true });
-    return () => window.removeEventListener("scroll", updateScrollState);
-  }, [keepExpanded]);
-
-  const expanded = keepExpanded || !scrolled || hovered || focused;
-
-  // Tapping outside closes the bar (touch screens have no "hover out")
-  useEffect(() => {
-    const onPointerDown = (event: PointerEvent) => {
-      if (!pillRef.current?.contains(event.target as Node)) setHovered(false);
-    };
-    document.addEventListener("pointerdown", onPointerDown);
-    return () => document.removeEventListener("pointerdown", onPointerDown);
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (closeTimer.current) clearTimeout(closeTimer.current);
-    };
-  }, []);
-
-  const open = () => {
-    if (closeTimer.current) clearTimeout(closeTimer.current);
-    setHovered(true);
-  };
-
-  const closeSoon = () => {
-    if (closeTimer.current) clearTimeout(closeTimer.current);
-    closeTimer.current = setTimeout(() => setHovered(false), CLOSE_DELAY_MS);
-  };
-
-  // On the home page there's no matching nav item, so a "Home" label stands in.
-  // It only appears while collapsed, so the expanded bar matches the other pages.
-  const items =
-    pathname === "/"
-      ? [{ href: "/", label: "Home" }, ...siteNav]
-      : siteNav;
+  const inverse = variant === "inverse";
+  const items = [
+    siteNav[0],
+    siteNav[1],
+    siteNav[2],
+    siteNav[3],
+  ];
 
   return (
-    // Sticky wrapper is click-through; only the bar itself catches pointer events.
-    <header className="pointer-events-none sticky top-0 z-50 px-page pt-header-t pb-header-t">
-      <motion.div
-        ref={pillRef}
-        initial={prefersReducedMotion ? false : { opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{
-          duration: prefersReducedMotion ? 0 : DURATION.base,
-          ease: EASE,
-        }}
-        onPointerEnter={open}
-        onPointerMove={(e) => {
-          if (e.pointerType !== "touch") open();
-        }}
-        onPointerLeave={(e) => {
-          if (e.pointerType !== "touch") closeSoon();
-        }}
-        onFocus={(e) => {
-          // Only keyboard focus keeps it open. A mouse click leaves focus on the
-          // clicked link, which would otherwise pin the bar open forever.
-          let keyboard = true;
-          try {
-            keyboard = e.target.matches(":focus-visible");
-          } catch {
-            /* very old browsers: treat as keyboard focus */
-          }
-          if (keyboard) setFocused(true);
-        }}
-        onBlur={(e) => {
-          if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setFocused(false);
-        }}
-        className="font-sans site-header-enter pointer-events-auto mx-auto flex h-10 w-fit max-w-full items-center rounded-lg bg-surface px-1.5 text-inverse shadow-[0_4px_20px_rgba(0,0,0,0.08)]"
-      >
-        {/* Logo link collapses with the expanded navigation. */}
-        <Collapsible show={expanded} prefersReducedMotion={prefersReducedMotion}>
-          <Link
-            href="/"
-            aria-label={site.name}
-            className="flex h-7 items-center gap-1 rounded-lg px-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-          >
-            <Image
-              src="/brand/premodus-light-tile.svg"
-              alt=""
-              width={24}
-              height={24}
-              className="size-6 rounded-lg object-contain"
-            />
-          
-          </Link>
-        </Collapsible>
-
+    <header
+      className={`sticky top-0 z-50 h-[60px] ${
+        inverse ? "bg-surface text-inverse" : "bg-canvas text-ink-strong"
+      }`}
+    >
+      <div className="mx-auto flex h-full w-full items-center justify-between px-4 md:px-[80px]">
+        <Link
+          href="/"
+          aria-label={site.name}
+          className={`flex h-full items-center focus-visible:outline-2 focus-visible:outline-offset-[-2px] ${
+            inverse ? "focus-visible:outline-inverse" : "focus-visible:outline-ink-strong"
+          }`}
+        >
+          <Image
+            src={inverse ? "/brand/premodus-logo-paper.svg" : "/brand/premodus-logo-ink.svg"}
+            alt={site.name}
+            width={177}
+            height={16}
+            className="h-4 w-[177px] shrink-0 object-contain"
+          />
+        </Link>
         <nav aria-label="Primary">
-          <ul className="flex items-center">
+          <ul className="flex h-full items-center gap-4 md:gap-20">
             {items.map((item) => {
               const active = isActive(pathname, item.href);
-              const isHomeLabel = item.href === "/" && item.label === "Home";
-              const show = isHomeLabel ? !expanded : expanded || active;
 
               return (
-                <Collapsible
-                  key={item.href}
-                  as="li"
-                  show={show}
-                  prefersReducedMotion={prefersReducedMotion}
-                >
+                <li key={item.href}>
                   <Link
                     href={item.href}
                     aria-current={active ? "page" : undefined}
-                    tabIndex={show ? undefined : -1}
-                    className={`relative block whitespace-nowrap rounded-sm px-2 py-1 text- text-inverse transition-[background-color,color] duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white hover:bg-white/20`}
+                    className={`block whitespace-nowrap px-2 py-2 text-body-medium ${
+                      inverse ? "text-inverse/75" : "text-ink-weak"
+                    } focus-visible:outline-2 focus-visible:outline-offset-2 ${
+                      inverse ? "focus-visible:outline-inverse" : "focus-visible:outline-ink-strong"
+                    } md:px-0`}
                   >
                     {item.label}
-                    {active ? (
-                      <motion.span
-                        layoutId="primary-nav-active"
-                        aria-hidden="true"
-                        className="pointer-events-none absolute inset-x-2 bottom-0 h-px bg-inverse"
-                        transition={{
-                          duration: prefersReducedMotion ? 0 : DURATION.fast,
-                          ease: EASE,
-                        }}
-                      />
-                    ) : null}
                   </Link>
-                </Collapsible>
+                </li>
               );
             })}
           </ul>
         </nav>
-      </motion.div>
+      </div>
     </header>
   );
 }

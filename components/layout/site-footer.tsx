@@ -8,36 +8,50 @@ const socials = [
   { label: "X", href: "https://x.com/premoduslabs" },
 ] as const;
 
-const footerLinkClass =
-  "text-small text-inverse transition-opacity duration-200 hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-inverse";
+export function SiteFooter({
+  variant = "default",
+}: {
+  variant?: "default" | "inverse";
+}) {
+  const inverse = variant === "inverse";
+  const footerLinkClass = `text-small ${
+    inverse ? "text-ink-strong" : "text-inverse"
+  } transition-opacity duration-200 hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-rule/25`;
 
-export function SiteFooter() {
   return (
-    <footer className="mt-auto bg-surface px-page pt-footer pb-footer text-inverse">
+    <footer
+      className={`mt-auto px-page pt-footer pb-footer ${
+        inverse ? "bg-canvas text-ink-strong" : "bg-surface text-inverse"
+      }`}
+    >
       <div className="mx-auto max-w-7xl">
-        <div className="grid grid-cols-1 gap-major border-t border-inverse/25 pt-8 md:grid-cols-12 md:gap-gutter">
+        <div className="grid grid-cols-1 gap-major border-t border-rule/25 pt-8 md:grid-cols-12 md:gap-gutter">
           <div className="md:col-span-5">
-            <div className="max-w-md border-t border-inverse/25 pt-4">
-              <p className="text-tiny text-inverse/60">Stay in touch</p>
+            <div className="max-w-md border-t border-rule/25 pt-4">
+              <p className={`text-tiny ${inverse ? "text-ink-weak" : "text-inverse/60"}`}>
+                Stay in touch
+              </p>
               <Text
                 as="h2"
                 variant="h4"
                 animate={false}
-                className="mt-2 !text-inverse"
+                className={`mt-2 ${inverse ? "!text-ink-strong" : "!text-inverse"}`}
               >
                 Subscribe to our mailing list
               </Text>
-              <p className="mt-2 text-small text-inverse/75">
+              <p className={`mt-2 text-small ${inverse ? "text-ink-medium" : "text-inverse/75"}`}>
                 Get insights and updates straight to your inbox.
               </p>
               <div className="mt-4">
-                <NewsletterForm />
+                <NewsletterForm variant={variant} />
               </div>
             </div>
           </div>
 
           <nav className="md:col-span-3 md:col-start-7" aria-label="Footer navigation">
-            <p className="text-tiny text-inverse/60">Navigate</p>
+            <p className={`text-tiny ${inverse ? "text-ink-weak" : "text-inverse/60"}`}>
+              Navigate
+            </p>
             <ul className="mt-4 flex flex-col gap-3">
               {siteNav.map((item) => (
                 <li key={item.href}>
@@ -50,7 +64,9 @@ export function SiteFooter() {
           </nav>
 
           <div className="md:col-span-3 md:col-start-10">
-            <p className="text-tiny text-inverse/60">Connect</p>
+            <p className={`text-tiny ${inverse ? "text-ink-weak" : "text-inverse/60"}`}>
+              Connect
+            </p>
             <a
               href={`mailto:${site.email}`}
               className={`mt-4 inline-block ${footerLinkClass}`}
@@ -74,7 +90,11 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <p className="mt-major border-t border-inverse/25 pt-4 text-tiny text-inverse/60">
+        <p
+          className={`mt-major border-t border-rule/25 pt-4 text-tiny ${
+            inverse ? "text-ink-weak" : "text-inverse/60"
+          }`}
+        >
           © {site.name} {new Date().getFullYear()}
         </p>
       </div>

@@ -33,7 +33,7 @@ Insights (blog) is a feature: `features/insights/*` plus thin routes under `app/
 
 # Design system
 
-Visual source of truth: Figma exports in `Premodus Labs/`. Code source of truth: `lib/design/tokens.ts` **and** `app/globals.css` (they must match). Font loading: `lib/design/fonts.ts` (Space Grotesk via `next/font/google`).
+Visual source of truth: Figma exports in `Premodus Labs/`. Code source of truth: `lib/design/tokens.ts` **and** `app/globals.css` (they must match). Font loading: `lib/design/fonts.ts` (Host Grotesk via `next/font/google`).
 
 ## Color
 
@@ -41,17 +41,18 @@ Only these fills and inks. Do not use Tailwind default palettes (`zinc`, `neutra
 
 | Token | Value | Tailwind |
 | --- | --- | --- |
-| Strong — Black | `#000000` | `text-ink-strong` / `bg-surface` |
-| Medium — Black 0.75 | `rgb(0 0 0 / 0.75)` | `text-ink-medium` |
-| Weak — Black 0.6 | `rgb(0 0 0 / 0.6)` | `text-ink-weak` |
-| Canvas | `#ffffff` | `bg-canvas` |
-| Inverse | `#ffffff` on surface | `text-inverse` |
+| Strong — Ink | `#1A1B18` | `text-ink-strong` / `bg-surface` |
+| Medium — Ink 0.75 | `rgb(26 27 24 / 0.75)` | `text-ink-medium` |
+| Weak — Ink 0.6 | `rgb(26 27 24 / 0.6)` | `text-ink-weak` |
+| Canvas — Paper | `#F2F1E8` | `bg-canvas` |
+| Inverse — Paper | `#F2F1E8` on surface | `text-inverse` |
+| Rule | `#5C767F` at 25% opacity | `border-rule/25` |
 
 Headings and strong body use `ink-strong`. Default body uses `ink-medium`. Captions and de-emphasized lines use `ink-weak`. Header/nav sits on `surface` with `inverse` type. Do not add a dark-mode inversion unless the spec says so.
 
 ## Typography
 
-Family: **Space Grotesk** only (`font-sans` → `--font-space-grotesk`). Weights in use: **400 regular** and **500 medium**. Do not load or apply other families (no Geist, Inter, system-ui as the designed face).
+Family: **Host Grotesk** only (`font-sans` → `--font-host-grotesk`). Weights in use: **400 regular** and **500 medium**. Do not load or apply other families (no Geist, Inter, system-ui as the designed face).
 
 Use the named type styles, not ad-hoc `text-3xl` / `text-lg`:
 
@@ -64,8 +65,8 @@ Use the named type styles, not ad-hoc `text-3xl` / `text-lg`:
 | Heading 4 | 20px | medium | `text-heading-4` |
 | Body | 16px | regular | `text-body` |
 | Body bold | 16px | medium | `text-body-bold` |
-| Small | 14px | regular | `text-small` |
-| Small bold | 14px | medium | `text-small-bold` |
+| Small | 16px | regular | `text-small` |
+| Small bold | 16px | medium | `text-small-bold` |
 | Tiny | 12px | regular | `text-tiny` |
 | Tiny bold | 12px | regular | `text-tiny-bold` |
 

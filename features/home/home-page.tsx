@@ -4,132 +4,66 @@ import { SectionTransition } from "@/components/ui/section-transition";
 import { Text } from "@/components/ui/text";
 import { projects } from "@/lib/constants/projects";
 import { HomeHero } from "@/features/home/home-hero";
-import { ProjectGrid } from "@/features/work/project-grid";
-import { ServicesScroller } from "@/features/home/services-scroller";
+import { ServicesGrid } from "@/features/home/services-grid";
+import { FeaturedWork } from "@/features/home/featured-work";
 
 const services = [
   {
     label: "Software Development",
-    title: "Built to hold up under real use, not just under a demo.",
+    title: "Built to hold up under real use",
     description:
       "We write the version that still works when the traffic spikes, the data’s messy, and someone’s using it on a bad connection — not the version that only works in the sales deck.",
-    model: "computer",
-  },
-  {
-    label: "Digital Transformation",
-    title: "Change that fits how people actually work, not disruption for its own sake.",
-    description:
-      "We don’t turn digital transformation projects into a problem no one had. We start with how the institution actually runs today, and build toward something better.",
-    model: "wall",
-  },
-  {
-    label: "IT Consulting",
-    title: "Advice from people who’ve had to live with the consequences of bad advice.",
-    description:
-      "We ask what you’re solving before we recommend the next one — because a recommendation that ignores the local context sets up the next problem.",
-    model: "paper",
+    video: "/media/card-software-development.mp4",
   },
   {
     label: "Cybersecurity",
-    title: "Threat models built for the environment we’re actually in, not a checklist copied from somewhere else.",
+    title: "Threat models built for the environment we’re actually in",
     description:
       "Malawi has particular threats, particular network patterns, and risks here don’t look like the risks in a generic framework.",
-    model: "shield",
+    video: "/media/card-cybersecurity.mp4",
+  },
+  {
+    label: "Digital Transformation",
+    title: "Change that fits how people actually work",
+    description:
+      "We don’t turn digital transformation projects into a problem no one had. We start with how the institution actually runs today, and build toward something better.",
+    video: "/media/card-digital-transformation.mp4",
   },
 ] as const;
 
 export function HomePage() {
   return (
     <>
-      <HomeHero region={"global" as any} />
-
-      <SectionTransition animateOnView={false} className="px-page pt-section pb-major">
-        {/* Left-anchored (no mx-auto) and wide, so content fills the desktop width */}
-        <div className="w-full max-w-[1600px]">
-          <ScrollReveal>
-            <div className="w-full">
-              <Text as="h2" variant="h2" className="max-w-3xl">
-                World-class starts with how we treat each piece of the work.
-              </Text>
-            </div>
-          </ScrollReveal>
-          <ServicesScroller services={services} />
-        </div>
-      </SectionTransition>
-
-      <SectionTransition className="px-page py-24">
-        <div className="grid w-full max-w-[1600px] grid-cols-1 gap-8 border-t border-surface pt-8 lg:grid-cols-12 lg:gap-gutter">
-          <ScrollReveal className="lg:col-span-5">
-            <Text variant="small-bold">What this means for you</Text>
-            <Text variant="h3" className="mt-4">
-              Early conversations, not sales pitches.
-            </Text>
-          </ScrollReveal>
-          <ScrollReveal className="lg:col-span-5 lg:col-start-8" delay={0.12}>
-            <Text variant="small">
-              We’d rather understand the actual problem than lead with a
-              proposal. Every engagement starts with the same question: what
-              does this look like if it’s built properly, for what you’re
-              actually dealing with?
-            </Text>
-          </ScrollReveal>
-        </div>
-      </SectionTransition>
+      <HomeHero />
 
       <SectionTransition
         animateOnView={false}
-        className="px-page py-24"
+        className="bg-surface px-6 py-[90px] text-inverse md:px-page"
       >
         <ScrollReveal>
-          <Text as="h2" variant="h2">
-            A small team that moves like one.
+          <Text
+            as="h2"
+            variant="h1"
+            className="max-w-[630px] font-semibold !text-inverse capitalize"
+          >
+            World-class starts with how we treat each piece of the work.
           </Text>
         </ScrollReveal>
-        <div className="mt-major grid grid-cols-1 gap-major md:grid-cols-3">
-          {[
-            {
-              title: "Small, fast, high-agency",
-              description:
-                "The people closest to the problem make the decisions, with the responsibility to see the work through.",
-            },
-            {
-              title: "Question the default",
-              description:
-                "We ask why before we copy what works elsewhere, because Malawi’s networks, budgets and users rarely match the template.",
-            },
-            {
-              title: "Impact before optics",
-              description:
-                "We judge the work by whether it holds up and helps people, not by how it looks in a pitch deck or a press release.",
-            },
-          ].map(({ title, description }, index) => (
-            <ScrollReveal key={title} delay={index * 0.12}>
-              <Text variant="small-bold">{title}</Text>
-              <Text variant="small" className="mt-4">
-                {description}
-              </Text>
-            </ScrollReveal>
-          ))}
+        <div className="mt-major">
+          <ServicesGrid services={services} />
         </div>
       </SectionTransition>
 
-      <SectionTransition className="px-page py-24">
-        <ScrollReveal>
-          <Text as="h2" variant="h2">
-            Work we’ve done
-          </Text>
-        </ScrollReveal>
-        <ProjectGrid projects={projects.slice(0, 3)} />
+      <SectionTransition animateOnView={false} className="bg-surface">
+        <FeaturedWork projects={projects.slice(0, 3)} />
       </SectionTransition>
 
-      <SectionTransition className="px-page py-24 text-center">
+      <SectionTransition className="px-page py-section text-center">
         <div className="mx-auto flex max-w-xl flex-col items-center gap-6">
           <ScrollReveal>
             <Text as="h2" variant="h2">
               Need something built?
             </Text>
-          </ScrollReveal>
-          <ScrollReveal delay={0.12}>
             <Text variant="body">
               We start with the problem so we can build what it needs.
             </Text>
