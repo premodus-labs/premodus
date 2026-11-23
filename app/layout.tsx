@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description:
     "We build technology at a world-class standard to solve the problems Malawi’s tech industry has overlooked.",
   icons: {
-    icon: [{ url: "/brand/premodus-light-tile.svg", type: "image/svg+xml" }],
+    icon: [{ url: "/brand/premodus-logo-icon.svg", type: "image/svg+xml" }],
   },
 };
 
