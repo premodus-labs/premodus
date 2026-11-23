@@ -21,6 +21,7 @@ const motionTags: Record<RevealTag, React.ElementType> = {
 type ScrollRevealProps = {
   children: ReactNode;
   delay?: number;
+  duration?: number;
   as?: RevealTag;
 } & Omit<ComponentPropsWithoutRef<RevealTag>, "children">;
 
@@ -28,6 +29,7 @@ export function ScrollReveal({
   children,
   className,
   delay = 0.05,
+  duration = DURATION.slow,
   as = "div",
   ...props
 }: ScrollRevealProps) {
@@ -46,7 +48,7 @@ export function ScrollReveal({
         hidden: { opacity: 0, y: 24 },
         visible: { opacity: 1, y: 0 },
       },
-      transition: { duration: DURATION.slow, delay, ease: EASE },
+      transition: { duration, delay, ease: EASE },
     },
     children,
   );

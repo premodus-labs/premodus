@@ -50,6 +50,7 @@ export function HomeHero({ services }: { services: readonly HomeService[] }) {
   const mediaRef = useRef<HTMLDivElement | null>(null);
   const [scriptReady, setScriptReady] = useState(false);
   const [useShader, setUseShader] = useState(false);
+  const [serviceCardsStarted, setServiceCardsStarted] = useState(false);
   const [aspectRatio, setAspectRatio] = useState<string>("16 / 9");
   const [fillTransform, setFillTransform] = useState({ scale: 1, y: 0 });
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -104,6 +105,9 @@ export function HomeHero({ services }: { services: readonly HomeService[] }) {
       "--home-services-progress",
       `${progress}`,
     );
+  });
+  useMotionValueEvent(servicesHeadingOpacity, "change", (progress) => {
+    if (!prefersReducedMotion && progress > 0) setServiceCardsStarted(true);
   });
 
   useEffect(() => {
@@ -308,7 +312,7 @@ export function HomeHero({ services }: { services: readonly HomeService[] }) {
             <div className="mt-4">
               <ServicesGrid
                 services={services}
-                progress={scrollYProgress}
+                started={serviceCardsStarted}
                 animate={!prefersReducedMotion}
               />
             </div>

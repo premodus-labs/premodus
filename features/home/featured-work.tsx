@@ -4,7 +4,10 @@ import { ButtonLink } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import { Text } from "@/components/ui/text";
 import { getBoilerImage } from "@/lib/constants/boiler-images";
+import { DURATION } from "@/lib/design/motion";
 import type { Project } from "@/lib/constants/projects";
+
+const REVEAL_DURATION = DURATION.slow / 2;
 
 function projectLink(project: Project) {
   return {
@@ -28,7 +31,7 @@ export function FeaturedWork({ projects }: { projects: Project[] }) {
   return (
     <div className="bg-surface px-page py-[90px] text-inverse">
       <div className="w-full">
-        <ScrollReveal delay={0.05}>
+        <ScrollReveal delay={0.05} duration={REVEAL_DURATION}>
           <Text
             as="h2"
             variant="h2"
@@ -48,6 +51,7 @@ export function FeaturedWork({ projects }: { projects: Project[] }) {
                 key={project.slug}
                 as="article"
                 delay={0.9 + index * 0.875}
+                duration={REVEAL_DURATION}
                 className="min-w-0"
               >
                 <Link
@@ -78,7 +82,12 @@ export function FeaturedWork({ projects }: { projects: Project[] }) {
             );
           })}
         </div>
-        <ScrollReveal as="div" delay={3.525} className="mt-10">
+        <ScrollReveal
+          as="div"
+          delay={3.525}
+          duration={REVEAL_DURATION}
+          className="mt-10"
+        >
           <ButtonLink
             href="/work"
             className="!rounded !bg-inverse !text-surface capitalize"

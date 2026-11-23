@@ -1,3 +1,11 @@
+.copy {
+  animation: heroEntrance 1400ms ease-out;
+}
+
+.canvasContainer {
+  animation: heroEntrance 1400ms ease-out 160ms backwards;
+}
+
 .scrollTrack {
   position: relative;
   height: 500vh;
@@ -145,5 +153,22 @@
 
   .title {
     max-width: 22ch;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .copy,
+  .canvasContainer {
+    animation: none;
+  }
+}
+
+@keyframes heroEntrance {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
   }
 }

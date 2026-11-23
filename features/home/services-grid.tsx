@@ -1,7 +1,7 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
-import { motion, useTransform, type MotionValue } from "motion/react";
+import { useEffect, useSyncExternalStore } from "react";
+import { motion, useAnimationControls } from "motion/react";
 import { Text } from "@/components/ui/text";
 
 export type HomeService = {
@@ -26,36 +26,37 @@ function getIsCompactViewport() {
 function ServiceCard({
   service,
   index,
-  progress,
+  started,
   animate,
   compact,
 }: {
   service: HomeService;
   index: number;
-  progress: MotionValue<number>;
+  started: boolean;
   animate: boolean;
   compact: boolean;
 }) {
-  const start = 0.58 + index * 0.18;
-  const nextStart = start + 0.18;
-  const desktopOpacity = useTransform(progress, [start, start + 0.02], [0, 1]);
-  const desktopY = useTransform(progress, [start, start + 0.02], [20, 0]);
-  const compactOpacity = useTransform(
-    progress,
-    [start, start + 0.02, nextStart, nextStart + 0.02],
-    [0, 1, 1, index === 2 ? 1 : 0],
-  );
-  const compactY = useTransform(progress, [start, start + 0.02], [20, 0]);
+  const controls = useAnimationControls();
+
+  useEffect(() => {
+    if (!animate || !started) return;
+
+    controls.start({
+      opacity: compact ? [0, 1, 1, index === 2 ? 1 : 0] : 1,
+      y: compact ? [20, 0, 0, 0] : 0,
+      transition: compact
+        ? { duration: 0.5, delay: index * 1.1, times: [0, 0.15, 0.8, 1] }
+        : { duration: 0.3, delay: index * 1.1 },
+    });
+  }, [animate, compact, controls, index, started]);
 
   return (
     <motion.article
+      initial={animate ? { opacity: 0, y: 20 } : false}
+      animate={animate ? controls : undefined}
       className={`mx-auto w-full max-w-[450px] min-w-0 lg:mx-0 lg:flex-1 ${
         compact && animate ? "col-start-1 row-start-1" : ""
       }`}
-      style={{
-        opacity: !animate ? 1 : compact ? compactOpacity : desktopOpacity,
-        y: !animate ? 0 : compact ? compactY : desktopY,
-      }}
     >
       <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg bg-canvas">
         <video
@@ -92,11 +93,11 @@ function ServiceCard({
 
 export function ServicesGrid({
   services,
-  progress,
+  started,
   animate = true,
 }: {
   services: readonly HomeService[];
-  progress: MotionValue<number>;
+  started: boolean;
   animate?: boolean;
 }) {
   const compact = useSyncExternalStore(
@@ -112,7 +113,7 @@ export function ServicesGrid({
           key={service.label}
           service={service}
           index={index}
-          progress={progress}
+          started={started}
           animate={animate}
           compact={compact}
         />
