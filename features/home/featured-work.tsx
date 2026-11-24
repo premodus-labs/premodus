@@ -29,7 +29,7 @@ export function FeaturedWork({ projects }: { projects: Project[] }) {
   if (featuredProjects.length === 0) return null;
 
   return (
-    <div className="bg-surface px-page py-[90px] text-inverse">
+    <div className="bg-surface px-5 py-6 text-inverse md:px-page md:py-[45px]">
       <div className="w-full">
         <ScrollReveal delay={0.05} duration={REVEAL_DURATION}>
           <Text
@@ -41,7 +41,7 @@ export function FeaturedWork({ projects }: { projects: Project[] }) {
           </Text>
         </ScrollReveal>
 
-        <div className="mt-10 grid grid-cols-1 gap-y-10 sm:grid-cols-2 sm:gap-x-5 lg:grid-cols-3 lg:gap-y-0">
+        <div className="mt-10 grid grid-cols-1 gap-y-10 md:grid-cols-2 md:gap-x-5 lg:grid-cols-3 lg:gap-y-0">
           {featuredProjects.map((project, index) => {
             const image = projectImage(project, index);
             const link = projectLink(project);
@@ -65,7 +65,7 @@ export function FeaturedWork({ projects }: { projects: Project[] }) {
                       src={image.src}
                       alt={image.alt}
                       fill
-                      sizes="(min-width: 1024px) calc((100vw - 120px) / 3), (min-width: 640px) calc((100vw - 180px) / 2), calc(100vw - 160px)"
+                      sizes="(min-width: 1024px) calc((100vw - 200px) / 3), (min-width: 768px) calc((100vw - 180px) / 2), calc(100vw - 40px)"
                       className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
                     />
                   </div>

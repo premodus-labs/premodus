@@ -39,7 +39,7 @@ export function HomePage() {
         <FeaturedWork projects={projects.slice(0, 3)} />
       </SectionTransition>
 
-      <SectionTransition className="px-page py-section text-center">
+      <SectionTransition className="px-5 py-section text-center md:px-page">
         <div className="mx-auto flex max-w-xl flex-col items-center gap-6">
           <ScrollReveal>
             <Text as="h2" variant="h2">
