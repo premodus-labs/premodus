@@ -253,57 +253,63 @@ export function HomeHero({ services }: { services: readonly HomeService[] }) {
         className={`${styles.hero} ${staticLayout ? styles.heroReduced : ""}`}
         style={staticLayout ? undefined : { backgroundColor: stageBackground }}
       >
-        <motion.div
-          className={styles.copy}
-          style={staticLayout ? undefined : { y: copyY, opacity: copyOpacity }}
+        <div
+          className={
+            staticLayout ? styles.heroContentReduced : styles.heroContent
+          }
         >
-          <div className={styles.copyInner}>
-            <h1
-              id="home-hero-title"
-              className={`text-heading-2 sm:text-display md:text-heading-1 ${styles.title}`}
-            >
-              Premodus Labs is a technology company based in Malawi, building
-              software and securing it for organizations anywhere.
-            </h1>
-            {/* <ButtonLink href="/work" className={styles.cta}>
+          <motion.div
+            className={styles.copy}
+            style={staticLayout ? undefined : { y: copyY, opacity: copyOpacity }}
+          >
+            <div className={styles.copyInner}>
+              <h1
+                id="home-hero-title"
+                className={`text-heading-2 sm:text-display md:text-heading-1 ${styles.title}`}
+              >
+                Premodus Labs is a technology company based in Malawi, building
+                software and securing it for organizations anywhere.
+              </h1>
+              {/* <ButtonLink href="/work" className={styles.cta}>
               See our work
             </ButtonLink> */}
-          </div>
-        </motion.div>
-        <motion.div
-          ref={mediaRef}
-          data-home-hero-visual=""
-          className={`${styles.canvasContainer} rounded-lg`}
-          style={{
-            aspectRatio,
-            ...(staticLayout
-              ? {}
-              : { y: mediaY, scale: mediaScale, borderRadius: mediaRadius }),
-          }}
-        >
-          {useShader ? (
-            <canvas
-              id="hero-ascii"
-              ref={canvasRef}
-              className={styles.canvas}
-              aria-hidden="true"
-            />
-          ) : (
-            <Image
-              src={HERO_FALLBACK_IMAGE}
-              alt=""
-              fill
-              priority
-              sizes="calc(100vw - 160px)"
-              className={styles.fallback}
-            />
-          )}
+            </div>
+          </motion.div>
           <motion.div
-            aria-hidden="true"
-            className={styles.inkOverlay}
-            style={{ opacity: staticLayout ? 0 : inkOpacity }}
-          />
-        </motion.div>
+            ref={mediaRef}
+            data-home-hero-visual=""
+            className={`${styles.canvasContainer} rounded-lg`}
+            style={{
+              aspectRatio,
+              ...(staticLayout
+                ? {}
+                : { y: mediaY, scale: mediaScale, borderRadius: mediaRadius }),
+            }}
+          >
+            {useShader ? (
+              <canvas
+                id="hero-ascii"
+                ref={canvasRef}
+                className={styles.canvas}
+                aria-hidden="true"
+              />
+            ) : (
+              <Image
+                src={HERO_FALLBACK_IMAGE}
+                alt=""
+                fill
+                priority
+                sizes="calc(100vw - 160px)"
+                className={styles.fallback}
+              />
+            )}
+            <motion.div
+              aria-hidden="true"
+              className={styles.inkOverlay}
+              style={{ opacity: staticLayout ? 0 : inkOpacity }}
+            />
+          </motion.div>
+        </div>
         <motion.div
           className={
             staticLayout ? styles.servicesReduced : styles.servicesOverlay
