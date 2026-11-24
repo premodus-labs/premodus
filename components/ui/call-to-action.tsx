@@ -11,6 +11,7 @@ type CallToActionProps = {
   secondaryLabel?: string;
   animateOnView?: boolean;
   variant?: "default" | "inverse";
+  fullWidthButtonOnMobile?: boolean;
 };
 
 export function CallToAction({
@@ -20,28 +21,37 @@ export function CallToAction({
   secondaryLabel,
   animateOnView = true,
   variant = "default",
+  fullWidthButtonOnMobile = false,
 }: CallToActionProps) {
   const inverse = variant === "inverse";
   const sectionClass = inverse ? "bg-surface text-inverse" : "";
   const headingClass = inverse ? "!text-inverse" : "";
   const bodyClass = inverse ? "!text-inverse/75" : "";
   const buttonClass = inverse ? "!bg-inverse !text-surface" : "";
+  const contentWidthClass = fullWidthButtonOnMobile ? "w-full" : "";
+  const actionsClass = fullWidthButtonOnMobile
+    ? "flex w-full flex-col items-center justify-center gap-4 md:flex-row"
+    : "flex flex-wrap items-center justify-center gap-4";
+  const fullWidthButtonClass = fullWidthButtonOnMobile ? "w-full md:w-auto" : "";
+  const sectionPaddingClass = fullWidthButtonOnMobile
+    ? "px-5 md:px-page"
+    : "px-page";
   const secondaryClass = inverse
     ? "text-inverse hover:text-inverse/75"
     : "text-ink-strong hover:text-ink-medium";
 
   if (!animateOnView) {
     return (
-      <section className={`section-panel px-page py-section text-center ${sectionClass}`}>
-        <div className="mx-auto flex max-w-xl flex-col items-center gap-6">
+      <section className={`section-panel ${sectionPaddingClass} py-section text-center ${sectionClass}`}>
+        <div className={`mx-auto flex ${contentWidthClass} max-w-xl flex-col items-center gap-6`}>
           <Text as="h2" variant="h2" animate={false} className={headingClass}>
             {title}
           </Text>
           <Text variant="body" animate={false} className={bodyClass}>
             {description}
           </Text>
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <ButtonLink href="/contact" className={buttonClass}>
+          <div className={actionsClass}>
+            <ButtonLink href="/contact" className={`${buttonClass} ${fullWidthButtonClass}`}>
               Get in touch
             </ButtonLink>
             {secondaryHref && secondaryLabel ? (
@@ -59,8 +69,8 @@ export function CallToAction({
   }
 
   return (
-    <SectionTransition className={`section-panel px-page py-section text-center ${sectionClass}`}>
-      <div className="mx-auto flex max-w-xl flex-col items-center gap-6">
+    <SectionTransition className={`section-panel ${sectionPaddingClass} py-section text-center ${sectionClass}`}>
+      <div className={`mx-auto flex ${contentWidthClass} max-w-xl flex-col items-center gap-6`}>
         <ScrollReveal>
           <Text as="h2" variant="h2" className={headingClass}>
             {title}
@@ -72,8 +82,8 @@ export function CallToAction({
           </Text>
         </ScrollReveal>
         <ScrollReveal delay={0.24}>
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <ButtonLink href="/contact" className={buttonClass}>
+          <div className={actionsClass}>
+            <ButtonLink href="/contact" className={`${buttonClass} ${fullWidthButtonClass}`}>
               Get in touch
             </ButtonLink>
             {secondaryHref && secondaryLabel ? (
