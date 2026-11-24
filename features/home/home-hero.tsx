@@ -272,6 +272,7 @@ export function HomeHero({ services }: { services: readonly HomeService[] }) {
         </motion.div>
         <motion.div
           ref={mediaRef}
+          data-home-hero-visual=""
           className={`${styles.canvasContainer} rounded-lg`}
           style={{
             aspectRatio,

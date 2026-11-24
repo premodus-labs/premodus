@@ -1,12 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, useMotionValueEvent, useScroll } from "motion/react";
 import { usePrefersReducedMotion } from "@/components/ui/use-prefers-reduced-motion";
 import { site, siteNav } from "@/lib/constants/navigation";
+
+const MOBILE_VIEWPORT = "(max-width: 767px)";
+
+function subscribeToMobileViewport(onChange: () => void) {
+  const mediaQuery = window.matchMedia(MOBILE_VIEWPORT);
+  mediaQuery.addEventListener("change", onChange);
+  return () => mediaQuery.removeEventListener("change", onChange);
+}
+
+function getIsMobileViewport() {
+  return window.matchMedia(MOBILE_VIEWPORT).matches;
+}
 
 function isActive(pathname: string, href: string) {
   return href === "/"
@@ -24,7 +36,16 @@ export function SiteHeader({
   const animatedHomeHeader = pathname === "/" && !inverse;
   const [hidden, setHidden] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [heroOutOfView, setHeroOutOfView] = useState(false);
   const prefersReducedMotion = usePrefersReducedMotion();
+  const mobileViewport = useSyncExternalStore(
+    subscribeToMobileViewport,
+    getIsMobileViewport,
+    () => false,
+  );
+  const mobileHomeHeader = animatedHomeHeader && mobileViewport;
+  const animateHomeColors = animatedHomeHeader && !mobileViewport;
+  const headerInverse = inverse || (mobileHomeHeader && heroOutOfView);
   const { scrollY } = useScroll();
   const items = [
     siteNav[0],
@@ -33,6 +54,23 @@ export function SiteHeader({
     siteNav[3],
   ];
 
+  useEffect(() => {
+    if (!mobileHomeHeader) return;
+
+    const heroVisual = document.querySelector("[data-home-hero-visual]");
+    if (!heroVisual) return;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry) {
+        setHeroOutOfView(
+          entry.boundingClientRect.top < 0 && entry.intersectionRatio < 0.5,
+        );
+      }
+    }, { threshold: [0.5] });
+    observer.observe(heroVisual);
+    return () => observer.disconnect();
+  }, [mobileHomeHeader]);
+
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious();
     if (previous === undefined) return;
@@ -40,9 +78,9 @@ export function SiteHeader({
 
     if (latest < 80 || direction < -8) {
       setHidden(false);
-    } else if (!animatedHomeHeader && direction > 8) {
+    } else if ((!animatedHomeHeader || mobileHomeHeader) && direction > 8) {
       setHidden(true);
-    } else if (animatedHomeHeader) {
+    } else if (animatedHomeHeader && !mobileHomeHeader) {
       const servicesProgress = Number.parseFloat(
         document.documentElement.style.getPropertyValue(
           "--home-services-progress",
@@ -60,13 +98,13 @@ export function SiteHeader({
   return (
     <motion.header
       data-home-hero-header={animatedHomeHeader ? "" : undefined}
-      className={`sticky top-0 z-50 h-[60px] ${
-        inverse
+      className={`sticky top-0 z-50 h-[60px] transition-colors duration-200 ${
+        headerInverse
           ? "bg-surface text-inverse"
           : "bg-canvas text-ink-strong"
       }`}
       style={
-        animatedHomeHeader
+        animateHomeColors
           ? {
               backgroundColor:
                 "color-mix(in srgb, var(--canvas), var(--surface) var(--home-hero-ink-progress, 0%))",
@@ -82,10 +120,10 @@ export function SiteHeader({
           href="/"
           aria-label={site.name}
           className={`flex h-full items-center focus-visible:outline-2 focus-visible:outline-offset-[-2px] ${
-            inverse ? "focus-visible:outline-inverse" : "focus-visible:outline-ink-strong"
+            headerInverse ? "focus-visible:outline-inverse" : "focus-visible:outline-ink-strong"
           }`}
         >
-          {animatedHomeHeader ? (
+          {animateHomeColors ? (
             <span className="relative block h-4 w-[177px] shrink-0">
               <Image
                 src="/brand/premodus-logo-ink.svg"
@@ -107,7 +145,7 @@ export function SiteHeader({
             </span>
           ) : (
             <Image
-              src={inverse ? "/brand/premodus-logo-paper.svg" : "/brand/premodus-logo-ink.svg"}
+              src={headerInverse ? "/brand/premodus-logo-paper.svg" : "/brand/premodus-logo-ink.svg"}
               alt={site.name}
               width={177}
               height={16}
@@ -118,7 +156,7 @@ export function SiteHeader({
         <button
           type="button"
           className={`rounded px-2 py-2 text-small md:hidden ${
-            inverse ? "text-inverse" : "text-ink-strong"
+            headerInverse ? "text-inverse" : "text-ink-strong"
           }`}
           aria-expanded={menuOpen}
           aria-controls="mobile-primary-navigation"
@@ -129,7 +167,7 @@ export function SiteHeader({
             })
           }
           style={
-            animatedHomeHeader
+            animateHomeColors
               ? {
                   color:
                     "color-mix(in srgb, var(--ink-weak), var(--inverse) var(--home-hero-ink-progress, 0%))",
@@ -150,12 +188,12 @@ export function SiteHeader({
                     href={item.href}
                     aria-current={active ? "page" : undefined}
                     className={`block whitespace-nowrap px-2 py-2 text-body-medium ${
-                      inverse ? "text-inverse/75" : "text-ink-weak"
+                      headerInverse ? "text-inverse/75" : "text-ink-weak"
                     } focus-visible:outline-2 focus-visible:outline-offset-2 ${
-                      inverse ? "focus-visible:outline-inverse" : "focus-visible:outline-ink-strong"
+                      headerInverse ? "focus-visible:outline-inverse" : "focus-visible:outline-ink-strong"
                     } md:px-0`}
                     style={
-                      animatedHomeHeader
+                      animateHomeColors
                         ? {
                             color:
                               "color-mix(in srgb, var(--ink-weak), var(--inverse) var(--home-hero-ink-progress, 0%))",
@@ -177,9 +215,9 @@ export function SiteHeader({
           aria-label="Primary"
           className="absolute inset-x-0 top-full border-t border-rule/25 px-4 pb-4 shadow-lg md:hidden"
           style={{
-            backgroundColor: animatedHomeHeader
+            backgroundColor: animateHomeColors
               ? "color-mix(in srgb, var(--canvas), var(--surface) var(--home-hero-ink-progress, 0%))"
-              : inverse
+              : headerInverse
                 ? "var(--surface)"
                 : "var(--canvas)",
           }}
@@ -195,10 +233,10 @@ export function SiteHeader({
                     aria-current={active ? "page" : undefined}
                     onClick={() => setMenuOpen(false)}
                     className={`block border-b border-rule/25 py-3 text-body-medium ${
-                      inverse ? "text-inverse/75" : "text-ink-weak"
+                      headerInverse ? "text-inverse/75" : "text-ink-weak"
                     }`}
                     style={
-                      animatedHomeHeader
+                      animateHomeColors
                         ? {
                             color:
                               "color-mix(in srgb, var(--ink-weak), var(--inverse) var(--home-hero-ink-progress, 0%))",
