@@ -23,6 +23,7 @@ export function SiteHeader({
   const inverse = variant === "inverse";
   const animatedHomeHeader = pathname === "/" && !inverse;
   const [hidden, setHidden] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const prefersReducedMotion = usePrefersReducedMotion();
   const { scrollY } = useScroll();
   const items = [
@@ -114,8 +115,27 @@ export function SiteHeader({
             />
           )}
         </Link>
-        <nav aria-label="Primary">
-          <ul className="flex h-full items-center gap-4 md:gap-20">
+        <button
+          type="button"
+          className={`rounded px-2 py-2 text-small md:hidden ${
+            inverse ? "text-inverse" : "text-ink-strong"
+          }`}
+          aria-expanded={menuOpen}
+          aria-controls="mobile-primary-navigation"
+          onClick={() => setMenuOpen((open) => !open)}
+          style={
+            animatedHomeHeader
+              ? {
+                  color:
+                    "color-mix(in srgb, var(--ink-weak), var(--inverse) var(--home-hero-ink-progress, 0%))",
+                }
+              : undefined
+          }
+        >
+          {menuOpen ? "Close" : "Menu"}
+        </button>
+        <nav className="hidden md:block" aria-label="Primary">
+          <ul className="flex h-full items-center gap-4 md:gap-8 lg:gap-20">
             {items.map((item) => {
               const active = isActive(pathname, item.href);
 
@@ -146,6 +166,49 @@ export function SiteHeader({
           </ul>
         </nav>
       </div>
+      {menuOpen ? (
+        <nav
+          id="mobile-primary-navigation"
+          aria-label="Primary"
+          className="absolute inset-x-0 top-full border-t border-rule/25 px-4 pb-4 shadow-lg md:hidden"
+          style={{
+            backgroundColor: animatedHomeHeader
+              ? "color-mix(in srgb, var(--canvas), var(--surface) var(--home-hero-ink-progress, 0%))"
+              : inverse
+                ? "var(--surface)"
+                : "var(--canvas)",
+          }}
+        >
+          <ul className="flex flex-col">
+            {items.map((item) => {
+              const active = isActive(pathname, item.href);
+
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    aria-current={active ? "page" : undefined}
+                    onClick={() => setMenuOpen(false)}
+                    className={`block border-b border-rule/25 py-3 text-body-medium ${
+                      inverse ? "text-inverse/75" : "text-ink-weak"
+                    }`}
+                    style={
+                      animatedHomeHeader
+                        ? {
+                            color:
+                              "color-mix(in srgb, var(--ink-weak), var(--inverse) var(--home-hero-ink-progress, 0%))",
+                          }
+                        : undefined
+                    }
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      ) : null}
     </motion.header>
   );
 }

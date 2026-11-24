@@ -20,7 +20,7 @@ export function SiteFooter({
 
   return (
     <footer
-      className={`mt-auto px-page pt-footer pb-footer ${
+      className={`mt-auto px-5 pt-footer pb-footer md:px-page ${
         inverse ? "bg-canvas text-ink-strong" : "bg-surface text-inverse"
       }`}
     >

@@ -58,7 +58,7 @@ function ServiceCard({
         compact && animate ? "col-start-1 row-start-1" : ""
       }`}
     >
-      <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg bg-canvas">
+      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-canvas sm:aspect-[3/4]">
         <video
           src={service.video}
           autoPlay
@@ -76,13 +76,13 @@ function ServiceCard({
           {service.label}
         </Text>
       </div>
-      <div className="mt-10">
+      <div className="mt-4 sm:mt-10">
         <Text as="h4" variant="h4" className="font-bold !text-inverse capitalize">
           {service.title}
         </Text>
         <Text
           variant="body"
-          className="mt-2.5 text-[18px] leading-6 !text-inverse capitalize"
+          className="mt-2.5 text-small sm:text-[18px] sm:leading-6 !text-inverse capitalize"
         >
           {service.description}
         </Text>

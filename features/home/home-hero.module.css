@@ -149,10 +149,15 @@
 @media (max-width: 767px) {
   .copy {
     width: 100%;
+    margin-bottom: 24px;
   }
 
   .title {
     max-width: 22ch;
+  }
+
+  .servicesOverlay {
+    padding-block: 16px;
   }
 }
 

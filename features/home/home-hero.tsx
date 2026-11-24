@@ -250,7 +250,7 @@ export function HomeHero({ services }: { services: readonly HomeService[] }) {
           <div className={styles.copyInner}>
             <h1
               id="home-hero-title"
-              className={`text-display md:text-heading-1 ${styles.title}`}
+              className={`text-heading-2 sm:text-display md:text-heading-1 ${styles.title}`}
             >
               Premodus Labs is a technology company based in Malawi, building
               software and securing it for organizations anywhere.
@@ -305,7 +305,7 @@ export function HomeHero({ services }: { services: readonly HomeService[] }) {
                 opacity: prefersReducedMotion ? 1 : servicesHeadingOpacity,
               }}
             >
-              <h2 className="text-heading-2 font-semibold !text-inverse mb-[40px]">
+              <h2 className="text-heading-3 sm:text-heading-2 font-semibold !text-inverse mb-4 sm:mb-10">
                 World-class starts with how we treat each piece of the work.
               </h2>
             </motion.div>
