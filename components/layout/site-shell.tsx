@@ -8,7 +8,8 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const headerVariant =
     pathname === "/work" || pathname === "/services" ? "inverse" : "default";
-  const footerVariant = pathname === "/work" ? "inverse" : "default";
+  const footerVariant =
+    pathname === "/work" || pathname === "/services" ? "inverse" : "default";
 
   return (
     <>
