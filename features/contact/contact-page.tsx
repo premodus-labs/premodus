@@ -22,13 +22,10 @@ const fields = [
 
 export function ContactPage() {
   return (
-    <SectionTransition className="px-page pt-16 pb-section">
+    <SectionTransition className="px-5 pt-16 pb-section md:px-page">
       <div className="w-full">
-        <Text as="h1" variant="h1">
-          Contact
-        </Text>
 
-        <div className="mt-major grid grid-cols-1 gap-major border-y border-rule/25 py-major lg:grid-cols-12 lg:gap-gutter">
+        <div className="grid grid-cols-1 gap-major py-major lg:grid-cols-12 lg:gap-gutter">
           <ScrollReveal className="flex items-center lg:col-span-5">
             <div className="max-w-md">
               <Text as="h2" variant="h2">
@@ -68,7 +65,7 @@ export function ContactPage() {
                 />
               </label>
 
-              <Button type="button" className="self-start">
+              <Button type="button" className="w-full self-stretch lg:w-auto lg:self-start">
                 Get in touch
               </Button>
             </form>

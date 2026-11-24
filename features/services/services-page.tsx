@@ -60,24 +60,28 @@ const services = [
 export function ServicesPage() {
   return (
     <div className="bg-surface text-inverse">
-      <SectionTransition className="px-page pt-header-t pb-header-b">
-        <Text as="h1" variant="h2" className="mx-auto w-full !text-inverse">
+      <SectionTransition className="px-5 pt-header-t pb-header-b md:px-page">
+        <Text
+          as="h1"
+          variant="h2"
+          className="mx-auto w-full !text-inverse sm:text-display md:text-heading-1"
+        >
           Three Services, All Built With the Same Constraint in Mind: This
           Has to Actually Work Here — Not in a Demo, Not in a Pitch Deck, in
           the Environment We’re Actually Operating in.
         </Text>
       </SectionTransition>
 
-      <SectionTransition className="px-page pb-section">
+      <SectionTransition className="px-5 pb-section md:px-page">
         <div className="mx-auto flex w-full flex-col gap-major">
           {services.map((service) => (
             <article
               key={service.title}
               id={service.title.replaceAll(" ", "-")}
-              className="rounded-lg grid min-h-[560px] grid-cols-1 overflow-hidden bg-canvas text-ink-strong md:grid-cols-2"
+              className="grid min-h-[560px] grid-cols-1 bg-transparent text-inverse lg:grid-cols-2 lg:overflow-hidden lg:rounded-lg lg:bg-canvas lg:text-ink-strong"
             >
               <video
-                className="h-[800px] w-full max-w-[600px] object-cover md:w-[600px]"
+                className="aspect-[3/4] w-full max-w-[600px] rounded-sm object-cover"
                 src={service.media}
                 autoPlay
                 loop
@@ -86,25 +90,43 @@ export function ServicesPage() {
                 preload="metadata"
                 aria-label={`${service.title} animation`}
               />
-              <div className="flex items-center px-8 py-major text-ink-strong md:px-major">
+              <div className="mt-6 text-inverse lg:mt-0 lg:flex lg:items-center lg:px-major lg:py-major lg:text-ink-strong">
                 <div className="max-w-md">
-                  <Text as="h3" variant="h3" className="!text-ink-strong">
+                  <Text
+                    as="h3"
+                    variant="h3"
+                    className="!text-inverse lg:!text-ink-strong"
+                  >
                     {service.title}
                   </Text>
-                  <Text variant="body" className="mt-4 !text-ink-medium">
+                  <Text
+                    variant="body"
+                    className="mt-4 !text-inverse/75 lg:!text-ink-medium"
+                  >
                     {service.description}
                   </Text>
-                  <Text variant="h4" className="mt-6 block !text-ink-strong">
+                  <Text
+                    variant="h4"
+                    className="mt-6 block !text-inverse lg:!text-ink-strong"
+                  >
                     Deliverables
                   </Text>
                   <ul className="mt-3 flex list-disc flex-col gap-1 pl-4">
                     {service.deliverables.map((deliverable) => (
                       <li key={deliverable}>
-                        <Text variant="body" className="!text-ink-medium">{deliverable}</Text>
+                        <Text
+                          variant="body"
+                          className="!text-inverse/75 lg:!text-ink-medium"
+                        >
+                          {deliverable}
+                        </Text>
                       </li>
                     ))}
                   </ul>
-                  <ButtonLink href="/contact" className="mt-6">
+                  <ButtonLink
+                    href="/contact"
+                    className="mt-6 w-full !bg-inverse !text-surface lg:w-auto lg:!bg-surface lg:!text-inverse"
+                  >
                     Get in touch
                   </ButtonLink>
                 </div>
@@ -116,6 +138,7 @@ export function ServicesPage() {
 
       <CallToAction
         variant="inverse"
+        fullWidthButtonOnMobile
         title="Start with a conversation, not a commitment."
         description="Tell us what you’re dealing with."
       />

@@ -40,7 +40,7 @@ export function HomePage() {
       </SectionTransition>
 
       <SectionTransition className="px-5 py-section text-center md:px-page">
-        <div className="mx-auto flex max-w-xl flex-col items-center gap-6">
+        <div className="mx-auto flex w-full max-w-xl flex-col items-center gap-6">
           <ScrollReveal>
             <Text as="h2" variant="h2">
               Need something built?
@@ -49,9 +49,11 @@ export function HomePage() {
               We start with the problem so we can build what it needs.
             </Text>
           </ScrollReveal>
-          <ScrollReveal delay={0.24}>
-            <div className="flex flex-wrap justify-center gap-4">
-              <ButtonLink href="/contact">Get in touch</ButtonLink>
+          <ScrollReveal delay={0.24} className="mt-4 w-full md:mt-0">
+            <div className="flex w-full flex-wrap justify-center gap-4">
+              <ButtonLink href="/contact" className="w-full md:w-auto">
+                Get in touch
+              </ButtonLink>
             </div>
           </ScrollReveal>
         </div>

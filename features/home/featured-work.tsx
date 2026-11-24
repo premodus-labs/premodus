@@ -92,7 +92,7 @@ export function FeaturedWork({ projects }: { projects: Project[] }) {
         >
           <ButtonLink
             href="/work"
-            className="!rounded !bg-inverse !text-surface capitalize"
+            className="w-full !rounded !bg-inverse !text-surface capitalize md:w-auto"
           >
             See all projects
           </ButtonLink>

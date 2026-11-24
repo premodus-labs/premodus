@@ -147,6 +147,10 @@
 }
 
 @media (max-width: 767px) {
+  .heroReduced {
+    margin-bottom: 0;
+  }
+
   .copy {
     width: 100%;
     margin-bottom: 24px;
@@ -156,8 +160,8 @@
     max-width: 22ch;
   }
 
-  .servicesOverlay {
-    padding-block: 16px;
+  .servicesReduced {
+    padding: var(--spacing-major) var(--spacing-page);
   }
 }
 

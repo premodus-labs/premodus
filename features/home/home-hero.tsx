@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Script from "next/script";
 import {
@@ -18,7 +18,18 @@ import styles from "./home-hero.module.css";
 // ── Tweak this ──────────────────────────────────────────────
 const HERO_IMAGE = "/media/typing.mp4";
 const HERO_FALLBACK_IMAGE = "/media/image.png";
+const MOBILE_VIEWPORT = "(max-width: 767px)";
 // ────────────────────────────────────────────────────────────
+
+function subscribeToMobileViewport(onChange: () => void) {
+  const mediaQuery = window.matchMedia(MOBILE_VIEWPORT);
+  mediaQuery.addEventListener("change", onChange);
+  return () => mediaQuery.removeEventListener("change", onChange);
+}
+
+function getIsMobileViewport() {
+  return window.matchMedia(MOBILE_VIEWPORT).matches;
+}
 
 type AsciiShaderController = { destroy: () => void };
 type AsciiShaderOptions = Record<string, unknown>;
@@ -53,7 +64,13 @@ export function HomeHero({ services }: { services: readonly HomeService[] }) {
   const [serviceCardsStarted, setServiceCardsStarted] = useState(false);
   const [aspectRatio, setAspectRatio] = useState<string>("16 / 9");
   const [fillTransform, setFillTransform] = useState({ scale: 1, y: 0 });
+  const mobileViewport = useSyncExternalStore(
+    subscribeToMobileViewport,
+    getIsMobileViewport,
+    () => false,
+  );
   const prefersReducedMotion = usePrefersReducedMotion();
+  const staticLayout = prefersReducedMotion || mobileViewport;
   const { scrollYProgress } = useScroll({
     target: scrollTrackRef,
     offset: ["start start", "end end"],
@@ -90,7 +107,7 @@ export function HomeHero({ services }: { services: readonly HomeService[] }) {
   );
 
   useMotionValueEvent(inkOpacity, "change", (progress) => {
-    if (prefersReducedMotion) return;
+    if (staticLayout) return;
 
     const root = document.documentElement;
     root.style.setProperty(
@@ -101,14 +118,14 @@ export function HomeHero({ services }: { services: readonly HomeService[] }) {
     root.style.setProperty("--home-hero-paper-logo-opacity", `${progress}`);
   });
   useMotionValueEvent(servicesOpacity, "change", (progress) => {
-    if (prefersReducedMotion) return;
+    if (staticLayout) return;
     document.documentElement.style.setProperty(
       "--home-services-progress",
       `${progress}`,
     );
   });
   useMotionValueEvent(servicesHeadingOpacity, "change", (progress) => {
-    if (!prefersReducedMotion && progress > 0) setServiceCardsStarted(true);
+    if (!staticLayout && progress > 0) setServiceCardsStarted(true);
   });
 
   useEffect(() => {
@@ -142,7 +159,7 @@ export function HomeHero({ services }: { services: readonly HomeService[] }) {
   }, []);
 
   useEffect(() => {
-    if (prefersReducedMotion) return;
+    if (staticLayout) return;
 
     const updateFillTransform = () => {
       const stage = stageRef.current;
@@ -169,17 +186,17 @@ export function HomeHero({ services }: { services: readonly HomeService[] }) {
       resizeObserver.disconnect();
       window.removeEventListener("resize", updateFillTransform);
     };
-  }, [aspectRatio, prefersReducedMotion]);
+  }, [aspectRatio, staticLayout]);
 
   useEffect(() => {
     const root = document.documentElement;
-    const progress = prefersReducedMotion ? 0 : inkOpacity.get();
+    const progress = staticLayout ? 0 : inkOpacity.get();
     root.style.setProperty("--home-hero-ink-progress", `${progress * 100}%`);
     root.style.setProperty("--home-hero-ink-logo-opacity", `${1 - progress}`);
     root.style.setProperty("--home-hero-paper-logo-opacity", `${progress}`);
     root.style.setProperty(
       "--home-services-progress",
-      `${prefersReducedMotion ? 0 : servicesOpacity.get()}`,
+      `${staticLayout ? 0 : servicesOpacity.get()}`,
     );
 
     return () => {
@@ -188,7 +205,7 @@ export function HomeHero({ services }: { services: readonly HomeService[] }) {
       root.style.removeProperty("--home-hero-paper-logo-opacity");
       root.style.removeProperty("--home-services-progress");
     };
-  }, [inkOpacity, prefersReducedMotion, servicesOpacity]);
+  }, [inkOpacity, servicesOpacity, staticLayout]);
 
   useEffect(() => {
     if (!useShader || !scriptReady) return;
@@ -229,24 +246,16 @@ export function HomeHero({ services }: { services: readonly HomeService[] }) {
     <section
       ref={scrollTrackRef}
       aria-labelledby="home-hero-title"
-      className={
-        prefersReducedMotion ? styles.scrollTrackReduced : styles.scrollTrack
-      }
+      className={staticLayout ? styles.scrollTrackReduced : styles.scrollTrack}
     >
       <motion.div
         ref={stageRef}
-        className={`${styles.hero} ${prefersReducedMotion ? styles.heroReduced : ""}`}
-        style={
-          prefersReducedMotion ? undefined : { backgroundColor: stageBackground }
-        }
+        className={`${styles.hero} ${staticLayout ? styles.heroReduced : ""}`}
+        style={staticLayout ? undefined : { backgroundColor: stageBackground }}
       >
         <motion.div
           className={styles.copy}
-          style={
-            prefersReducedMotion
-              ? undefined
-              : { y: copyY, opacity: copyOpacity }
-          }
+          style={staticLayout ? undefined : { y: copyY, opacity: copyOpacity }}
         >
           <div className={styles.copyInner}>
             <h1
@@ -263,10 +272,11 @@ export function HomeHero({ services }: { services: readonly HomeService[] }) {
         </motion.div>
         <motion.div
           ref={mediaRef}
+          data-home-hero-visual=""
           className={`${styles.canvasContainer} rounded-lg`}
           style={{
             aspectRatio,
-            ...(prefersReducedMotion
+            ...(staticLayout
               ? {}
               : { y: mediaY, scale: mediaScale, borderRadius: mediaRadius }),
           }}
@@ -291,19 +301,19 @@ export function HomeHero({ services }: { services: readonly HomeService[] }) {
           <motion.div
             aria-hidden="true"
             className={styles.inkOverlay}
-            style={{ opacity: prefersReducedMotion ? 0 : inkOpacity }}
+            style={{ opacity: staticLayout ? 0 : inkOpacity }}
           />
         </motion.div>
         <motion.div
           className={
-            prefersReducedMotion ? styles.servicesReduced : styles.servicesOverlay
+            staticLayout ? styles.servicesReduced : styles.servicesOverlay
           }
-          style={{ opacity: prefersReducedMotion ? 1 : servicesOpacity }}
+          style={{ opacity: staticLayout ? 1 : servicesOpacity }}
         >
           <div className={styles.servicesContent}>
             <motion.div
               style={{
-                opacity: prefersReducedMotion ? 1 : servicesHeadingOpacity,
+                opacity: staticLayout ? 1 : servicesHeadingOpacity,
               }}
             >
               <h2 className="text-heading-3 sm:text-heading-2 font-semibold !text-inverse mb-4 sm:mb-10">
@@ -313,7 +323,7 @@ export function HomeHero({ services }: { services: readonly HomeService[] }) {
             <div className="mt-4">
               <ServicesGrid
                 services={services}
-                started={serviceCardsStarted}
+                started={staticLayout || serviceCardsStarted}
                 animate={!prefersReducedMotion}
               />
             </div>

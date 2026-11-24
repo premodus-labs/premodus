@@ -43,13 +43,12 @@ function ServiceCard({
     if (!animate || !started) return;
 
     controls.start({
-      opacity: compact ? [0, 1, 1, index === 2 ? 1 : 0] : 1,
-      y: compact ? [20, 0, 0, 0] : 0,
+      opacity: 1,
+      y: 0,
       transition: compact
         ? {
             duration: 0.5,
             delay: index * CARD_STAGGER_DELAY,
-            times: [0, 0.15, 0.8, 1],
           }
         : { duration: 0.3, delay: index * CARD_STAGGER_DELAY },
     });
@@ -59,11 +58,9 @@ function ServiceCard({
     <motion.article
       initial={animate ? { opacity: 0, y: 20 } : false}
       animate={animate ? controls : undefined}
-      className={`mx-auto w-full max-w-[450px] min-w-0 lg:mx-0 lg:flex-1 ${
-        compact && animate ? "col-start-1 row-start-1" : ""
-      }`}
+      className="mx-auto w-full max-w-[450px] min-w-0 lg:mx-0 lg:flex-1"
     >
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-canvas sm:aspect-[3/4]">
+      <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg bg-canvas">
         <video
           src={service.video}
           autoPlay

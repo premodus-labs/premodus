@@ -7,10 +7,14 @@ import { ProjectGrid } from "@/features/work/project-grid";
 export function WorkPage() {
   return (
     <div className="bg-surface text-inverse">
-      <SectionTransition className="px-page pt-4 pb-section">
+      <SectionTransition className="px-5 pt-4 pb-section md:px-page">
         <div className="mx-auto">
           <div className="max-w-3xl">
-            <Text variant="h1" className="mt-4 !text-inverse">
+            <Text
+              as="h1"
+              variant="h2"
+              className="mt-4 !text-inverse sm:text-display md:text-heading-1"
+            >
               A Running Record Of What We’ve Built, Who It’s For, and What It Solved.
             </Text>
           </div>
@@ -20,9 +24,8 @@ export function WorkPage() {
       <CallToAction
         title="Start with a conversation, not a commitment."
         description="Let us know what you need built."
-        secondaryHref="/services"
-        secondaryLabel="Explore services"
         variant="inverse"
+        fullWidthButtonOnMobile
       />
     </div>
   );

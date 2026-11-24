@@ -46,7 +46,7 @@ export function ProjectGrid({
 
   return (
     <>
-      <div className="mt-[40px] grid grid-cols-2 items-start gap-x-[20px] gap-y-major">
+      <div className="mt-[40px] grid grid-cols-1 items-start gap-y-major lg:grid-cols-2 lg:gap-x-[20px]">
         {projects.map((p, index) => {
           const image = imageFor(p, index);
           return (
