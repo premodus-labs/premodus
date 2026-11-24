@@ -58,7 +58,7 @@ export function ProjectGrid({
               aria-haspopup="dialog"
             >
               <div
-                className="relative flex aspect-[3/2] w-full items-center justify-center overflow-hidden rounded-lg bg-white"
+                className="relative flex aspect-[3/2] w-full items-center justify-center overflow-hidden rounded-sm bg-white"
               >
                 <Image
                   src={image.src}

@@ -256,9 +256,9 @@ export function HomeHero({ services }: { services: readonly HomeService[] }) {
               Premodus Labs is a technology company based in Malawi, building
               software and securing it for organizations anywhere.
             </h1>
-            <ButtonLink href="/work" className={styles.cta}>
+            {/* <ButtonLink href="/work" className={styles.cta}>
               See our work
-            </ButtonLink>
+            </ButtonLink> */}
           </div>
         </motion.div>
         <motion.div
