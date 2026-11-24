@@ -1,16 +1,47 @@
-import Image from "next/image";
 import { AnimatedText } from "@/components/ui/animated-text";
 import { CallToAction } from "@/components/ui/call-to-action";
 import { Text } from "@/components/ui/text";
-import { getBoilerImage } from "@/lib/constants/boiler-images";
 
 const vision =
   "A Malawi that runs on its own ideas — productive, efficient, and self-sustaining, powered by technology built at home.";
 
+const socialIconPaths = {
+  GitHub:
+    "M12 .9a11.1 11.1 0 0 0-3.51 21.63c.55.1.76-.24.76-.53v-2.08c-3.1.67-3.76-1.32-3.76-1.32-.5-1.28-1.23-1.62-1.23-1.62-1.01-.69.08-.68.08-.68 1.12.08 1.71 1.15 1.71 1.15 1 1.7 2.62 1.21 3.26.92.1-.72.39-1.21.71-1.49-2.47-.28-5.06-1.24-5.06-5.5 0-1.22.44-2.22 1.15-3-.12-.28-.5-1.42.11-2.96 0 0 .94-.3 3.05 1.15a10.6 10.6 0 0 1 5.56 0c2.12-1.45 3.05-1.15 3.05-1.15.61 1.54.23 2.68.12 2.96.71.78 1.14 1.78 1.14 3 0 4.27-2.6 5.21-5.08 5.49.4.35.76 1.02.76 2.06V22c0 .29.2.63.77.52A11.1 11.1 0 0 0 12 .9Z",
+  LinkedIn:
+    "M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2ZM8.34 18H5.67V9.4h2.67ZM7 8.22a1.55 1.55 0 1 1 .02-3.1A1.55 1.55 0 0 1 7 8.22ZM18.33 18h-2.66v-4.18c0-1-.02-2.29-1.4-2.29-1.4 0-1.61 1.1-1.61 2.22V18H10V9.4h2.55v1.17h.04a2.8 2.8 0 0 1 2.52-1.39c2.7 0 3.22 1.78 3.22 4.1Z",
+  X: "M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-5-7.3L5.5 22H2.3l7.3-8.4L1.8 2h6.4l4.5 6.7L18.9 2Zm-1.1 18h1.7L7.3 3.9H5.5L17.8 20Z",
+} as const;
+
 const team = [
-  ["PG", "Perani Gondwe", "Managing Director", "Leads how the work gets built."],
-  ["TM", "Tanthwe Mtema", "Head of Business Operations", "Leads how the business runs."],
-  ["AN", "Albert Ngonda", "Technical Director", "Leads how the work stays secure.", "/images/founders/bert.jpg"],
+  {
+    name: "Perani Gondwe",
+    role: "Managing Director.",
+    description: "Leads how the work gets built.",
+    socials: [
+      { label: "LinkedIn", href: "https://www.linkedin.com/in/perani-gondwe-368428343/" },
+      { label: "GitHub", href: "https://github.com/perani-g" },
+      { label: "X", href: "https://x.com/peranigondwe" },
+    ],
+  },
+  {
+    name: "Tanthwe Mtema",
+    role: "Head of Business Operations.",
+    description: "Leads how the business runs.",
+    socials: [
+      { label: "LinkedIn", href: "https://www.linkedin.com/in/tanthwe-mtema-aa7405282/" },
+      { label: "GitHub", href: "https://github.com/Tanthwe77" },
+    ],
+  },
+  {
+    name: "Albert Ngonda",
+    role: "Technical Director.",
+    description: "Leads how the work stays secure.",
+    socials: [
+      { label: "LinkedIn", href: "https://www.linkedin.com/in/albert-ngonda-a1289022b/" },
+      { label: "GitHub", href: "https://github.com/ngondaa" },
+    ],
+  },
 ] as const;
 
 export function AboutPage() {
@@ -82,37 +113,36 @@ export function AboutPage() {
             Three people, no layers between the work and the person doing it.
           </Text>
           <div className="mt-6 grid grid-cols-1 gap-gutter md:grid-cols-3">
-            {team.map(([initials, name, role, description, imagePath], index) => (
-              <article key={name} className="group">
-                <div className="relative aspect-[3/4] overflow-hidden bg-surface">
-                  <Image
-                    src={imagePath ? imagePath : getBoilerImage(index).src}
-                    alt={name}
-                    fill
-                    sizes="(min-width: 768px) 33vw, 100vw"
-                    className="object-cover grayscale transition duration-500 group-hover:grayscale-0 motion-reduce:transition-none"
-                  />
-                  <span className="sr-only">{initials}</span>
-                </div>
-                <Text as="h3" variant="small-bold" className="mt-3">
+            {team.map(({ name, role, description, socials }) => (
+              <article
+                key={name}
+                className="rounded-sm bg-surface p-6 text-inverse"
+              >
+                <Text as="h4" variant="h4" className="!text-inverse">
                   {name}
                 </Text>
-                <Text variant="tiny" className="mt-1">
-                  {role}
+                <Text variant="body-bold" className="mt-1 !text-inverse/75">
+                  {role} {description}
                 </Text>
-                <Text variant="tiny" className="mt-2">
-                  {description}
-                </Text>
-                <div className="mt-2 flex items-center gap-2 text-ink-strong" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" className="size-4 fill-current">
-                    <path d="M12 .9a11.1 11.1 0 0 0-3.51 21.63c.55.1.76-.24.76-.53v-2.08c-3.1.67-3.76-1.32-3.76-1.32-.5-1.28-1.23-1.62-1.23-1.62-1.01-.69.08-.68.08-.68 1.12.08 1.71 1.15 1.71 1.15 1 1.7 2.62 1.21 3.26.92.1-.72.39-1.21.71-1.49-2.47-.28-5.06-1.24-5.06-5.5 0-1.22.44-2.22 1.15-3-.12-.28-.5-1.42.11-2.96 0 0 .94-.3 3.05 1.15a10.6 10.6 0 0 1 5.56 0c2.12-1.45 3.05-1.15 3.05-1.15.61 1.54.23 2.68.12 2.96.71.78 1.14 1.78 1.14 3 0 4.27-2.6 5.21-5.08 5.49.4.35.76 1.02.76 2.06V22c0 .29.2.63.77.52A11.1 11.1 0 0 0 12 .9Z" />
-                  </svg>
-                  <svg viewBox="0 0 24 24" className="size-4 fill-current">
-                    <path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2ZM8.34 18H5.67V9.4h2.67ZM7 8.22a1.55 1.55 0 1 1 .02-3.1A1.55 1.55 0 0 1 7 8.22ZM18.33 18h-2.66v-4.18c0-1-.02-2.29-1.4-2.29-1.4 0-1.61 1.1-1.61 2.22V18H10V9.4h2.55v1.17h.04a2.8 2.8 0 0 1 2.52-1.39c2.7 0 3.22 1.78 3.22 4.1Z" />
-                  </svg>
-                  <svg viewBox="0 0 24 24" className="size-4 fill-current">
-                    <path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-5-7.3L5.5 22H2.3l7.3-8.4L1.8 2h6.4l4.5 6.7L18.9 2Zm-1.1 18h1.7L7.3 3.9H5.5L17.8 20Z" />
-                  </svg>
+                <div className="mt-6 flex items-center gap-3">
+                  {socials.map(({ label, href }) => (
+                    <a
+                      key={label}
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${name} on ${label}`}
+                      className="text-inverse transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-inverse"
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        className="size-6 fill-current"
+                        aria-hidden="true"
+                      >
+                        <path d={socialIconPaths[label]} />
+                      </svg>
+                    </a>
+                  ))}
                 </div>
               </article>
             ))}
