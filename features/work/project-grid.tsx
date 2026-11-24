@@ -58,18 +58,19 @@ export function ProjectGrid({
               aria-haspopup="dialog"
             >
               <div
-                className={`relative flex aspect-[3/2] w-full items-end overflow-hidden rounded-lg p-6 ${
-                  p.slug === "rugare-mental-health" ? "bg-white" : "bg-surface"
-                }`}
+                className="relative flex aspect-[3/2] w-full items-center justify-center overflow-hidden rounded-lg bg-white"
               >
                 <Image
                   src={image.src}
                   alt={image.alt}
-                  fill
-                  sizes="(min-width: 768px) 50vw, 50vw"
-                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                  width={200}
+                  height={200}
+                  className="h-auto w-auto max-h-full max-w-full object-contain transition-transform duration-500 ease-out group-hover:scale-105"
                 />
-                <Text variant="tiny-bold" className="relative text-inverse">
+                <Text
+                  variant="small-bold"
+                  className="absolute bottom-6 left-6 text-ink-weak"
+                >
                   {p.label}
                 </Text>
               </div>

@@ -8,7 +8,7 @@
 
 .scrollTrack {
   position: relative;
-  height: 500vh;
+  height: 400vh;
   background: var(--canvas);
 }
 

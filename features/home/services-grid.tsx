@@ -12,6 +12,7 @@ export type HomeService = {
 };
 
 const COMPACT_VIEWPORT = "(max-width: 1023px)";
+const CARD_STAGGER_DELAY = 0.5;
 
 function subscribeToCompactViewport(onChange: () => void) {
   const mediaQuery = window.matchMedia(COMPACT_VIEWPORT);
@@ -45,8 +46,12 @@ function ServiceCard({
       opacity: compact ? [0, 1, 1, index === 2 ? 1 : 0] : 1,
       y: compact ? [20, 0, 0, 0] : 0,
       transition: compact
-        ? { duration: 0.5, delay: index * 1.1, times: [0, 0.15, 0.8, 1] }
-        : { duration: 0.3, delay: index * 1.1 },
+        ? {
+            duration: 0.5,
+            delay: index * CARD_STAGGER_DELAY,
+            times: [0, 0.15, 0.8, 1],
+          }
+        : { duration: 0.3, delay: index * CARD_STAGGER_DELAY },
     });
   }, [animate, compact, controls, index, started]);
 

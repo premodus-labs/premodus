@@ -58,32 +58,33 @@ export function HomeHero({ services }: { services: readonly HomeService[] }) {
     target: scrollTrackRef,
     offset: ["start start", "end end"],
   });
-  const copyY = useTransform(scrollYProgress, [0.05, 0.28], [0, -240]);
-  const copyOpacity = useTransform(scrollYProgress, [0.05, 0.25], [1, 0]);
+  const timelineProgress = useTransform(scrollYProgress, [0, 1], [0, 0.75]);
+  const copyY = useTransform(timelineProgress, [0.05, 0.28], [0, -240]);
+  const copyOpacity = useTransform(timelineProgress, [0.05, 0.25], [1, 0]);
   const mediaScale = useTransform(
-    scrollYProgress,
+    timelineProgress,
     [0.3, 0.42],
     [1, fillTransform.scale],
   );
   const mediaY = useTransform(
-    scrollYProgress,
+    timelineProgress,
     [0.3, 0.42],
     [0, fillTransform.y],
   );
-  const mediaRadius = useTransform(scrollYProgress, [0.3, 0.42], [8, 0]);
-  const inkOpacity = useTransform(scrollYProgress, [0.42, 0.46], [0, 1]);
+  const mediaRadius = useTransform(timelineProgress, [0.3, 0.42], [8, 0]);
+  const inkOpacity = useTransform(timelineProgress, [0.42, 0.46], [0, 1]);
   const stageBackground = useTransform(
-    scrollYProgress,
+    timelineProgress,
     [0.42, 0.46],
     ["#F2F1E8", "#1A1B18"],
   );
   const servicesOpacity = useTransform(
-    scrollYProgress,
+    timelineProgress,
     [0.46, 0.5],
     [0, 1],
   );
   const servicesHeadingOpacity = useTransform(
-    scrollYProgress,
+    timelineProgress,
     [0.46, 0.5],
     [0, 1],
   );

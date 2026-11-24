@@ -8,6 +8,8 @@ import { DURATION } from "@/lib/design/motion";
 import type { Project } from "@/lib/constants/projects";
 
 const REVEAL_DURATION = DURATION.slow / 2;
+const FIRST_CARD_DELAY = 0.9;
+const CARD_STAGGER_DELAY = 0.5;
 
 function projectLink(project: Project) {
   return {
@@ -50,7 +52,7 @@ export function FeaturedWork({ projects }: { projects: Project[] }) {
               <ScrollReveal
                 key={project.slug}
                 as="article"
-                delay={0.9 + index * 0.875}
+                delay={FIRST_CARD_DELAY + index * CARD_STAGGER_DELAY}
                 duration={REVEAL_DURATION}
                 className="min-w-0"
               >
@@ -60,13 +62,13 @@ export function FeaturedWork({ projects }: { projects: Project[] }) {
                   rel={link.rel}
                   className="group block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-inverse"
                 >
-                  <div className="relative aspect-[89/61.5] overflow-hidden rounded-md">
+                  <div className="flex aspect-[89/61.5] items-center justify-center overflow-hidden rounded-md bg-white">
                     <Image
                       src={image.src}
                       alt={image.alt}
-                      fill
-                      sizes="(min-width: 1024px) calc((100vw - 200px) / 3), (min-width: 768px) calc((100vw - 180px) / 2), calc(100vw - 40px)"
-                      className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+                      width={200}
+                      height={200}
+                      className="h-[200px] w-[200px] object-contain transition-transform duration-500 ease-out group-hover:scale-105"
                     />
                   </div>
                 </Link>
@@ -84,7 +86,7 @@ export function FeaturedWork({ projects }: { projects: Project[] }) {
         </div>
         <ScrollReveal
           as="div"
-          delay={3.525}
+          delay={FIRST_CARD_DELAY + featuredProjects.length * CARD_STAGGER_DELAY}
           duration={REVEAL_DURATION}
           className="mt-10"
         >
