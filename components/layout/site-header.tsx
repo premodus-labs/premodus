@@ -34,28 +34,28 @@ export function SiteHeader({
   ];
 
   useMotionValueEvent(scrollY, "change", (latest) => {
-    if (!animatedHomeHeader) {
-      setHidden(false);
-      return;
-    }
-
     const previous = scrollY.getPrevious();
     if (previous === undefined) return;
     const direction = latest - previous;
-    const servicesProgress = Number.parseFloat(
-      document.documentElement.style.getPropertyValue(
-        "--home-services-progress",
-      ),
-    );
 
     if (latest < 80 || direction < -8) {
       setHidden(false);
-    } else if (direction > 8 && servicesProgress > 0) {
+    } else if (!animatedHomeHeader && direction > 8) {
       setHidden(true);
+    } else if (animatedHomeHeader) {
+      const servicesProgress = Number.parseFloat(
+        document.documentElement.style.getPropertyValue(
+          "--home-services-progress",
+        ),
+      );
+
+      if (direction > 8 && servicesProgress > 0) {
+        setHidden(true);
+      }
     }
   });
 
-  const shouldHide = animatedHomeHeader && hidden;
+  const shouldHide = hidden && !menuOpen;
 
   return (
     <motion.header
@@ -122,7 +122,12 @@ export function SiteHeader({
           }`}
           aria-expanded={menuOpen}
           aria-controls="mobile-primary-navigation"
-          onClick={() => setMenuOpen((open) => !open)}
+          onClick={() =>
+            setMenuOpen((open) => {
+              if (!open) setHidden(false);
+              return !open;
+            })
+          }
           style={
             animatedHomeHeader
               ? {
