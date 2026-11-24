@@ -151,10 +151,9 @@ export function AboutPage() {
       </section>
 
       <CallToAction
+        fullWidthButtonOnMobile
         title="Want to know more about what we’re building?"
         description="Get in touch, or take a look at the work."
-        secondaryHref="/services"
-        secondaryLabel="See our services"
       />
     </>
   );

@@ -78,7 +78,7 @@ export function ServicesPage() {
             <article
               key={service.title}
               id={service.title.replaceAll(" ", "-")}
-              className="grid min-h-[560px] grid-cols-1 bg-transparent text-inverse md:grid-cols-2 md:overflow-hidden md:rounded-lg md:bg-canvas md:text-ink-strong"
+              className="grid min-h-[560px] grid-cols-1 bg-transparent text-inverse lg:grid-cols-2 lg:overflow-hidden lg:rounded-lg lg:bg-canvas lg:text-ink-strong"
             >
               <video
                 className="aspect-[3/4] w-full max-w-[600px] rounded-sm object-cover"
@@ -90,24 +90,24 @@ export function ServicesPage() {
                 preload="metadata"
                 aria-label={`${service.title} animation`}
               />
-              <div className="mt-6 text-inverse md:mt-0 md:flex md:items-center md:px-major md:py-major md:text-ink-strong">
+              <div className="mt-6 text-inverse lg:mt-0 lg:flex lg:items-center lg:px-major lg:py-major lg:text-ink-strong">
                 <div className="max-w-md">
                   <Text
                     as="h3"
                     variant="h3"
-                    className="!text-inverse md:!text-ink-strong"
+                    className="!text-inverse lg:!text-ink-strong"
                   >
                     {service.title}
                   </Text>
                   <Text
                     variant="body"
-                    className="mt-4 !text-inverse/75 md:!text-ink-medium"
+                    className="mt-4 !text-inverse/75 lg:!text-ink-medium"
                   >
                     {service.description}
                   </Text>
                   <Text
                     variant="h4"
-                    className="mt-6 block !text-inverse md:!text-ink-strong"
+                    className="mt-6 block !text-inverse lg:!text-ink-strong"
                   >
                     Deliverables
                   </Text>
@@ -116,7 +116,7 @@ export function ServicesPage() {
                       <li key={deliverable}>
                         <Text
                           variant="body"
-                          className="!text-inverse/75 md:!text-ink-medium"
+                          className="!text-inverse/75 lg:!text-ink-medium"
                         >
                           {deliverable}
                         </Text>
@@ -125,7 +125,7 @@ export function ServicesPage() {
                   </ul>
                   <ButtonLink
                     href="/contact"
-                    className="mt-6 w-full !bg-inverse !text-surface md:w-auto md:!bg-surface md:!text-inverse"
+                    className="mt-6 w-full !bg-inverse !text-surface lg:w-auto lg:!bg-surface lg:!text-inverse"
                   >
                     Get in touch
                   </ButtonLink>

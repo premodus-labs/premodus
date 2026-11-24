@@ -5,7 +5,6 @@ import { site, siteNav } from "@/lib/constants/navigation";
 
 const socials = [
   { label: "LinkedIn", href: "https://www.linkedin.com/company/premodus/" },
-  { label: "X", href: "https://x.com/premoduslabs" },
 ] as const;
 
 export function SiteFooter({

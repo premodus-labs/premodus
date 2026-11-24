@@ -24,9 +24,8 @@ export function WorkPage() {
       <CallToAction
         title="Start with a conversation, not a commitment."
         description="Let us know what you need built."
-        secondaryHref="/services"
-        secondaryLabel="Explore services"
         variant="inverse"
+        fullWidthButtonOnMobile
       />
     </div>
   );

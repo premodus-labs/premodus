@@ -30,9 +30,9 @@ export function CallToAction({
   const buttonClass = inverse ? "!bg-inverse !text-surface" : "";
   const contentWidthClass = fullWidthButtonOnMobile ? "w-full" : "";
   const actionsClass = fullWidthButtonOnMobile
-    ? "flex w-full flex-col items-center justify-center gap-4 md:flex-row"
+    ? "flex w-full flex-col items-center justify-center gap-4 lg:flex-row"
     : "flex flex-wrap items-center justify-center gap-4";
-  const fullWidthButtonClass = fullWidthButtonOnMobile ? "w-full md:w-auto" : "";
+  const fullWidthButtonClass = fullWidthButtonOnMobile ? "w-full lg:w-auto" : "";
   const sectionPaddingClass = fullWidthButtonOnMobile
     ? "px-5 md:px-page"
     : "px-page";
@@ -81,7 +81,10 @@ export function CallToAction({
             {description}
           </Text>
         </ScrollReveal>
-        <ScrollReveal delay={0.24}>
+        <ScrollReveal
+          delay={0.24}
+          className={fullWidthButtonOnMobile ? "w-full" : undefined}
+        >
           <div className={actionsClass}>
             <ButtonLink href="/contact" className={`${buttonClass} ${fullWidthButtonClass}`}>
               Get in touch
