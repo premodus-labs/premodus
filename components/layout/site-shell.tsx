@@ -6,13 +6,15 @@ import { SiteHeader } from "@/components/layout/site-header";
 
 export function SiteShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const variant = pathname === "/work" ? "inverse" : "default";
+  const headerVariant =
+    pathname === "/work" || pathname === "/services" ? "inverse" : "default";
+  const footerVariant = pathname === "/work" ? "inverse" : "default";
 
   return (
     <>
-      <SiteHeader variant={variant} />
+      <SiteHeader variant={headerVariant} />
       <main className="flex-1">{children}</main>
-      <SiteFooter variant={variant} />
+      <SiteFooter variant={footerVariant} />
     </>
   );
 }
