@@ -17,7 +17,7 @@ import styles from "./home-hero.module.css";
 
 // ── Tweak this ──────────────────────────────────────────────
 const HERO_IMAGE = "/media/typing.mp4";
-const HERO_FALLBACK_IMAGE = "/media/image.png";
+const HERO_FALLBACK_IMAGE = "/media/texture.png";
 const MOBILE_VIEWPORT = "(max-width: 767px)";
 // ────────────────────────────────────────────────────────────
 
