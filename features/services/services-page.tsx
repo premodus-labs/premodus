@@ -1,147 +1,129 @@
 import { CallToAction } from "@/components/ui/call-to-action";
-import { ScrollReveal } from "@/components/ui/scroll-reveal";
+import { ButtonLink } from "@/components/ui/button";
 import { SectionTransition } from "@/components/ui/section-transition";
 import { Text } from "@/components/ui/text";
 
 const services = [
   {
     title: "Software development",
-    capabilities: [
-      "Custom web and mobile applications, built and maintained end-to-end.",
-      "Digital product design — how something looks, feels, and works before a line of code justifies it.",
-      "Legacy system modernization — rebuilding or extending software that’s aged past what it can support.",
-      "API development for organizations that need their data or services accessible to other tools.",
+    media: "/media/card-software-development.mp4",
+    description:
+      "We design and build software: web applications, cross-platform mobile apps, and integrations that connect existing systems. Design and engineering happen in one team, from scoping through launch.",
+    deliverables: [
+      "Scoping, requirements gathering, and process mapping",
+      "UI/UX design: wireframes, visual design, and a click-based prototype",
+      "Design system components, styles, and usage guidelines",
+      "Web applications",
+      "Cross-platform mobile applications",
+      "Backend and API development",
+      "Third-party integrations",
+      "Maintenance and ongoing technical support",
     ],
-    fit: "You have a process still running on spreadsheets, WhatsApp, or paper — and need something built to last.",
-  },
-  {
-    title: "Digital transformation",
-    capabilities: [
-      "Systems integration — connecting institutional tools and data sources that currently don’t talk to each other.",
-      "Process digitization — turning manual, paper-based, or fragmented workflows into ones that people actually use.",
-      "Post-launch support through adoption, not just handoff at go-live.",
-    ],
-    fit: "You already have tools, teams, and processes — they just don’t work together yet.",
-  },
-  {
-    title: "IT consulting",
-    capabilities: [
-      "Technology strategy and roadmapping — auditing what an institution has and what’s breaking down.",
-      "Vendor and procurement advisory — an independent read before you commit to a proposal.",
-      "Technical due diligence — assessing systems before budget gets committed to them.",
-    ],
-    fit: "You’re about to make a technology decision and want someone who will help you get it right the first time.",
   },
   {
     title: "Cybersecurity",
-    capabilities: [
-      "Security audits — assessing existing systems against real threat models, not generic checklists.",
-      "Penetration testing — probing systems the way an actual attacker would.",
-      "Secure implementation — building security into new systems from the start.",
+    media: "/media/card-cybersecurity.mp4",
+    description:
+      "We assess and strengthen the security of an organization’s systems, applications, and practices. We find weak spots, explain them in plain terms, and guide the client through fixing them.",
+    deliverables: [
+      "Security assessment: review of systems, infrastructure, and controls",
+      "Vulnerability assessment and penetration testing",
+      "Finding report: prioritized risks with clear remediation steps",
+      "Security policy and process",
+      "Incident response plan",
+      "Secure architecture review",
+      "Team security training",
+      "Ongoing security monitoring",
     ],
-    fit: "You’re handling sensitive data and need security built in from the start rather than bolted on after.",
+  },
+  {
+    title: "Digital transformation",
+    media: "/media/card-digital-transformation.mp4",
+    description:
+      "We help organizations move their operations onto digital systems. We assess how work gets done today, advise on the tools and technology, and plan the change, so the tools we recommend fit the organization and part of its service.",
+    deliverables: [
+      "Current-state assessment: existing processes, tools, and data points",
+      "Digital strategy: prioritization, roadmap, and costed options",
+      "Process mapping and redesign",
+      "Technology and vendor selection",
+      "System architecture and integration design",
+      "Implementation planning",
+      "Change management plan and staff training",
+      "Post-launch support",
+      "Retainer",
+      "Troubleshooting",
+      "API development",
+      "Code review",
+      "Legacy system integration",
+      "Data migration",
+      "Security hardening",
+      "Post-implementation support",
+    ],
   },
 ] as const;
 
 export function ServicesPage() {
   return (
-    <>
-      <SectionTransition className="px-page pt-16 pb-section">
-        <div className="mx-auto max-w-7xl">
-        <div className="max-w-md">
-          <ScrollReveal>
-            <Text as="h1" variant="h1">Services</Text>
-          </ScrollReveal>
-          <ScrollReveal delay={0.18}>
-            <Text variant="body" className="mt-4">
-            Four services, all built with the same constraint in mind: this has to
-            actually work here — not in a demo, not in a pitch deck, in the
-            environment we’re actually operating in.
-            </Text>
-          </ScrollReveal>
-        </div>
-        <nav aria-label="Service areas" className="mt-6">
-          <ul className="flex flex-wrap gap-x-6 gap-y-3">
-            {services.map((service, index) => (
-              <li key={service.title}>
-                <ScrollReveal delay={0.34 + index * 0.1}>
-                  <a
-                    href={`#${service.title.replaceAll(" ", "-")}`}
-                    className="text-tiny text-ink-medium underline underline-offset-4 transition-colors duration-200 hover:text-ink-strong"
-                  >
-                    {service.title}
-                  </a>
-                </ScrollReveal>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        <div className="mt-major border-t border-rule/25">
-          {services.map((service, index) => (
+    <div className="bg-surface text-inverse">
+      <SectionTransition className="px-page pt-header-t pb-header-b">
+        <Text as="h1" variant="h2" className="mx-auto w-full !text-inverse">
+          Three Services, All Built With the Same Constraint in Mind: This
+          Has to Actually Work Here — Not in a Demo, Not in a Pitch Deck, in
+          the Environment We’re Actually Operating in.
+        </Text>
+      </SectionTransition>
+
+      <SectionTransition className="px-page pb-section">
+        <div className="mx-auto flex w-full flex-col gap-major">
+          {services.map((service) => (
             <article
               key={service.title}
               id={service.title.replaceAll(" ", "-")}
-              className="grid grid-cols-1 gap-8 border-b border-rule/25 py-8 md:grid-cols-12 md:gap-gutter"
+              className="rounded-lg grid min-h-[560px] grid-cols-1 overflow-hidden bg-canvas text-ink-strong md:grid-cols-2"
             >
-              <ScrollReveal
-                className="md:col-span-5"
-                delay={index * 0.06}
-              >
-                <Text as="h2" variant="h4">
-                  {service.title}
-                </Text>
-              </ScrollReveal>
-              <div className="md:col-span-6 md:col-start-7">
-                <ScrollReveal delay={index * 0.06 + 0.08}>
-                <Text variant="tiny" className="block">Capabilities</Text>
-                </ScrollReveal>
-                <ul className="mt-3 flex list-none flex-col gap-3 p-0">
-                  {service.capabilities.map((capability, capabilityIndex) => (
-                    <li key={capability}>
-                      <ScrollReveal delay={capabilityIndex * 0.08}>
-                        <Text variant="small">{capability}</Text>
-                      </ScrollReveal>
-                    </li>
-                  ))}
-                </ul>
-                <ScrollReveal delay={0.16}>
-                  <div className="mt-6 border-l border-rule/25 pl-4">
-                    <Text variant="tiny" className="block">When you’d reach for this</Text>
-                    <Text variant="small" className="mt-2">{service.fit}</Text>
-                  </div>
-                </ScrollReveal>
+              <video
+                className="h-[800px] w-full max-w-[600px] object-cover md:w-[600px]"
+                src={service.media}
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="metadata"
+                aria-label={`${service.title} animation`}
+              />
+              <div className="flex items-center px-8 py-major text-ink-strong md:px-major">
+                <div className="max-w-md">
+                  <Text as="h3" variant="h3" className="!text-ink-strong">
+                    {service.title}
+                  </Text>
+                  <Text variant="body" className="mt-4 !text-ink-medium">
+                    {service.description}
+                  </Text>
+                  <Text variant="h4" className="mt-6 block !text-ink-strong">
+                    Deliverables
+                  </Text>
+                  <ul className="mt-3 flex list-disc flex-col gap-1 pl-4">
+                    {service.deliverables.map((deliverable) => (
+                      <li key={deliverable}>
+                        <Text variant="body" className="!text-ink-medium">{deliverable}</Text>
+                      </li>
+                    ))}
+                  </ul>
+                  <ButtonLink href="/contact" className="mt-6">
+                    Get in touch
+                  </ButtonLink>
+                </div>
               </div>
             </article>
           ))}
         </div>
-        </div>
       </SectionTransition>
-      <SectionTransition className="section-panel px-page py-section">
-        <div className="mx-auto w-full max-w-7xl">
-          <ScrollReveal>
-            <Text variant="small-bold">How engagements start</Text>
-          </ScrollReveal>
-          <ScrollReveal delay={0.1}>
-            <Text as="h2" variant="h2" className="mt-4 max-w-2xl">
-              No proposal templates, no sales layer between you and the people who’d actually do the work.
-            </Text>
-          </ScrollReveal>
-          <div className="mt-major grid grid-cols-1 gap-major md:grid-cols-3">
-          {[
-            ["A conversation", "You describe the problem. We ask questions until we actually understand it — including, sometimes, whether it’s the right problem to solve first."],
-            ["An honest scope", "What it would take, realistically — timeline, cost, what’s in and out. If we think you don’t need what you’re asking for, we’ll say so before you pay for it."],
-            ["Direct access, start to finish", "No account manager relaying messages to the people doing the work. You talk to us."],
-          ].map(([step, description], index) => (
-            <ScrollReveal key={step} delay={index * 0.1}>
-              <Text variant="tiny">0{index + 1}</Text>
-              <Text as="h3" variant="body-bold" className="mt-4">{step}</Text>
-              <Text variant="small" className="mt-3">{description}</Text>
-            </ScrollReveal>
-          ))}
-          </div>
-        </div>
-      </SectionTransition>
-      <CallToAction title="Start with a conversation, not a commitment." description="Tell us what you’re dealing with." />
-    </>
+
+      <CallToAction
+        variant="inverse"
+        title="Start with a conversation, not a commitment."
+        description="Tell us what you’re dealing with."
+      />
+    </div>
   );
 }
